@@ -6,4 +6,4 @@ This is an R Markdown supplement for the article Tutorial on survival modelling 
 
 > Zhi Zhao, John Zobolas, Manuela Zucknick, Tero Aittokallio (2023).
 > Tutorial on survival modelling with omics data
-> bioRxiv. DOI: 10.1101/xxxxxx.
+> arXiv DOI: [10.48550/arxiv.2302.12542](https://arxiv.org/abs/2302.12542v1)
