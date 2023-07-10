@@ -794,8 +794,8 @@ This can be done for example by repeatedly splitting the dataset to training/val
 :::{.green-box}
 To validate a prediction model systematically, the predictive performance of the model is commonly addressed by
 
-  - Discrimination: the ability of the model to distinguish between low and high risk patients
-  - Calibration: the agreement between the observed and predicted survival probabilities
+  - **Discrimination**: the ability of the model to distinguish between low and high risk patients
+  - **Calibration**: the agreement between the observed and predicted survival probabilities
   - **Overall performance**: the distance between the observed and predicted survival probabilities
 :::
 
