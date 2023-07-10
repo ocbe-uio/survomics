@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 )
 ```
 <br>
-This is an [R Markdown](http://rmarkdown.rstudio.com) supplement for the article **_Tutorial on survival modelling with omics data_**.
+This is an [R Markdown](http://rmarkdown.rstudio.com) supplement for the article [**_Tutorial on survival modelling with omics data_**](https://arxiv.org/abs/2302.12542).
 
 # Introduction {-}
 
@@ -206,7 +206,7 @@ The R/Bioconductor package **TCGAbiolinks** cannot retrieve any proteomics or me
 It is always useful to look at your data first, in particular the data type and dimensions (i.e. numbers of rows and columns for a data frame or matrix).
 :::
 
-# Univariate analysis {-}
+# Survival analysis with low-dimensional input data {-}
 
 ## Nonparametric survival analysis {-}
 
@@ -279,7 +279,7 @@ Score (logrank) test = 26.63  on 1 df,   p=2e-07
 
 The Cox model assumes proportional hazards and log-linearity of the covariates.
 To check the log-linearity for a clinical or demographic variable, e.g. age, we can fit a penalized smoothing spline for age effect.
-The following code shows that the nonlinear part of the smoothing spline does not have a significant effect ($p = 0.00013$).
+The following code shows that the nonlinear part of the smoothing spline has a significant effect ($p = 0.00013$).
 Thus, the assumption of log-linearity for age is not satisfied.
 
 ```{r}
@@ -325,13 +325,13 @@ From a practical point of view, since most omics profiles contain thousands of v
 In addition, we perceive that not too many omics features are relevant to one medical problem.
 We will demonstrate **two different filtering approaches for high-dimensional omics data**:
 
-- Univariate p-value-based filtering
-- Univariate variance-based filtering
+- P-value-based filtering
+- Variance-based filtering
 
 ### P-value filter {-}
 
 Before joint analyzing the associations between the thousands of omics features and survival outcomes, one can analyze the association between each omics feature and the survival outcomes, and filter omics features at a statistical significance level $0.1$ or $0.2$ (larger than 0.05 to reduce false negative identification of omics features in multivariate analysis).
-For demonstration, based on the $100$ mRNA-Seq features from TCGA breast cancer patients preprocessed previously, the code below filters omics features at the statistical significance level $0.2$, i.e. univariate analysis $p < 0.2$.
+For demonstration, based on the $100$ mRNA-Seq features from TCGA breast cancer patients preprocessed previously, the code below filters omics features at the statistical significance level $0.2$, i.e. $p < 0.2$.
 
 ```{r}
 RNA_log2count = log2(RNA_count[1:100, ] + 1)
@@ -382,7 +382,7 @@ cumsum_cutoff = cumsum_var[length(cumsum_var)] * 0.01
 filtered_names = filtered$statistics$feature[cumsum_var < cumsum_cutoff]
 ```
 
-# Multivariate analysis {-}
+# Survival analysis with high-dimensional input data {-}
 
 ## Unsupervised learning (omics data) {-}
 
@@ -787,40 +787,22 @@ BhGLM::plot.bh(Bayesfit, col.pts = c("red", "blue"), main = "Cox with mixture do
 
 # Survival model validation
 
-The ideal evaluation of a prognostic model is based on completely independent validation data. 
+The ideal evaluation of a prognostic model is based on completely independent validation data, since high-dimensional survival models built on the training data can be overfitted. 
 If there are no independent validation data, it is recommended to use resampling-based methods for estimating the **uncertainty** of the model’s prediction performance. 
-This can be done for example by repeatedly splitting the dataset to training/validation sets and evaluating a model’s performance on the different validation sets using various evaluation metrics.
+This can be done for example by repeatedly splitting the dataset to training/validation sets and evaluating a model’s performance on the different validation sets using various evaluation metrics. 
 
-To evaluate a prognostic model, there exist several performance metrics.
-These can be *time-dependent* or *time-independent*, with the time-dependent metrics being more informative in general compared to integrated measures (i.e. evaluated across many time points).
+:::{.green-box}
+To validate a prediction model systematically, the predictive performance of the model is commonly addressed by
+
+  - Discrimination: the ability of the model to distinguish between low and high risk patients
+  - Calibration: the agreement between the observed and predicted survival probabilities
+  - **Overall performance**: the distance between the observed and predicted survival probabilities
+:::
+
+The performance metrics can be *time-dependent* or *time-independent*, with the time-dependent metrics being more informative in general compared to integrated measures (i.e. evaluated across many time points).
 For survival data, we can assess the **discriminatory power** of a model (i.e. how well does it ranks patients) or how well a model is **calibrated** (i.e. how closely the predicted survival probabilities agree numerically with the actual survival outcomes).
 For example, measures such as the (integrated) area under time-specific ROC curves (**AUC**, @Heagerty2005) and the concordance index (**C-index**, @Harrell1982) are measures of discrimination, while the right-censored logarithmic loss (**RCLL**, @Avati2020) is a measure of calibration.
-The well-known Brier score [@Graf1999] is used to evaluate both discrimination and calibration performance.
-
-For one split of train/validation data sets, one can estimate a survival discrimation or calibration metric based on either the training or validation data set, such as AUC, C-index and Brier score and their corresponding time-dependent metrics, see the table below.
-Since high-dimensional survival models built on the training data can be overfitted, the conclusion should be drawn based on the evaluation from the validation data.
-
-```{r table, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
-tabl = "
-                      Training data                   Validation data       
-            |------------------------------:|------------------------------:|
-            | Time-dependent  | Integrated  | Time-dependent  | Integrated  |
-            |-----------------|:-----------:|-----------------|:-----------:|
-AUC         |       \u2713         |      \u2713      |       \u2713         |      \u2713      |
-C-index     |       \u2713         |      \u2713      |       \u2713         |      \u2713      |
-Brier score |       \u2713         |      \u2713      |       \u2713         |      \u2713      |
-"
-cat(tabl) # output the table in a format good for HTML/PDF/docx conversion
-```
-```
-                      Training data                   Validation data       
-            |------------------------------:|------------------------------:|
-            | Time-dependent  | Integrated  | Time-dependent  | Integrated  |
-            |-----------------|:-----------:|-----------------|:-----------:|
-AUC         |       ✓         |      ✓      |       ✓         |      ✓      |
-C-index     |       ✓         |      ✓      |       ✓         |      ✓      |
-Brier score |       ✓         |      ✓      |       ✓         |      ✓      |
-```
+The well-known **Brier score** [@Graf1999] is used to evaluate both discrimination and calibration performance.
 
 ## Model evaluation (classic) {-}
 
@@ -1244,8 +1226,8 @@ f_train = cph(formula = Surv(times, status) ~ age + ethnicity + UBE2T + ORC6L + 
               data = data_train, x = TRUE, y = TRUE, surv = TRUE, time.inc = 5)
 f_validate = cph(formula = Surv(times, status) ~ age + ethnicity + UBE2T + ORC6L + ESR1,
               data = data_validate, x = TRUE, y = TRUE, surv = TRUE, time.inc = 5)
-cal_train = calibrate(f_train, u = 5, cmethod = "KM", m = nrow(data_train) / 5, B = 200)
-cal_validate = calibrate(f_validate, u = 5, cmethod = "KM", m = nrow(data_validate) / 5, B = 200)
+cal_train = calibrate(f_train, u = 5, cmethod = "KM", m = nrow(data_train) / 4, B = 200)
+cal_validate = calibrate(f_validate, u = 5, cmethod = "KM", m = nrow(data_validate) / 4, B = 200)
 
 pdf("TCGA_surv_calibration.pdf", width=7, height=4)
 layout(matrix(1:2, nrow = 1))
