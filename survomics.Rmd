@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 )
 ```
 <br>
-This is an [R Markdown](http://rmarkdown.rstudio.com) supplement for the article [**_Tutorial on survival modelling with omics data_**](https://arxiv.org/abs/2302.12542).
+This is an [R Markdown](http://rmarkdown.rstudio.com) supplement for the article [**_Tutorial on survival modelling with omics data_**](https://arxiv.org/abs/2302.12542) [@Zhao2023].
 
 # Introduction {-}
 
@@ -140,6 +140,8 @@ clin %>%
 
 ![_Overall survival times and status of pan-cancer patients from TCGA._](fig/TCGA_survival.png){width=60%}
 
+<br>
+
 # TCGA omics data {-}
 
 We use function `GDCquery()` to query and use `GDCdownload()` and `GDCprepare()` to download TCGA omics data from one cancer type (breast cancer).
@@ -206,6 +208,8 @@ The R/Bioconductor package **TCGAbiolinks** cannot retrieve any proteomics or me
 It is always useful to look at your data first, in particular the data type and dimensions (i.e. numbers of rows and columns for a data frame or matrix).
 :::
 
+<br>
+
 # Survival analysis with low-dimensional input data {-}
 
 ## Nonparametric survival analysis {-}
@@ -231,6 +235,8 @@ ggsurv
 ```
 ![_Kaplan-Meier curve for 1061 BRCA patients data from TCGA._](fig/TCGA_surv_km1.png){width=60%}
 
+<br>
+
 To compare the survival curves of two groups of patients, for example, treatment (i.e. pharmaceutical or radiation therapy) or nontreatment, the `R` function `survival::survdiff()` can perform the log-rank test to compare two survival curves.
 Alternatively, the `R` function `survival::survfit` with a formula including the treatment group as a covariate can return the (KM) survival probabilities for each groups. 
 Then the `R` function `survminer::ggsurvplot()` with a `survfit` object will draw the two survival curves and perform the log-rank test as shown in the following figure.
@@ -249,6 +255,8 @@ ggsurv$plot = ggsurv$plot +
 ggsurv
 ```
 ![_Kaplan-Meier curves of the BRCA patients' survival data from TCGA grouped by treatment (i.e. pharmaceutical or radiation therapy) or nontreatment. The log-rank test is to compare the two survival distributions corresponding to the two groups of patients._](fig/TCGA_surv_km2.png){width=60%}
+
+<br>
 
 To analyze if a continuous variable, e.g. age, is associated with the survival outcomes, we can use the `R` function `coxph()` for fitting a Cox model, which is similar to the function `lm()` for fitting linear models.
 
@@ -319,6 +327,8 @@ Here the approaches for checking log-linearity or proportional hazards can only 
 When including high-dimensional omics data, there are no standard approaches for checking log-linearity or proportional hazards currently.
 :::
 
+<br>
+
 ## Feature preselection/filtering {-}
 
 From a practical point of view, since most omics profiles contain thousands of variables and most supervised statistical methods are not suited for high dimensional omics features, it is better to filter the omics features first.
@@ -382,6 +392,8 @@ cumsum_cutoff = cumsum_var[length(cumsum_var)] * 0.01
 filtered_names = filtered$statistics$feature[cumsum_var < cumsum_cutoff]
 ```
 
+<br>
+
 # Survival analysis with high-dimensional input data {-}
 
 ## Unsupervised learning (omics data) {-}
@@ -432,6 +444,8 @@ M3C::tsne(TCGA_PAM50, labels = pam50, dotsize = 3,  legendtitle = "Subtype")
 M3C::umap(TCGA_PAM50, labels = pam50, dotsize = 3,  legendtitle = "Subtype")
 ```
 ![_Unsupervised clustering (uniform manifold approximation and projection, UMAP) of transcriptomic data from TCGA breast cancer patients_](fig/TCGA_umap.png){width=50%}
+
+<br>
 
 ## Supervised learning (omics and survival data) {-}
 
@@ -521,6 +535,8 @@ title("Lasso   \n\n")
 ```
 ![_Coefficient paths of a Lasso Cox model. The verticle gray line indicates the optimal $\lambda$ and its correspondingly selected features are marked as green (positive coefficient) and red (negative coefficient) colors. Note that the demographic variables age and ethnicity were not penalized, so that their coefficient paths did not start from zero in the figure._](fig/TCGA_lasso.png){width=60%}
 
+<br>
+
 Elastic Net Cox model includes the $\lambda$ and an additional penalty parameter $\alpha \in [0,1]$.
 The parameter $\alpha$ can be fixed as $0$ (Ridge), $1$ (Lasso) or any value between $0$ and $1$ for making a compromise between Ridge and Lasso, which can also be optimized by cross-validation manually, see the example below.
 
@@ -556,6 +572,8 @@ title("Elastic Net     \n\n")
 ```
 ![_Coefficient paths of an Elastic Net Cox model. The verticle gray line indicates the optimal $\lambda$ and its correspondingly selected features are marked as green (positive coefficient) and red (negative coefficient) colors. Note that the demographic variables age and ethnicity were not penalized, so that their coefficient paths did not start from zero in the figure._](fig/TCGA_elastic.png){width=60%}
 
+<br>
+
 Adaptive Lasso Cox model needs to pre-estimate all coefficients which will be used as weights via the argument `penalty.factor` in the `glmnet()` and `cv.glmnet()` functions to fit a Lasso Cox model.
 The pre-estimation can be done by a Ridge Cox model, see an example below.
 
@@ -587,6 +605,8 @@ plot_glmnet(mod, label = TRUE, s = lambda_optimal, col = cols,
 title("Adative Lasso    \n\n")
 ```
 ![_Coefficient paths of an adaptive Lasso Cox model. The verticle gray line indicates the optimal $\lambda$ and its correspondingly selected features are marked as green (positive coefficient) and red (negative coefficient) colors. Note that the demographic variables age and ethnicity were not penalized, so that their coefficient paths did not start from zero in the figure._](fig/TCGA_adaptivelasso.png){width=60%}
+
+<br>
 
 Group Lasso Cox model can be implemented through the `R` package [**grpreg**](https://CRAN.R-project.org/package=grpreg) [@Breheny2015].
 For an illustration, we specify the two demographic variables as the first group, the first $10$ PAM50 genes as the second group, the last $40$ PAM50 genes as the third group.
@@ -741,6 +761,8 @@ GGally::ggcoef(tbl) + coord_flip() + xlab(expression(Posterior~~beta)) +
 ```
 ![_Estimates of regression coefficients by a penalized semiparametric Bayesian Cox model with Lasso prior. Solid dots indicate the posterior mean over MCMC iterations (excluding burn-in period), and verticle lines show the corresponding 95% credibility intervals._](fig/TCGA_bayeslasso.png){width=60%}
 
+<br>
+
 In the `R` package [**psbcGroup**](https://CRAN.R-project.org/package=psbcGroup) [@Lee2021], function `psbcEN()` implements Bayesian Cox models with Elastic Net prior for feature selection with grouping effect of correlated features.
 Function `psbcFL()` implements Bayesian Cox models with fused Lasso prior.
 
@@ -772,6 +794,8 @@ ggcoef(EN_tbl) + coord_flip() + xlab(expression(Posterior~~beta)) +
 ```
 ![_Estimates of regression coefficients by a penalized semiparametric Bayesian Cox model with Elastic Net prior. Solid dots indicate the posterior mean over MCMC iterations (excluding burn-in period), and verticle lines show the corresponding 95% credibility intervals._](fig/TCGA_bayesEN.png){width=60%}
 
+<br>
+
 A penalized semiparametric Bayesian Cox model with double exponential spike-and-slab prior is implemented in the `R` package [**BhGLM**](https://github.com/nyiuab/BhGLM.git) [@Yi2019]. Note that **BhGLM** provides frequentist confidence intervals of the posterior mode of the coefficients.
 
 ```{r}
@@ -784,6 +808,7 @@ BhGLM::plot.bh(Bayesfit, col.pts = c("red", "blue"), main = "Cox with mixture do
 ```
 ![_Coefficient estimates of a penalized semiparametric Bayesian Cox model with (double exponential) spike-and-slab prior. Solid dots denote the posterior mode of the coefficients and lines denote the 95% confidence intervals. Red colored text on the right side mark the significant features with $p < 0.05$._](fig/TCGA_bayesSpikeSlab.png){width=60%}
 
+<br>
 
 # Survival model validation
 
@@ -801,7 +826,7 @@ To validate a prediction model systematically, the predictive performance of the
 
 The performance metrics can be *time-dependent* or *time-independent*, with the time-dependent metrics being more informative in general compared to integrated measures (i.e. evaluated across many time points).
 For survival data, we can assess the **discriminatory power** of a model (i.e. how well does it ranks patients) or how well a model is **calibrated** (i.e. how closely the predicted survival probabilities agree numerically with the actual survival outcomes).
-For example, measures such as the (integrated) area under time-specific ROC curves (**AUC**, @Heagerty2005) and the concordance index (**C-index**, @Harrell1982) are measures of discrimination, while the right-censored logarithmic loss (**RCLL**, @Avati2020) is a measure of calibration.
+For example, measures such as the receiver operating characteristic (ROC) curve, the (integrated) area under time-specific ROC curves (**AUC**, @Heagerty2005) and the concordance index (**C-index**, @Harrell1982) are measures of discrimination, while the right-censored logarithmic loss (**RCLL**, @Avati2020) is a measure of calibration.
 The well-known **Brier score** [@Graf1999] is used to evaluate both discrimination and calibration performance.
 
 ## Model evaluation (classic) {-}
@@ -859,6 +884,8 @@ ggsurv
 ```
 ![_Kaplan-Meier curves of the BRCA patients data dichotomized by the median of prognostic scores (calculated from the Lasso Cox model with patients' survival and mRNA-Seq data) into two groups. The log-rank test is to compare the two survival distributions corresponding to the two groups of patients._](fig/TCGA_surv_km_lasso.png){width=60%}
 
+<br>
+
 The prognostic scores can also be divided into three or more groups based on quantiles and the log-rank test can be used to compare the difference of multiple survival curves.
 
 ```{r}
@@ -881,9 +908,28 @@ ggsurv
 ```
 ![_Kaplan-Meier curves of the BRCA patients data divided by 33% and 67% quantiles of prognostic scores (calculated from the Lasso Cox model with patients' survival and mRNA-Seq data) into three groups. The log-rank test is to compare the two survival distributions corresponding to the three groups of patients._](fig/TCGA_surv_km_lasso2.png){width=60%}
 
+<br>
+
+<font size="4"> **ROC curve** </font> 
+
+The `R` package [**risksetROC**](https://CRAN.R-project.org/package=risksetROC) [@Heagerty2005] can estimate a ROC curve at an evaluation time point. 
+The following code draws a ROC curve at 5-years survival evaluation time point for the 20% TCGA validation data and based on a Lasso Cox model learned from the 80% training data.
+
+```{r}
+ROC = risksetROC(Stime = y_validate[, 1], status = y_validate[, 2],
+                 marker = pred_lp, predict.time = 5, method = "Cox", 
+                 main = "ROC Curve", col = "seagreen3", type = "s", 
+                 lwd = 2, xlab="1 - Specificity", ylab="Sensitivity") 
+text(0.7, 0.2, paste("AUC =", round(ROC$AUC, 3)))
+```
+
+![_ROC curve estimated at 5-years survival evaluation time point for the 20% TCGA validation data and based on a Lasso Cox model learned from the 80% training data. The AUC value is the area under the ROC curve. The diagonal line represents the performance of a random prediction of the outcome event with AUC = 0.5._](fig/TCGA_surv_roc.png){width=50%}
+
+<br>
+
 <font size="4"> **Time-dependent AUC** </font> 
 
-The `R` package [**risksetROC**](https://CRAN.R-project.org/package=risksetROC) [@Heagerty2005] can estimate both time-dependent and integrated AUC.
+Both time-dependent and integrated AUCs can be estimated by the `R` package [**risksetROC**](https://CRAN.R-project.org/package=risksetROC). 
 We demonstrate the calculation based on both training and validation data.
 
 :::{.info-box .note}
@@ -923,6 +969,8 @@ ggplot(dat_AUC, aes(times, tAUC, group = group, color = group)) + xlab("Evaluati
   geom_step(direction = "vh") + theme(legend.position = c(0.7, 0.8), legend.title=element_blank())
 ```
 ![_Time-dependent AUC based on a Lasso Cox model applied to the BRCA patients data from TCGA. The red line shows the Time-dependent AUC calculated from the 80% training data, and the green line shows the Time-dependent AUC calculated from the 20% validation data._](fig/TCGA_surv_auc_lasso.png){width=50%}
+
+<br>
 
 <font size="4"> **Integrated AUC** </font> 
 
@@ -977,6 +1025,8 @@ pred = predict(cvfit, newx = x_validate, type = "response", s = cvfit$lambda.min
 [1] 0.5786861
 ```
 
+<br>
+
 ### Calibration metrics {-}
 
 <font size="4"> **Time-dependent Brier score** </font> 
@@ -1014,6 +1064,8 @@ ggplot(Brier_score, aes(times, Brier, group = model, color = model)) + xlab("Eva
 ```
 ![_Time-dependent Brier score based on a Lasso Cox model applied to the BRCA patients data from TCGA. The red line shows the Time-dependent Brier score calculated from the 80% training data, and the green line shows the Time-dependent Brier score calculated from the 20% validation data._](fig/TCGA_surv_brier_t_lasso.png){width=60%}
 
+<br>
+
 <font size="4"> **Integrated Brier score (IBS)** </font> 
 
 The function `riskRegression::Score()` also summarizes IBS when specifying argument `summary = "ibs"`.
@@ -1026,6 +1078,8 @@ Brier_validate_ibs$IBS[which.max(Brier_validate_ibs$times)]
 ```
 [1] 0.1711617
 ```
+
+<br>
 
 ### Uncertainty Quantification {-#uq1}
 
@@ -1068,6 +1122,8 @@ ggplot(dat_tmp, aes(x, y)) + geom_boxplot() + ylim(0.5, 1) + xlab("") + ylab("In
 ```
 ![_Integrated AUC based on randomly split validation data 100 times. The blue dots are the 100 values of integrated AUC._](fig/TCGA_surv_iauc_lasso.png){width=30%}
 
+<br>
+
 Similar to obtaining uncertainty of the integrated AUC, we can also estimate the uncertainty of the C-index for evaluating the global performance of our model's discrimination.
 
 ```{r}
@@ -1094,6 +1150,8 @@ ggplot(dat_tmp, aes(x, y, col = x)) + geom_boxplot() + geom_jitter(size = 0.5, a
 ```
 ![_C-index (Harrell's and Uno's) based on randomly split validation data 100 times._](fig/TCGA_surv_cindex_lasso.png){width=40%}
 
+<br>
+
 The `R` package [**c060**](https://CRAN.R-project.org/package=c060) [@Sill2014] includes wrapper functions for the [**glmnet**](https://CRAN.R-project.org/package=glmnet) algorithm and implements resampling-based methods (e.g. cross-validation and bootstrap - with and without replacement) based on the [**peperr**](https://CRAN.R-project.org/package=peperr) package to calculate the time-dependent Brier score.
 [**c060**](https://CRAN.R-project.org/package=c060) extends [**peperr**](https://CRAN.R-project.org/package=peperr) package to allow mandatory features without penalization.
 @Binder2008 recommends to draw bootstrap samples without replacement (i.e. subsampling), because bootstrap samples with replacement often result in too complex models in high-dimensional settings.
@@ -1111,6 +1169,8 @@ peperr_object = peperr::peperr(response = y_surv, x = x, fit.fun = fit.glmnet,
 c060::Plot.peperr.curves(peperr_object)
 ```
 ![_Resampling-based prediction error curves (time-dependent Brier score) a the Lasso Cox model applied to the BRCA data set from TCGA. The gray area indicates the pointwise 2.5% and 97.5% quantiles of the 100 out-of-bag bootstrap samples. The other lines show the prediction error curves of the null model (estimated by the Kaplan-Meier estimator without covariate information), the full apparent error estimates (i.e., the errors as estimated when applying the model to the entire training data set), and the .632+ bootstrap error estimates._](fig/TCGA_surv_brier_lasso.png){width=60%}
+
+<br>
 
 ### Feature stability analysis {-}
 
@@ -1164,6 +1224,8 @@ beta_MPM
 [49] -0.1696531126  0.0573713694 -0.0308897787 -0.2130819387
 ```
 
+<br>
+
 ### Graphical computation
 
 After identifying stable omics features predictive of survival outcomes, we can draw a nomogram to allows the graphical calculation of survival probabilities for practitioners.
@@ -1208,6 +1270,8 @@ regplot::regplot(f, observation = data_tmp[1,], failtime = c(1, 3, 5), title = "
 ```
 ![_Nomogram developed to estimate the overall survival probability for TCGA's BRAC patients based on demographic and Lasso Cox selected mRNA features. The red coloured symbols represent one patient’s information and predicted probabilities of 1-year, 3-year and 5-year survival._](fig/TCGA_surv_nomogram.png){width=80%}
 
+<br>
+
 A calibration plot is a straightforward visualization to show the prediction ability of the nomogram, i.e., the agreement between predicted survival probabilities from the final model and the KM estimated survival probabilities in different percentiles of the predicted values at a time point of interest. 
 We demonstrate below calibration plots based on training and validation data sets, respectively.
 
@@ -1224,8 +1288,7 @@ ddist = datadist(data_train)
 options(datadist='ddist')
 f_train = cph(formula = Surv(times, status) ~ age + ethnicity + UBE2T + ORC6L + ESR1,
               data = data_train, x = TRUE, y = TRUE, surv = TRUE, time.inc = 5)
-f_validate = cph(formula = Surv(times, status) ~ age + ethnicity + UBE2T + ORC6L + ESR1,
-              data = data_validate, x = TRUE, y = TRUE, surv = TRUE, time.inc = 5)
+f_validate = update(f_train, data = data_validate)
 cal_train = calibrate(f_train, u = 5, cmethod = "KM", m = nrow(data_train) / 4, B = 200)
 cal_validate = calibrate(f_validate, u = 5, cmethod = "KM", m = nrow(data_validate) / 4, B = 200)
 
@@ -1244,6 +1307,7 @@ dev.off()
 ```
 ![_Nomogram model calibration curves for TCGA's BRAC patients at 5-year evaluation time-point._](fig/TCGA_surv_calibration.png){width=70%}
 
+<br>
 
 ## Model evaluation (mlr3) {-#mlr3}
 
@@ -1266,6 +1330,8 @@ library("mlr3verse") # mlr3, mlr3pipeplines, mlr3learners, mlr3tuning, paradox, 
 library("mlr3proba") # probabilistic learning and survival analysis
 library("mlr3extralearners") # for lrn('surv.glmnet')
 ```
+
+<br>
 
 ### Workflow {-}
 
@@ -1331,6 +1397,8 @@ Using [**mlr3proba**](https://mlr3proba.mlr-org.com) [@Sonabend2021], we can con
 See details such as the transformation assumptions, the choice of the survival function form and the available baseline survival distribution estimators on the respective [documentation](https://mlr3proba.mlr-org.com/reference/mlr_pipeops_compose_distr.html).
 :::
 
+<br>
+
 Train the Lasso Cox model:
 ```{r}
 set.seed(3)
@@ -1384,10 +1452,13 @@ pred$distr$survival(times)[,c(1,2)]
 20 0.9633548 0.9769738
 ```
 
+<br>
+
 ### Discrimination metrics {-}
 
 We want to test our Lasso Cox model and see how well it was able to **discriminate the patients in the test set**.
 For this we can use the $lp$ predictions of Lasso Cox model and metrics such as the (time-dependent) C-index and (time-dependent) AUC.
+<br>
 
 <font size="4"> **Harrell's C-index** [@Harrell1982]: </font> 
 ```{r}
@@ -1406,6 +1477,8 @@ surv.cindex.harrell
           0.6188244 
 ```
 
+<br>
+
 <font size="4"> **Uno's C-index** [@Uno2011]: (across all time points of the test set): </font> 
 ```{r}
 uno_c = msr('surv.cindex', weight_meth = 'G2')
@@ -1418,6 +1491,8 @@ pred$score(uno_c, task = task, train_set = split$train)
 surv.cindex.uno 
       0.6004459 
 ```
+
+<br>
 
 <font size="4"> **Uno's Integrated AUC** [@Uno2007] (across all time points of the test set): </font> 
 ```{r}
@@ -1434,6 +1509,8 @@ surv.uno_iauc
     0.6645719 
 ```
 
+<br>
+
 <font size="4"> **Uno's AUC at a specific time point**, e.g. $10$ years: </font> 
 ```{r}
 uno_auc = msr('surv.uno_auc', integrated = FALSE, times = 10)
@@ -1447,11 +1524,14 @@ surv.uno_auc.10
       0.6749081 
 ```
 
+<br>
+
 ### Calibration metrics {-}
 
 We want to test how well our Lasso Cox model was **calibrated**.
 Usually we derive an estimation of the error between the survival distributions ($distr$ predictions) of the patients in the test set and their actual survival outcomes (corresponding to the survival task's `time` and `status` variables).
 The most frequently used metric is the Brier Score [@Graf1999]:
+<br>
 
 <font size="4"> **Integrated Brier Score (IBS)** (across all time points of the test set): </font> 
 ```{r}
@@ -1477,6 +1557,8 @@ pred$score(ibrier_se, task = task, train_set = split$train)
 0.02253927
 ```
 
+<br>
+
 <font size="4"> **Brier Score at a specific time point**, e.g. $10$ years: </font> 
 ```{r}
 brier10 = msr('surv.brier', proper = TRUE, integrated = FALSE, times = 10)
@@ -1490,6 +1572,8 @@ surv.graf.10
    0.4252442 
 ```
 
+<br>
+
 <font size="4"> **Right-censored Logarithmic Loss score** (RCLL) [@Avati2020]: </font> 
 ```{r}
 rcll = msr('surv.rcll')
@@ -1499,6 +1583,8 @@ pred$score(rcll)
 surv.rcll 
  4.684644 
 ```
+
+<br>
 
 <font size="4"> **D-calibration** [@Humza2020]: </font> 
 ```{r}
@@ -1512,6 +1598,8 @@ surv.dcalib
 :::{.info-box .note}
 View all evaluation metrics for survival data implemented in [**mlr3proba**](https://mlr3proba.mlr-org.com) [here](https://mlr3proba.mlr-org.com/reference/#survival-measures)
 :::
+
+<br>
 
 ### Uncertainty Quantification {-}
 
