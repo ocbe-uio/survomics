@@ -826,8 +826,7 @@ To validate a prediction model systematically, the predictive performance of the
 
 The performance metrics can be *time-dependent* or *time-independent*, with the time-dependent metrics being more informative in general compared to integrated measures (i.e. evaluated across many time points).
 For survival data, we can assess the **discriminatory power** of a model (i.e. how well does it ranks patients) or how well a model is **calibrated** (i.e. how closely the predicted survival probabilities agree numerically with the actual survival outcomes).
-For example, measures such as the receiver operating characteristic (ROC) curve, the (integrated) area under time-specific ROC curves (**AUC**, @Heagerty2005) and the concordance index (**C-index**, @Harrell1982) are measures of discrimination, while the right-censored logarithmic loss (**RCLL**, @Avati2020) is a measure of calibration.
-The well-known **Brier score** [@Graf1999] is used to evaluate both discrimination and calibration performance.
+For example, measures such as the receiver operating characteristic (ROC) curve, the (integrated) area under time-specific ROC curves (**AUC**, @Heagerty2005) and the concordance index (**C-index**, @Harrell1982) are measures of discrimination, while the right-censored logarithmic loss (**RCLL**, @Avati2020) and the well-known **Brier score** [@Graf1999] are used to evaluate both discrimination and calibration performance.
 
 ## Model evaluation (classic) {-}
 
@@ -1029,6 +1028,12 @@ pred = predict(cvfit, newx = x_validate, type = "response", s = cvfit$lambda.min
 
 ### Calibration metrics {-}
 
+See a [calibration plot](#slopeCali) in the following section [Graphical computation](#graphComp).
+
+<br>
+
+### Overall metrics {-}
+
 <font size="4"> **Time-dependent Brier score** </font> 
 
 The `R` package [**riskRegression**](https://CRAN.R-project.org/package=riskRegression) can assess the prediction error curves of survival models based on the time-dependent Brier score.
@@ -1226,9 +1231,11 @@ beta_MPM
 
 <br>
 
-### Graphical computation
+### Graphical representation {-#graphComp}
 
-After identifying stable omics features predictive of survival outcomes, we can draw a nomogram to allows the graphical calculation of survival probabilities for practitioners.
+After identifying stable omics features predictive of survival outcomes, we can draw a **nomogram** to allows the graphical calculation of survival probabilities and report a **calibration plot** for practitioners.
+
+<font size="4"> **Nomogram** </font> 
 
 We demonstrate a nomogram using the stable selected features from TCGA breast cancer data preprocessed previously.
 The `R` package **regplot** draws an enhanced regression nomogram based on the **rms** package.
@@ -1270,7 +1277,9 @@ regplot::regplot(f, observation = data_tmp[1,], failtime = c(1, 3, 5), title = "
 ```
 ![_Nomogram developed to estimate the overall survival probability for TCGA's BRAC patients based on demographic and Lasso Cox selected mRNA features. The red coloured symbols represent one patient’s information and predicted probabilities of 1-year, 3-year and 5-year survival._](fig/TCGA_surv_nomogram.png){width=80%}
 
-<br>
+<br> 
+
+<font size="4"> [**Calibration plot**]{#slopeCali} </font> 
 
 A calibration plot is a straightforward visualization to show the prediction ability of the nomogram, i.e., the agreement between predicted survival probabilities from the final model and the KM estimated survival probabilities in different percentiles of the predicted values at a time point of interest. 
 We demonstrate below calibration plots based on training and validation data sets, respectively.
@@ -1528,7 +1537,22 @@ surv.uno_auc.10
 
 ### Calibration metrics {-}
 
-We want to test how well our Lasso Cox model was **calibrated**.
+We want to test how well our Lasso Cox model was **calibrated**. @Andres2018 and @Haider2020 suggested the distributional (D)-calibration accounting survival probabilities across all times. This can be useful when assessing the entire post-treatment survival prognosis, for example, assessing the post liver transplantation survival utility in @Andres2018.
+
+<font size="4"> **D-calibration** </font> 
+```{r}
+dcal = msr('surv.dcalib')
+pred$score(dcal)
+```
+```
+surv.dcalib 
+   32.25961 
+```
+
+<br>
+
+### Overall metrics {-}
+
 Usually we derive an estimation of the error between the survival distributions ($distr$ predictions) of the patients in the test set and their actual survival outcomes (corresponding to the survival task's `time` and `status` variables).
 The most frequently used metric is the Brier Score [@Graf1999]:
 <br>
@@ -1574,7 +1598,7 @@ surv.graf.10
 
 <br>
 
-<font size="4"> **Right-censored Logarithmic Loss score** (RCLL) [@Avati2020]: </font> 
+<font size="4"> **Right-censored Logarithmic Loss score** (RCLL) [@Avati2020,@Sonabend2022]: </font> 
 ```{r}
 rcll = msr('surv.rcll')
 pred$score(rcll)
@@ -1586,15 +1610,6 @@ surv.rcll
 
 <br>
 
-<font size="4"> **D-calibration** [@Humza2020]: </font> 
-```{r}
-dcal = msr('surv.dcalib')
-pred$score(dcal)
-```
-```
-surv.dcalib 
-   32.25961 
-```
 :::{.info-box .note}
 View all evaluation metrics for survival data implemented in [**mlr3proba**](https://mlr3proba.mlr-org.com) [here](https://mlr3proba.mlr-org.com/reference/#survival-measures)
 :::
