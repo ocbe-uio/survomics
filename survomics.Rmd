@@ -1598,7 +1598,7 @@ surv.graf.10
 
 <br>
 
-<font size="4"> **Right-censored Logarithmic Loss score** (RCLL) [@Avati2020,@Sonabend2022]: </font> 
+<font size="4"> **Right-censored Logarithmic Loss score** (RCLL) [@Avati2020;@Sonabend2022]: </font> 
 ```{r}
 rcll = msr('surv.rcll')
 pred$score(rcll)
