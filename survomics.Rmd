@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 )
 ```
 <br>
-This is an [R Markdown](http://rmarkdown.rstudio.com) supplement for the article [**_Tutorial on survival modelling with omics data_**](https://arxiv.org/abs/2302.12542) [@Zhao2023].
+This is an [R Markdown](http://rmarkdown.rstudio.com) supplement for the article [**_Tutorial: guidelines for survival analysis with omics data_**](https://arxiv.org/abs/2302.12542) [@Zhao2023].
 
 # Introduction {-}
 
@@ -756,10 +756,9 @@ beta_U = apply(beta_p, 2, quantile, 0.975)
 tbl = data.frame(term = colnames(x), estimate = beta_mean,  conf.low = beta_L,  conf.high = beta_U)
 tbl$term = factor(tbl$term, levels = tbl$term)
 
-GGally::ggcoef(tbl) + coord_flip() + xlab(expression(Posterior~~beta)) + 
-  ylab("") + theme(axis.text.x = element_text(angle = 90, size = 7))
+GGally::ggcoef(tbl) + xlab(expression(Posterior~~beta)) + ylab("")
 ```
-![_Estimates of regression coefficients by a penalized semiparametric Bayesian Cox model with Lasso prior. Solid dots indicate the posterior mean over MCMC iterations (excluding burn-in period), and verticle lines show the corresponding 95% credibility intervals._](fig/TCGA_bayeslasso.png){width=60%}
+![_Estimates of regression coefficients by a penalized semiparametric Bayesian Cox model with Lasso prior. Solid dots indicate the posterior mean over MCMC iterations (excluding burn-in period), and horizontal lines show the corresponding 95% credibility intervals._](fig/TCGA_bayeslasso.png){width=60%}
 
 <br>
 
@@ -789,10 +788,9 @@ EN_beta_U = apply(EN_beta_p, 2, quantile, 0.975)
 EN_tbl = data.frame(term = colnames(x), estimate = EN_beta_mean, conf.low = EN_beta_L, conf.high = EN_beta_U)
 EN_tbl$term = factor(EN_tbl$term, levels = EN_tbl$term)
 
-ggcoef(EN_tbl) + coord_flip() + xlab(expression(Posterior~~beta)) + 
-  ylab("") + theme(axis.text.x = element_text(angle = 90, size = 7))
+GGally::ggcoef(EN_tbl) + xlab(expression(Posterior~~beta)) + ylab("")
 ```
-![_Estimates of regression coefficients by a penalized semiparametric Bayesian Cox model with Elastic Net prior. Solid dots indicate the posterior mean over MCMC iterations (excluding burn-in period), and verticle lines show the corresponding 95% credibility intervals._](fig/TCGA_bayesEN.png){width=60%}
+![_Estimates of regression coefficients by a penalized semiparametric Bayesian Cox model with Elastic Net prior. Solid dots indicate the posterior mean over MCMC iterations (excluding burn-in period), and horizontal lines show the corresponding 95% credibility intervals._](fig/TCGA_bayesEN.png){width=60%}
 
 <br>
 
