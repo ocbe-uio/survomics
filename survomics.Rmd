@@ -1,6 +1,5 @@
 ---
 title: "Supplemental information for 'Tutorial on survival modelling with omics data'"
-author: "[Zhi Zhao](https://github.com/zhizuio) and [John Zobolas](https://github.com/bblodfon)"
 date: "Last updated: `r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
