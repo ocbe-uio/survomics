@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 )
 ```
 <br>
-This is an [R Markdown](http://rmarkdown.rstudio.com) supplement for the article [**_Tutorial: guidelines for survival analysis with omics data_**](https://arxiv.org/abs/2302.12542) [@Zhao2023].
+This is an [R Markdown](http://rmarkdown.rstudio.com) supplement for the article [**_Tutorial on survival modelling with omics data_**](https://arxiv.org/abs/2302.12542) [@Zhao2023].
 
 # Introduction {-}
 
