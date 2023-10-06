@@ -1,6 +1,6 @@
 # Supplemental information for ‘Tutorial on survival modelling with omics data’
 
-This is an R Markdown supplement for the article ‘[Tutorial on survival modelling with omics data](https://arxiv.org/abs/2302.12542v1)’, see [here](https://ocbe-uio.github.io/survomics/survomics.html).
+This is an R Markdown supplement for the article ‘[Tutorial on survival modelling with omics data](https://arxiv.org/abs/2302.12542)’, see the step-by-step R tutorial [here](https://ocbe-uio.github.io/survomics/survomics.html).
 
 ## Citation
 
