@@ -18,12 +18,12 @@ link-citations: true
 ---
 
 ```{r, include=FALSE}
-knitr::opts_chunk$set( 
-  comment = '', eval = FALSE
+knitr::opts_chunk$set(
+  comment = "", eval = FALSE
 )
 ```
 <br>
-This is an [R Markdown](http://rmarkdown.rstudio.com) supplement for the article [**_Tutorial on survival modelling with omics data_**](https://arxiv.org/abs/2302.12542) [@Zhao2023].
+This is an [R Markdown](http://rmarkdown.rstudio.com) supplement for the article [**_Tutorial on survival modelling with omics data_**](https://arxiv.org/abs/2302.12542) [@Zhao2023a].
 
 # Introduction {-}
 
@@ -75,29 +75,33 @@ library("regplot")
 
 ```{r}
 # download the clinical data and extract data for multiple cancers using GDC api method
-cancer_types = c("TCGA-BLCA", "TCGA-BRCA", "TCGA-COAD", "TCGA-LIHC", 
-                  "TCGA-LUAD", "TCGA-PAAD", "TCGA-PRAD", "TCGA-THCA")
-clin = NULL
+cancer_types <- c(
+  "TCGA-BLCA", "TCGA-BRCA", "TCGA-COAD", "TCGA-LIHC",
+  "TCGA-LUAD", "TCGA-PAAD", "TCGA-PRAD", "TCGA-THCA"
+)
+clin <- NULL
 for (i in seq_along(cancer_types)) {
-  tmp = TCGAbiolinks::GDCquery_clinic(project = cancer_types[i], type = "clinical")
-  clin = rbind(clin, tmp[, c("project", "submitter_id", "vital_status", 
-                              "days_to_last_follow_up", "days_to_death", 
-                              "age_at_diagnosis", "gender", "race", 
-                              "ethnicity", "ajcc_pathologic_t")])
+  tmp <- TCGAbiolinks::GDCquery_clinic(project = cancer_types[i], type = "clinical")
+  clin <- rbind(clin, tmp[, c(
+    "project", "submitter_id", "vital_status",
+    "days_to_last_follow_up", "days_to_death",
+    "age_at_diagnosis", "gender", "race",
+    "ethnicity", "ajcc_pathologic_t"
+  )])
 }
 
 # extract the observed time for each patient and use years as unit
-clin$time = apply(clin[, c("days_to_death", "days_to_last_follow_up")], 1, max, na.rm = TRUE) / 365.25
-clin$age = clin$age_at_diagnosis / 365.25
-clin$status = clin$vital_status
-clin = clin[, c("project", "submitter_id", "status", "time", "gender", "age", "race", "ethnicity")]
+clin$time <- apply(clin[, c("days_to_death", "days_to_last_follow_up")], 1, max, na.rm = TRUE) / 365.25
+clin$age <- clin$age_at_diagnosis / 365.25
+clin$status <- clin$vital_status
+clin <- clin[, c("project", "submitter_id", "status", "time", "gender", "age", "race", "ethnicity")]
 # extract patients with positive overall survival time
-clin = clin[(clin$time > 0) & (clin$status %in% c("Alive", "Dead")), ]
+clin <- clin[(clin$time > 0) & (clin$status %in% c("Alive", "Dead")), ]
 
 # frequency table of the patients w.r.t. status, gender and ethnicity
 clin %>%
   count(status, gender, ethnicity) %>%
-  group_by(status) %>%        
+  group_by(status) %>%
   mutate(prop = prop.table(n))
 ```
 
@@ -122,19 +126,21 @@ clin %>%
 
 ```{r}
 # censoring plot by cancer types
-ID = 1:nrow(clin)
+ID <- 1:nrow(clin)
 clin %>%
   ggplot(
-    aes(y = ID, x = time, colour = project, shape = factor(status))) +
-    geom_segment(aes(x = time, y = ID, xend = 0, yend = ID)) +
+    aes(y = ID, x = time, colour = project, shape = factor(status))
+  ) +
+  geom_segment(aes(x = time, y = ID, xend = 0, yend = ID)) +
   geom_point() +
   ggtitle("") +
   labs(x = "Years", y = "Patients") +
   scale_shape_discrete(name = "Status", labels = c("Censored", "Dead")) +
-  scale_color_discrete(name = "Cancer", 
-                       labels = c("Bladder", "Breast", "Colon", "Liver", "Lung adeno", 
-                                  "Pancreatic", "Prostate", "Thyroid")) +
-  theme(legend.position = "top", legend.direction = "vertical") + 
+  scale_color_discrete(
+    name = "Cancer",
+    labels = c("Bladder", "Breast", "Colon", "Liver", "Lung adeno", "Pancreatic", "Prostate", "Thyroid")
+  ) +
+  theme(legend.position = "top", legend.direction = "vertical") +
   guides(color = guide_legend(nrow = 2, byrow = TRUE))
 ```
 
@@ -151,20 +157,22 @@ The accompanied metadata are almost the same as the clinical data downloaded via
 
 ```{r}
 # download TCGA breast cancer (BRCA) mRNA-Seq data using GDC api method
-query = TCGAbiolinks::GDCquery(project = "TCGA-BRCA",
-                               data.category = "Transcriptome Profiling",
-                               data.type = "Gene Expression Quantification",
-                               workflow.type = "STAR - Counts",
-                               experimental.strategy = "RNA-Seq",
-                               sample.type = c("Primary Tumor"))
+query <- TCGAbiolinks::GDCquery(
+  project = "TCGA-BRCA",
+  data.category = "Transcriptome Profiling",
+  data.type = "Gene Expression Quantification",
+  workflow.type = "STAR - Counts",
+  experimental.strategy = "RNA-Seq",
+  sample.type = c("Primary Tumor")
+)
 TCGAbiolinks::GDCdownload(query = query, method = "api")
-dat = TCGAbiolinks::GDCprepare(query = query)
+dat <- TCGAbiolinks::GDCprepare(query = query)
 
 SummarizedExperiment::assays(dat)$unstranded[1:5, 1:2]
 ```
 ```{r, echo=FALSE}
 # save the downloaded large data on sever
-save(dat, file="TCGA_data.rda")
+save(dat, file = "TCGA_data.rda")
 # load the downloaded large data and work on PC
 load("/Users/zhiz/TCGA_data.rda")
 ```
@@ -181,11 +189,13 @@ It is recommended to use DESeq2 or TMM normalization method for RNA-seq data bef
 Here we demonstrate how to use the R/Bioconductor package [**DESeq2**](https://bioconductor.org/packages/DESeq2/) [@Love2014] to normalize the RNA count data.
 
 ```{r}
-meta = colData(dat)[, c("project_id", "submitter_id", "age_at_diagnosis",  "ethnicity", "gender", "days_to_death", "days_to_last_follow_up", "vital_status", "paper_BRCA_Subtype_PAM50", "treatments")]
-meta$treatments = unlist(lapply(meta$treatments, function(xx) {any(xx$treatment_or_therapy == "yes")}))
-dds = DESeq2::DESeqDataSetFromMatrix(assays(dat)$unstranded, colData = meta, design = ~ 1) 
-dds2 = DESeq2::estimateSizeFactors(dds)
-RNA_count = DESeq2::counts(dds2, normalized = TRUE)
+meta <- colData(dat)[, c("project_id", "submitter_id", "age_at_diagnosis", "ethnicity", "gender", "days_to_death", "days_to_last_follow_up", "vital_status", "paper_BRCA_Subtype_PAM50", "treatments")]
+meta$treatments <- unlist(lapply(meta$treatments, function(xx) {
+  any(xx$treatment_or_therapy == "yes")
+}))
+dds <- DESeq2::DESeqDataSetFromMatrix(assays(dat)$unstranded, colData = meta, design = ~1)
+dds2 <- DESeq2::estimateSizeFactors(dds)
+RNA_count <- DESeq2::counts(dds2, normalized = TRUE)
 RNA_count[1:5, 1:2]
 ```
 
@@ -201,17 +211,17 @@ ENSG00000000460.17                   1473.62649                    447.01403
 To perform survival analysis with both clinical/demographic variables and omics data, in the following code we extract female breast cancer patients with their corresponding survival outcomes, clinical/demographic variables and RNA-seq features.
 
 ```{r}
-meta$time = apply(meta[, c("days_to_death", "days_to_last_follow_up")], 1, max, na.rm = TRUE) / 365.25
-meta$status = meta$vital_status
-meta$age = meta$age_at_diagnosis / 365.25
-clin = subset(meta, gender == "female" & !duplicated(submitter_id) & time > 0 & !is.na(age))
-clin = clin[order(clin$submitter_id), ]
-RNA_count = RNA_count[, rownames(clin)]
+meta$time <- apply(meta[, c("days_to_death", "days_to_last_follow_up")], 1, max, na.rm = TRUE) / 365.25
+meta$status <- meta$vital_status
+meta$age <- meta$age_at_diagnosis / 365.25
+clin <- subset(meta, gender == "female" & !duplicated(submitter_id) & time > 0 & !is.na(age))
+clin <- clin[order(clin$submitter_id), ]
+RNA_count <- RNA_count[, rownames(clin)]
 ```
 
 :::{.info-box .note}
-- [Bioconductor](https://bioconductor.org/packages/release/bioc/html/TCGAbiolinks.html) might provide an old package version of **TCGAbiolinks** for Linux machines. 
-Here, we use the version TCGAbiolinks_2.29.6. 
+- [Bioconductor](https://bioconductor.org/packages/release/bioc/html/TCGAbiolinks.html) might provide an outdated version of **TCGAbiolinks**. 
+Here, we use the GitHub version TCGAbiolinks_2.29.6. 
 If you encounter some issues when using this tutorial, please check your installed **TCGAbiolinks** version. 
 If necessary, you can re-install the package from its [GitHub repository](https://github.com/BioinformaticsFMRP/TCGAbiolinks.git). 
 
@@ -230,18 +240,20 @@ The dashed lines in the following figure indicate the median survival time.
 
 ```{r}
 # Kaplan-Meier (KM) estimation
-clin$status[clin$status == "Dead"] = 1
-clin$status[clin$status == "Alive"] = 0
-clin$status = as.numeric(clin$status)
-sfit = survival::survfit(Surv(time, status) ~ 1, data = clin)
+clin$status[clin$status == "Dead"] <- 1
+clin$status[clin$status == "Alive"] <- 0
+clin$status <- as.numeric(clin$status)
+sfit <- survival::survfit(Surv(time, status) ~ 1, data = clin)
 
 # calculate survival probability at 1-, 3- and 5-year time points
 summary(sfit, times = c(1, 3, 5))
 theme_set(theme_bw())
-ggsurv = survminer::ggsurvplot(sfit, conf.int = TRUE, risk.table = TRUE, 
-                               xlab = "Time since diagnosis (year)",
-                               legend = "none", surv.median.line = "hv")
-ggsurv$plot = ggsurv$plot + annotate("text", x = 20, y = 0.9, label = "+  Censor")
+ggsurv <- survminer::ggsurvplot(sfit,
+  conf.int = TRUE, risk.table = TRUE,
+  xlab = "Time since diagnosis (year)",
+  legend = "none", surv.median.line = "hv"
+)
+ggsurv$plot <- ggsurv$plot + annotate("text", x = 20, y = 0.9, label = "+  Censor")
 ggsurv
 ```
 ```{r, echo=FALSE}
@@ -260,12 +272,14 @@ Then the `R` function `survminer::ggsurvplot()` with a `survfit` object will dra
 ```{r}
 survival::survdiff(Surv(time, status) ~ treatments, data = clin)
 
-sfit2 = survfit(Surv(time, status) ~ treatments, data = clin)
-ggsurv = ggsurvplot(sfit2, conf.int = TRUE, risk.table = TRUE, 
-           xlab = "Time since diagnosis (year)", legend = c(.6, .9),
-           legend.labs = c("No", "Yes"), legend.title = "Treatment",  
-           risk.table.y.text.col = TRUE, risk.table.y.text = FALSE)
-ggsurv$plot = ggsurv$plot + 
+sfit2 <- survfit(Surv(time, status) ~ treatments, data = clin)
+ggsurv <- ggsurvplot(sfit2,
+  conf.int = TRUE, risk.table = TRUE,
+  xlab = "Time since diagnosis (year)", legend = c(.6, .9),
+  legend.labs = c("No", "Yes"), legend.title = "Treatment",
+  risk.table.y.text.col = TRUE, risk.table.y.text = FALSE
+)
+ggsurv$plot <- ggsurv$plot +
   annotate("text", x = 21, y = 1, label = "+  Censor") +
   annotate("text", x = 22, y = .88, label = paste0("Log-rank test:\n", surv_pvalue(sfit2)$pval.txt))
 ggsurv
@@ -282,7 +296,7 @@ dev.off()
 To analyze if a continuous variable, e.g. age, is associated with the survival outcomes, we can use the `R` function `coxph()` for fitting a Cox model, which is similar to the function `lm()` for fitting linear models.
 
 ```{r}
-fit_cox = coxph(Surv(time, status) ~ age, data = clin)
+fit_cox <- coxph(Surv(time, status) ~ age, data = clin)
 summary(fit_cox)
 ```
 ```
@@ -312,7 +326,7 @@ The following code shows that the nonlinear part of the smoothing spline has a s
 Thus, the assumption of log-linearity for age is not satisfied.
 
 ```{r}
-fit_cox_spline = coxph(Surv(time, status) ~ pspline(age), data = clin)
+fit_cox_spline <- coxph(Surv(time, status) ~ pspline(age), data = clin)
 fit_cox_spline
 ```
 ```
@@ -335,7 +349,7 @@ The following code shows that the time-dependent age is significant using a scor
 Thus, the assumption of proportional hazards for age is not satisfied. The above two tests indicate a non-loglinear or time-dependent association of age with the survival outcomes.
 
 ```{r}
-survival::cox.zph(fit_cox, transform = "log") 
+survival::cox.zph(fit_cox, transform = "log")
 ```
 ```
        chisq df    p
@@ -365,7 +379,7 @@ One can be interested in only some biologically meaningful genes or only protein
 For example, the code below filters protein-coding genes. 
 
 ```{r}
-filtered_rna = RNA_count[rowData(dat)$gene_type == "protein_coding", ]
+filtered_rna <- RNA_count[rowData(dat)$gene_type == "protein_coding", ]
 ```
 
 ### P-value filter {-}
@@ -374,13 +388,13 @@ Before joint analyzing the associations between the thousands of omics features 
 For demonstration, based on the $100$ mRNA-Seq features from TCGA breast cancer patients preprocessed previously, the code below filters omics features at the statistical significance level $0.2$, i.e. $p < 0.2$.
 
 ```{r}
-RNA_log2count = log2(RNA_count[1:100, ] + 1)
-pvalues = rep(NA, nrow(RNA_log2count))
+RNA_log2count <- log2(RNA_count[1:100, ] + 1)
+pvalues <- rep(NA, nrow(RNA_log2count))
 for (j in 1:nrow(RNA_log2count)) {
-  fit_cox = coxph(Surv(clin$time, clin$status) ~ RNA_log2count[j, ], data = clin)
-  pvalues[j] = summary(fit_cox)$coefficients[, "Pr(>|z|)"]
+  fit_cox <- coxph(Surv(clin$time, clin$status) ~ RNA_log2count[j, ], data = clin)
+  pvalues[j] <- summary(fit_cox)$coefficients[, "Pr(>|z|)"]
 }
-filtered_rna = RNA_log2count[which(pvalues < 0.2), ]
+filtered_rna <- RNA_log2count[which(pvalues < 0.2), ]
 ```
 
 ### Variance filter {-}
@@ -394,9 +408,9 @@ If the omics data include outliers, MAD filter is more robust than the variance 
 Based on the $60660$ mRNA-Seq features from TCGA breast cancer patients preprocessed previously, the code below extracts the $1\%$ most variable features using variance as a filtering metric.
 
 ```{r}
-RNA_log2count = log2(RNA_count + 1)
-filtered = M3C::featurefilter(RNA_log2count, percentile = 1, method = 'var', topN = 5)
-filtered_rna1 = filtered$filtered_data
+RNA_log2count <- log2(RNA_count + 1)
+filtered <- M3C::featurefilter(RNA_log2count, percentile = 1, method = "var", topN = 5)
+filtered_rna1 <- filtered$filtered_data
 ```
 ```
 ***feature filter function***
@@ -417,9 +431,9 @@ Another variance-type filter is to remain features with certain percentage of **
 The code below extracts the most variable features explaining $1\%$ **cumulative variances**.
 
 ```{r}
-cumsum_var = cumsum(filtered$statistics$var)
-cumsum_cutoff = cumsum_var[length(cumsum_var)] * 0.01
-filtered_names = filtered$statistics$feature[cumsum_var < cumsum_cutoff]
+cumsum_var <- cumsum(filtered$statistics$var)
+cumsum_cutoff <- cumsum_var[length(cumsum_var)] * 0.01
+filtered_names <- filtered$statistics$feature[cumsum_var < cumsum_cutoff]
 ```
 
 <br>
@@ -438,28 +452,28 @@ The `R` package [**M3C**](https://bioconductor.org/packages/M3C/) [@John2020] pr
 
 ```{r}
 # identify indexes of the PAM50 genes in the TCGA-BRCA data
-idx = which(rowData(dat)$gene_name %in% 
-              c("UBE2T", "BIRC5", "NUF2", "CDC6", "CCNB1", "TYMS", "MYBL2", "CEP55", "MELK", "NDC80", "RRM2", "UBE2C", "CENPF", "PTTG1", "EXO1", "ORC6", "ANLN", "CCNE1", "CDC20", "MKI67", "KIF2C", "ACTR3B", "MYC", "EGFR", "KRT5", "PHGDH", "CDH3", "MIA", "KRT17", "FOXC1", "SFRP1", "KRT14", "ESR1", "SLC39A6", "BAG1", "MAPT", "PGR", "CXXC5", "MLPH", "BCL2", "MDM2", "NAT1", "FOXA1", "BLVRA", "MMP11", "GPR160", "FGFR4", "GRB7", "TMEM45B", "ERBB2"))
+idx <- which(rowData(dat)$gene_name %in%
+  c("UBE2T", "BIRC5", "NUF2", "CDC6", "CCNB1", "TYMS", "MYBL2", "CEP55", "MELK", "NDC80", "RRM2", "UBE2C", "CENPF", "PTTG1", "EXO1", "ORC6", "ANLN", "CCNE1", "CDC20", "MKI67", "KIF2C", "ACTR3B", "MYC", "EGFR", "KRT5", "PHGDH", "CDH3", "MIA", "KRT17", "FOXC1", "SFRP1", "KRT14", "ESR1", "SLC39A6", "BAG1", "MAPT", "PGR", "CXXC5", "MLPH", "BCL2", "MDM2", "NAT1", "FOXA1", "BLVRA", "MMP11", "GPR160", "FGFR4", "GRB7", "TMEM45B", "ERBB2"))
 # extract the PAM50 genes of TCGA-BRCA patients
-TCGA_PAM50 = RNA_count[idx, ]
+TCGA_PAM50 <- RNA_count[idx, ]
 # use gene symbols instead of Ensembl IDs
-rownames(TCGA_PAM50) = rowData(dat)$gene_name[idx]
+rownames(TCGA_PAM50) <- rowData(dat)$gene_name[idx]
 
 # log2-transformation of the normalized count data
-TCGA_PAM50 = log2(TCGA_PAM50 + 1)
-pam50 = factor(clin$paper_BRCA_Subtype_PAM50)
+TCGA_PAM50 <- log2(TCGA_PAM50 + 1)
+pam50 <- factor(clin$paper_BRCA_Subtype_PAM50)
 
-M3C::pca(TCGA_PAM50, labels = pam50, dotsize = 3,  legendtitle = "Subtype")
+M3C::pca(TCGA_PAM50, labels = pam50, dotsize = 3, legendtitle = "Subtype")
 ```
 ![_Unsupervised clustering (principal component analysis, PCA) of transcriptomic data from TCGA breast cancer patients_](fig/TCGA_pca.png){width=50%}
 
 ```{r}
-M3C::tsne(TCGA_PAM50, labels = pam50, dotsize = 3,  legendtitle = "Subtype")
+M3C::tsne(TCGA_PAM50, labels = pam50, dotsize = 3, legendtitle = "Subtype")
 ```
 ![_Unsupervised clustering ($t$-stochastic neighbour embedding, $t$-SNE) of transcriptomic data from TCGA breast cancer patients_](fig/TCGA_tsne.png){width=50%}
 
 ```{r}
-M3C::umap(TCGA_PAM50, labels = pam50, dotsize = 3,  legendtitle = "Subtype")
+M3C::umap(TCGA_PAM50, labels = pam50, dotsize = 3, legendtitle = "Subtype")
 ```
 ![_Unsupervised clustering (uniform manifold approximation and projection, UMAP) of transcriptomic data from TCGA breast cancer patients_](fig/TCGA_umap.png){width=50%}
 
@@ -479,13 +493,13 @@ Similarly, the first components from $t$-SNE or UMAP can also be extracted as co
 
 ```{r}
 # principal component regression
-x_tmp = prcomp(t(TCGA_PAM50))
+x_tmp <- prcomp(t(TCGA_PAM50))
 
 # choose the top two components (subjective) as covariates
-X_PC = x_tmp$x[, 1:2]
+X_PC <- x_tmp$x[, 1:2]
 # build classical survival model (e.g. PH Cox model)
-data_tmp = data.frame(time = clin$time, status = clin$status, X_PC)
-fit = coxph(Surv(time, status) ~ PC1 + PC2, data = data_tmp)
+data_tmp <- data.frame(time = clin$time, status = clin$status, X_PC)
+fit <- coxph(Surv(time, status) ~ PC1 + PC2, data = data_tmp)
 summary(fit)
 ```
 ```
@@ -523,38 +537,42 @@ The `glmnet()` and `cv.glmnet()` functions provide the argument `penalty.factor`
 ## Lasso Cox model
 
 ## for demonstration simplicity, PAM50 genes are used here
-x = cbind(age = clin$age, ethnicity = factor(clin$ethnicity), t(TCGA_PAM50))
-y = cbind(time = clin$time, status = clin$status)
+x <- cbind(age = clin$age, ethnicity = factor(clin$ethnicity), t(TCGA_PAM50))
+y <- cbind(time = clin$time, status = clin$status)
 
 # set penalty factor without penalizing the two demographical variables
-pf = c(rep(0, 2), rep(1, ncol(x) - 2))
+pf <- c(rep(0, 2), rep(1, ncol(x) - 2))
 
 # Lasso Cox by using cv.glmnet to obtain the 5-fold CV optimal lambda.min or lambda.1se
 set.seed(123)
-cvfit = glmnet::cv.glmnet(x, y, family = "cox", nfolds = 5, penalty.factor = pf)
-mod = cvfit$glmnet.fit
-lambda_optimal = cvfit$lambda.min # optimal lambda
+cvfit <- glmnet::cv.glmnet(x, y, family = "cox", nfolds = 5, penalty.factor = pf)
+mod <- cvfit$glmnet.fit
+lambda_optimal <- cvfit$lambda.min # optimal lambda
 
-betas = as.vector(coef(mod, s = lambda_optimal))
-beta.positive = colnames(x)[betas > 0]
-beta.negative = colnames(x)[betas < 0]
-#get ordered list of variables as they appear at smallest lambda
-allnames = names(coef(mod)[, ncol(coef(mod))]
-                [order(coef(mod)[, ncol(coef(mod))], decreasing = TRUE)])
+betas <- as.vector(coef(mod, s = lambda_optimal))
+beta.positive <- colnames(x)[betas > 0]
+beta.negative <- colnames(x)[betas < 0]
+# get ordered list of variables as they appear at smallest lambda
+allnames <- names(coef(mod)[, ncol(coef(mod))]
+[order(coef(mod)[, ncol(coef(mod))], decreasing = TRUE)])
 # assign colors for positive (pink) and negative (green) coefficients
-cols = rep("gray80", length(allnames))
-cols[allnames %in% beta.positive] = "seagreen3"
-cols[allnames %in% beta.negative] = "hotpink"
+cols <- rep("gray80", length(allnames))
+cols[allnames %in% beta.positive] <- "seagreen3"
+cols[allnames %in% beta.negative] <- "hotpink"
 
 # drwa coefficient paths of a Lasso Cox model
-plotmo::plot_glmnet(mod, label = TRUE, s = lambda_optimal, col = cols,
-            xlab = expression(log ~~ lambda), ylab = expression(beta))
+plotmo::plot_glmnet(mod,
+  label = TRUE, s = lambda_optimal, col = cols,
+  xlab = expression(log ~ ~lambda), ylab = expression(beta)
+)
 title("Lasso    \n\n")
 ```
 ```{r, echo=FALSE}
 pdf("TCGA_Lasso.pdf", width = 6, height = 5)
-plotmo::plot_glmnet(mod, label = TRUE, s = lambda_optimal, col = cols,
-            xlab = expression(log ~~ lambda), ylab = expression(beta))
+plotmo::plot_glmnet(mod,
+  label = TRUE, s = lambda_optimal, col = cols,
+  xlab = expression(log ~ ~lambda), ylab = expression(beta)
+)
 title("Lasso    \n\n")
 dev.off()
 ```
@@ -569,36 +587,42 @@ The parameter $\alpha$ can be fixed as $0$ (Ridge), $1$ (Lasso) or any value bet
 ## Elastic Net Cox model
 
 # set penalty parameter alpha which comprises between Lasso and ridge regressions
-alpha = seq(0.1, 1, length = 10)
-fitEN = list()
+alpha <- seq(0.1, 1, length = 10)
+fitEN <- list()
 set.seed(123)
 for (i in 1:length(alpha)) {
-  fitEN[[i]] = cv.glmnet(x, y, family = "cox", alpha = alpha[i], nfolds = 5, penalty.factor = pf)
+  fitEN[[i]] <- cv.glmnet(x, y, family = "cox", alpha = alpha[i], nfolds = 5, penalty.factor = pf)
 }
-idx = which.min(sapply(fitEN, function(xx) {xx$cvm[xx$lambda == xx$lambda.min]}))
-cvfit = fitEN[[idx]]
+idx <- which.min(sapply(fitEN, function(xx) {
+  xx$cvm[xx$lambda == xx$lambda.min]
+}))
+cvfit <- fitEN[[idx]]
 
 # the following code is the same as Lasso previously
-mod = cvfit$glmnet.fit
-lambda_optimal = cvfit$lambda.min # optimal lambda
+mod <- cvfit$glmnet.fit
+lambda_optimal <- cvfit$lambda.min # optimal lambda
 
-betas = as.vector(coef(mod, s = lambda_optimal))
-beta.positive = colnames(x)[betas > 0]
-beta.negative = colnames(x)[betas < 0]
-allnames = names(coef(mod)[, ncol(coef(mod))]
-                [order(coef(mod)[, ncol(coef(mod))], decreasing = TRUE)])
-cols = rep("gray80", length(allnames))
-cols[allnames %in% beta.positive] = "seagreen3" 
-cols[allnames %in% beta.negative] = "hotpink"   
+betas <- as.vector(coef(mod, s = lambda_optimal))
+beta.positive <- colnames(x)[betas > 0]
+beta.negative <- colnames(x)[betas < 0]
+allnames <- names(coef(mod)[, ncol(coef(mod))]
+[order(coef(mod)[, ncol(coef(mod))], decreasing = TRUE)])
+cols <- rep("gray80", length(allnames))
+cols[allnames %in% beta.positive] <- "seagreen3"
+cols[allnames %in% beta.negative] <- "hotpink"
 
-plotmo::plot_glmnet(mod, label = TRUE, s = lambda_optimal, col = cols,
-            xlab = expression(log ~~ lambda), ylab = expression(beta))
+plotmo::plot_glmnet(mod,
+  label = TRUE, s = lambda_optimal, col = cols,
+  xlab = expression(log ~ ~lambda), ylab = expression(beta)
+)
 title("Elastic Net     \n\n")
 ```
 ```{r, echo=FALSE}
 pdf("TCGA_elastic.pdf", width = 6, height = 5)
-plotmo::plot_glmnet(mod, label = TRUE, s = lambda_optimal, col = cols,
-            xlab = expression(log ~~ lambda), ylab = expression(beta))
+plotmo::plot_glmnet(mod,
+  label = TRUE, s = lambda_optimal, col = cols,
+  xlab = expression(log ~ ~lambda), ylab = expression(beta)
+)
 title("Elastic Net     \n\n")
 dev.off()
 ```
@@ -613,33 +637,37 @@ The pre-estimation can be done by a Ridge Cox model, see an example below.
 ## Adaptive Lasso Cox model
 
 set.seed(123)
-fit = cv.glmnet(x, y, family = "cox", alpha = 0, nfolds = 5)
-weights = abs(1 / as.vector(coef(fit, s = "lambda.min")))
+fit <- cv.glmnet(x, y, family = "cox", alpha = 0, nfolds = 5)
+weights <- abs(1 / as.vector(coef(fit, s = "lambda.min")))
 
 # adaptive Lasso Cox by using cv.glmnet to obtain the 5-fold CV optimal lambda.min or lambda.1se
-cvfit = cv.glmnet(x, y, family = "cox", nfolds = 5, penalty.factor = pf)
-mod = cvfit$glmnet.fit
-lambda_optimal = cvfit$lambda.min # optimal lambda
+cvfit <- cv.glmnet(x, y, family = "cox", nfolds = 5, penalty.factor = pf)
+mod <- cvfit$glmnet.fit
+lambda_optimal <- cvfit$lambda.min # optimal lambda
 
-betas = as.vector(coef(mod, s = lambda_optimal))
-beta.positive = colnames(x)[betas > 0]
-beta.negative = colnames(x)[betas < 0]
-#get ordered list of variables as they appear at smallest lambda
-allnames = names(coef(mod)[, ncol(coef(mod))]
-                [order(coef(mod)[, ncol(coef(mod))], decreasing = TRUE)])
-#assign colors
-cols = rep("gray80", length(allnames))
-cols[allnames %in% beta.positive] = "seagreen3"
-cols[allnames %in% beta.negative] = "hotpink"
+betas <- as.vector(coef(mod, s = lambda_optimal))
+beta.positive <- colnames(x)[betas > 0]
+beta.negative <- colnames(x)[betas < 0]
+# get ordered list of variables as they appear at smallest lambda
+allnames <- names(coef(mod)[, ncol(coef(mod))]
+[order(coef(mod)[, ncol(coef(mod))], decreasing = TRUE)])
+# assign colors
+cols <- rep("gray80", length(allnames))
+cols[allnames %in% beta.positive] <- "seagreen3"
+cols[allnames %in% beta.negative] <- "hotpink"
 
-plot_glmnet(mod, label = TRUE, s = lambda_optimal, col = cols,
-            xlab = expression(log ~ lambda), ylab = expression(beta))
+plot_glmnet(mod,
+  label = TRUE, s = lambda_optimal, col = cols,
+  xlab = expression(log ~ lambda), ylab = expression(beta)
+)
 title("Adative Lasso    \n\n")
 ```
 ```{r, echo=FALSE}
 pdf("TCGA_adaptiveLasso.pdf", width = 6, height = 5)
-plot_glmnet(mod, label = TRUE, s = lambda_optimal, col = cols,
-            xlab = expression(log ~ lambda), ylab = expression(beta))
+plot_glmnet(mod,
+  label = TRUE, s = lambda_optimal, col = cols,
+  xlab = expression(log ~ lambda), ylab = expression(beta)
+)
 title("Adative Lasso    \n\n")
 dev.off()
 ```
@@ -661,10 +689,10 @@ Note that the `R` package [**grpreg**](https://CRAN.R-project.org/package=grpreg
 
 ```{r}
 # group Lasso Cox model
-group = c(rep("demographic", 2), rep("PAM50_1", 10), rep("PAM50_2", 40))
-group = factor(group)
+group <- c(rep("demographic", 2), rep("PAM50_1", 10), rep("PAM50_2", 40))
+group <- factor(group)
 set.seed(123)
-cvfit = grpreg::cv.grpsurv(X = x, y = y, group = group, penalty = "grLasso", returnY = TRUE)
+cvfit <- grpreg::cv.grpsurv(X = x, y = y, group = group, penalty = "grLasso", returnY = TRUE)
 round(cvfit$fit$beta[, c(which.min(cvfit$cve), 10, 20)], digits = 4)
 ```
 ```
@@ -729,13 +757,13 @@ The following example shows that it induces sparsity in each group of covariates
 
 ```{r}
 # sparse group Lasso Cox model
-group = c(rep("demographic", 2), rep("PAM50_1", 10), rep("PAM50_2", 40))
-group = factor(group)
-dat_tmp = list(x = x, time = clin$time, status = clin$status)
+group <- c(rep("demographic", 2), rep("PAM50_1", 10), rep("PAM50_2", 40))
+group <- factor(group)
+dat_tmp <- list(x = x, time = clin$time, status = clin$status)
 set.seed(123)
-cvfit = SGL::cvSGL(dat_tmp, index = group, type = "cox", nfold = 5)
-beta.hat = cvfit$fit$beta[, which.min(cvfit$lldiff)]
-names(beta.hat) = paste0("group", as.numeric(group), ".", c(1:2, 1:10, 1:40))
+cvfit <- SGL::cvSGL(dat_tmp, index = group, type = "cox", nfold = 5)
+beta.hat <- cvfit$fit$beta[, which.min(cvfit$lldiff)]
+names(beta.hat) <- paste0("group", as.numeric(group), ".", c(1:2, 1:10, 1:40))
 beta.hat
 ```
 ```
@@ -770,37 +798,36 @@ For the group Lasso prior, set the hyperparameter `priorPara$groupInd` as a vect
 # Bayesian Cox model with Lasso prior
 
 set.seed(123)
-survObj = list(t = clin$time, di = clin$status, x = x)
-p = ncol(x)
-# set hyperparameters. 
+survObj <- list(t = clin$time, di = clin$status, x = x)
+p <- ncol(x)
+# set hyperparameters.
 # For Lasso prior (i.e. 'groupInd'= 1:p), larger ratio r/delta tends to force the posterior betas to be more concentrated at 0
 # For group Lasso prior (i.e. 'groupInd' as group indicator for covariates), larger ratio r/delta tends to force stronger grouping effect of covariates
-s = c(sort(survObj$t[survObj$di == 1]), 2 * max(survObj$t) - max(survObj$t[-which(survObj$t == max(survObj$t))]))
-priorPara = list('eta0' = 1, 'kappa0' = 1, 'c0' = 2, 'r' = 0.5, 
-                  'delta' = 0.0001, 's' = s, 'J' = length(s), 'groupInd' = 1:p)
+s <- c(sort(survObj$t[survObj$di == 1]), 2 * max(survObj$t) - max(survObj$t[-which(survObj$t == max(survObj$t))]))
+priorPara <- list(
+  "eta0" = 1, "kappa0" = 1, "c0" = 2, "r" = 0.5,
+  "delta" = 0.0001, "s" = s, "J" = length(s), "groupInd" = 1:p
+)
 # set MCMC parameters
-mcmcPara = list('numBeta' = p, 'beta.prop.var' = 1)
+mcmcPara <- list("numBeta" = p, "beta.prop.var" = 1)
 # set initial values of hyperparameters
-lambdaSq = 1
-initial = list('beta.ini' = rep(0, p), 'lambdaSq' = 1, 'sigmaSq' = runif(1, 0.1, 10),
-                'tauSq' = rexp(length(unique(priorPara$groupInd)), 'rate' = lambdaSq / 2),
-                'h' = rgamma(priorPara$J, 1, 1))
+lambdaSq <- 1
+initial <- list(
+  "beta.ini" = rep(0, p), "lambdaSq" = 1, "sigmaSq" = runif(1, 0.1, 10),
+  "tauSq" = rexp(length(unique(priorPara$groupInd)), "rate" = lambdaSq / 2),
+  "h" = rgamma(priorPara$J, 1, 1)
+)
 # in real applications, 'num.reps' should be large enough (e.g. 20000, 40000) and 'chain' to be > 1
 # argument 'rw' should be FALSE for high-dimensional covariates
-BayesLassofit = psbcGroup::psbcGL(survObj, priorPara, initial, rw = TRUE, mcmcPara, num.reps = 100, thin = 1, chain = 1)
+BayesLassofit <- psbcGroup::psbcGL(survObj, priorPara, initial, rw = TRUE, mcmcPara, num.reps = 100, thin = 1, chain = 1)
 # burn-in the first half MCMC iterations
-beta_p = BayesLassofit$beta.p[-(1:51), ]
-beta_mean = colMeans(beta_p)
-beta_L = apply(beta_p, 2, quantile, 0.025)
-beta_U = apply(beta_p, 2, quantile, 0.975)
-tbl = data.frame(term = colnames(x), estimate = beta_mean,  conf.low = beta_L,  conf.high = beta_U)
-tbl$term = factor(tbl$term, levels = tbl$term)
-
-GGally::ggcoef(tbl) + xlab(expression(Posterior ~~ beta)) + ylab("")
+beta_p <- BayesLassofit$beta.p[-(1:51), ]
+colnames(beta_p) <- colnames(x)
+psbcSpeedUp:::plot.psbcSpeedUp(beta_p)
 ```
 ```{r, echo=FALSE}
 pdf("TCGA_bayesLasso.pdf", width = 4, height = 6)
-GGally::ggcoef(tbl) + xlab(expression(Posterior ~~ beta)) + ylab("")
+psbcSpeedUp:::plot.psbcSpeedUp(beta_p)
 dev.off()
 ```
 ![_Estimates of regression coefficients by a penalized semiparametric Bayesian Cox model with Lasso prior. Solid dots indicate the posterior mean over MCMC iterations (excluding burn-in period), and horizontal lines show the corresponding 95% credibility intervals._](fig/TCGA_bayeslasso.png){width=50%}
@@ -808,15 +835,17 @@ dev.off()
 <br>
 
 Note that **psbcGroup** cannot distinguish mandatory (unpenalized) covariates with omics features, see @Zucknick2015 for an extended Bayesian Lasso Cox model. 
-The following code implements the Bayesian Lasso Cox model with mandatory covariates through the `R` package [**psbcSpeedUp**](https://CRAN.R-project.org/package=psbcSpeedUp) [@Zhao2023].
+The following code implements the Bayesian Lasso Cox model with mandatory covariates through the `R` package [**psbcSpeedUp**](https://CRAN.R-project.org/package=psbcSpeedUp) [@Zhao2023b].
 
 ```{r}
 # Bayesian Cox model with Lasso prior and mandatory covariates
 set.seed(123)
-survObjM = list(t = clin$time, di = clin$status, x = x[, c(3:52, 1:2)])
-priorPara = list('eta0' = 1, 'kappa0' = 1, 'c0' = 2, 'r' = 0.5, 'delta' = 0.0001)
-BayesLassoMfit <- psbcSpeedUp::psbcSpeedUp(survObjM, p = 50, q = 2, hyperpar = priorPara, 
-                                           nIter = 100, burnin = 50, thin = 1, rw = FALSE, outFilePath = "tmp")
+survObjM <- list(t = clin$time, di = clin$status, x = x[, c(3:52, 1:2)])
+priorPara <- list("eta0" = 1, "kappa0" = 1, "c0" = 2, "r" = 0.5, "delta" = 0.0001)
+BayesLassoMfit <- psbcSpeedUp::psbcSpeedUp(survObjM,
+  p = 50, q = 2, hyperpar = priorPara,
+  nIter = 100, burnin = 50, thin = 1, rw = FALSE, outFilePath = "tmp"
+)
 plot(BayesLassoMfit)
 ```
 ```
@@ -842,18 +871,23 @@ set.seed(123)
 # set hyperparameters
 # Larger ratio r1/delta1 forces the posterior betas to be more concentrated at 0
 # Larger ratio r2/delta2 forces stronger grouping effect of covariates
-priorPara = list('eta0' = 1, 'kappa0' = 1, 'c0' = 2, 'r1' = 0.1, 'r2' = 1, 
-                  'delta1' = 0.1, 'delta2' = 1, 's' = s, 'J' = length(s))
+priorPara <- list(
+  "eta0" = 1, "kappa0" = 1, "c0" = 2, "r1" = 0.1, "r2" = 1,
+  "delta1" = 0.1, "delta2" = 1, "s" = s, "J" = length(s)
+)
 # set MCMC parameters
-mcmcPara = list('numBeta' = p, 'beta.prop.var' = 1)
+mcmcPara <- list("numBeta" = p, "beta.prop.var" = 1)
 # set initial values of hyperparameters
-initial = list('beta.ini' = rep(0, p), 'lambda1Sq' = 1, 'lambda2' = 1, 'sigmaSq' = runif(1, 0.1, 10),
-                'tauSq' = rexp(p, rate = 1 / 2), 'h' = rgamma(priorPara$J, 1, 1))
+initial <- list(
+  "beta.ini" = rep(0, p), "lambda1Sq" = 1, "lambda2" = 1, "sigmaSq" = runif(1, 0.1, 10),
+  "tauSq" = rexp(p, rate = 1 / 2), "h" = rgamma(priorPara$J, 1, 1)
+)
 # in real application, 'num.reps' should be large enough (e.g. 20000, 40000) and 'chain' to be > 1
-BayesENfit = psbcEN(survObj, priorPara, initial, rw = FALSE, mcmcPara, num.reps = 100, thin = 1, chain = 1)
+BayesENfit <- psbcEN(survObj, priorPara, initial, rw = FALSE, mcmcPara, 
+                     num.reps = 100, thin = 1, chain = 1)
 # burn-in the first half MCMC iterations
-EN_beta_p = BayesENfit$beta.p[52:101, ]
-colnames(EN_beta_p) = colnames(x)
+EN_beta_p <- BayesENfit$beta.p[52:101, ]
+colnames(EN_beta_p) <- colnames(x)
 psbcSpeedUp:::plot.psbcSpeedUp(EN_beta_p)
 ```
 ```{r, echo=FALSE}
@@ -869,16 +903,16 @@ A penalized semiparametric Bayesian Cox model with double exponential spike-and-
 
 ```{r}
 # penalized semiparametric Bayesian Cox model with (double exponential) spike-and-slab prior
-y_surv = Surv(clin$time, clin$status)
-x_dataframe = as.data.frame(x)
+y_surv <- Surv(clin$time, clin$status)
+x_dataframe <- as.data.frame(x)
 set.seed(123)
-Bayesfit = BhGLM::bcoxph(y_surv ~ ., x_dataframe, prior = mde(0, 0.01, 0.8), control = coxph.control(iter.max = 200))
-BhGLM::plot.bh(Bayesfit, col.pts = c("red", "blue"), main = "Cox with mixture double exponential\n") 
+Bayesfit <- BhGLM::bcoxph(y_surv ~ ., x_dataframe, prior = mde(0, 0.01, 0.8), control = coxph.control(iter.max = 200))
+BhGLM::plot.bh(Bayesfit, col.pts = c("red", "blue"), main = "Cox with mixture double exponential\n")
 ```
 ```{r, echo=FALSE}
 pdf("TCGA_bayesSpikeSlab.pdf", width = 6, height = 5)
 par(mar = c(3, 8, 4, 4))
-BhGLM::plot.bh(Bayesfit, col.pts = c("red", "blue"), main = "Cox with mixture double exponential\n") 
+BhGLM::plot.bh(Bayesfit, col.pts = c("red", "blue"), main = "Cox with mixture double exponential\n")
 dev.off()
 ```
 ![_Coefficient estimates of a penalized semiparametric Bayesian Cox model with (double exponential) spike-and-slab prior. Solid dots denote the posterior mode of the coefficients and lines denote the 95% confidence intervals. Red colored text on the right side mark the significant features with $p < 0.05$._](fig/TCGA_bayesSpikeSlab.png){width=60%}
@@ -914,12 +948,12 @@ For example, we can randomly split the 1047 BRCA patients from TCGA into $80\%$ 
 
 ```{r}
 set.seed(123)
-n = nrow(x)
-idx = sample(1:n, n * 0.8, replace = FALSE)
-x_train = x[idx, ]
-y_train = y[idx, ]
-x_validate = x[-idx, ]
-y_validate = y[-idx, ]
+n <- nrow(x)
+idx <- sample(1:n, n * 0.8, replace = FALSE)
+x_train <- x[idx, ]
+y_train <- y[idx, ]
+x_validate <- x[-idx, ]
+y_validate <- y[-idx, ]
 ```
 
 :::{.info-box .note}
@@ -937,23 +971,25 @@ The following code shows the **goodness-of-fit** of a Lasso Cox model with the B
 ```{r}
 # train a Lasso Cox model, similarly for other Cox-type models
 set.seed(123)
-cvfit = cv.glmnet(x_train, y_train, family = "cox", nfolds = 5, penalty.factor = pf)
-pred_lp = predict(cvfit, newx = x_validate, s = cvfit$lambda.min, type = "link")
+cvfit <- cv.glmnet(x_train, y_train, family = "cox", nfolds = 5, penalty.factor = pf)
+pred_lp <- predict(cvfit, newx = x_validate, s = cvfit$lambda.min, type = "link")
 
 # dichotomize by prognostic scores (linear predictor)  by median to divide the validation patients into two groups
-group_dichotomize = as.numeric(pred_lp > median(pred_lp))
+group_dichotomize <- as.numeric(pred_lp > median(pred_lp))
 
 # draw two survival curves based on KM estimation and compare them by a log-rank test
-dat_tmp = data.frame(time = y_validate[, 1], status = y_validate[, 2], group = group_dichotomize)
-sfit = survfit(Surv(time, status) ~ group, data = dat_tmp)
+dat_tmp <- data.frame(time = y_validate[, 1], status = y_validate[, 2], group = group_dichotomize)
+sfit <- survfit(Surv(time, status) ~ group, data = dat_tmp)
 
-ggsurv = ggsurvplot(sfit, conf.int = TRUE, risk.table = TRUE, 
-           xlab = "Time since diagnosis (year)", legend = c(.2, .3),
-           legend.labs = c("Low risk", "High risk"), legend.title = "Dichotomized groups",  
-           risk.table.y.text.col = TRUE, risk.table.y.text = FALSE)
-ggsurv$plot = ggsurv$plot + 
+ggsurv <- ggsurvplot(sfit,
+  conf.int = TRUE, risk.table = TRUE,
+  xlab = "Time since diagnosis (year)", legend = c(.2, .3),
+  legend.labs = c("Low risk", "High risk"), legend.title = "Dichotomized groups",
+  risk.table.y.text.col = TRUE, risk.table.y.text = FALSE
+)
+ggsurv$plot <- ggsurv$plot +
   annotate("text", x = 2.6, y = .03, label = paste0("Log-rank test:\n", surv_pvalue(sfit)$pval.txt))
-ggsurv$table = ggsurv$table + labs(y = "Dichotomized\n groups")
+ggsurv$table <- ggsurv$table + labs(y = "Dichotomized\n groups")
 ggsurv
 ```
 ```{r, echo=FALSE}
@@ -968,20 +1004,22 @@ dev.off()
 The prognostic scores can also be divided into three or more groups based on quantiles and the log-rank test can be used to compare the difference of multiple survival curves.
 
 ```{r}
-group = pred_lp
-group[pred_lp >= quantile(pred_lp, 2 / 3)] = 3
-group[pred_lp >= quantile(pred_lp, 1 / 3) & pred_lp < quantile(pred_lp, 2 / 3)] = 2
-group[pred_lp < quantile(pred_lp, 1 / 3)] = 1
+group <- pred_lp
+group[pred_lp >= quantile(pred_lp, 2 / 3)] <- 3
+group[pred_lp >= quantile(pred_lp, 1 / 3) & pred_lp < quantile(pred_lp, 2 / 3)] <- 2
+group[pred_lp < quantile(pred_lp, 1 / 3)] <- 1
 
 # draw two survival curves based on KM estimation and compare them by a log-rank test
-dat_tmp = data.frame(time = y_validate[, 1], status = y_validate[, 2], group = group)
-sfit = survfit(Surv(time, status) ~ group, data = dat_tmp)
+dat_tmp <- data.frame(time = y_validate[, 1], status = y_validate[, 2], group = group)
+sfit <- survfit(Surv(time, status) ~ group, data = dat_tmp)
 
-ggsurv = ggsurvplot(sfit, conf.int = TRUE, risk.table = TRUE, 
-           xlab = "Time since diagnosis (year)", legend = c(.2, .3),
-           legend.labs = c("Low risk", "Middle risk", "High risk"), legend.title = "Groups",  
-           risk.table.y.text.col = TRUE, risk.table.y.text = FALSE)
-ggsurv$plot = ggsurv$plot + 
+ggsurv <- ggsurvplot(sfit,
+  conf.int = TRUE, risk.table = TRUE,
+  xlab = "Time since diagnosis (year)", legend = c(.2, .3),
+  legend.labs = c("Low risk", "Middle risk", "High risk"), legend.title = "Groups",
+  risk.table.y.text.col = TRUE, risk.table.y.text = FALSE
+)
+ggsurv$plot <- ggsurv$plot +
   annotate("text", x = 3.5, y = .05, label = paste0("Log-rank test:\n", surv_pvalue(sfit)$pval.txt))
 ggsurv
 ```
@@ -1000,18 +1038,22 @@ The `R` package [**risksetROC**](https://CRAN.R-project.org/package=risksetROC) 
 The following code draws a ROC curve at 5-years survival evaluation time point for the 20% TCGA validation data and based on a Lasso Cox model learned from the 80% training data.
 
 ```{r}
-ROC = risksetROC(Stime = y_validate[, 1], status = y_validate[, 2],
-                 marker = pred_lp, predict.time = 5, method = "Cox", 
-                 main = "ROC Curve", col = "seagreen3", type = "s", 
-                 lwd = 2, xlab = "1 - Specificity", ylab = "Sensitivity") 
+ROC <- risksetROC(
+  Stime = y_validate[, 1], status = y_validate[, 2],
+  marker = pred_lp, predict.time = 5, method = "Cox",
+  main = "ROC Curve", col = "seagreen3", type = "s",
+  lwd = 2, xlab = "1 - Specificity", ylab = "Sensitivity"
+)
 text(0.7, 0.2, paste("AUC =", round(ROC$AUC, 3)))
 ```
 ```{r, echo=FALSE}
 pdf("TCGA_surv_roc.pdf", height = 3.9, width = 3.4)
-ROC = risksetROC(Stime = y_validate[, 1], status = y_validate[, 2],
-                 marker = pred_lp, predict.time = 5, method = "Cox", 
-                 main = "ROC Curve", col = "seagreen3", type = "s", 
-                 lwd = 2, xlab = "1 - Specificity", ylab = "Sensitivity") 
+ROC <- risksetROC(
+  Stime = y_validate[, 1], status = y_validate[, 2],
+  marker = pred_lp, predict.time = 5, method = "Cox",
+  main = "ROC Curve", col = "seagreen3", type = "s",
+  lwd = 2, xlab = "1 - Specificity", ylab = "Sensitivity"
+)
 text(0.7, 0.2, paste("AUC =", round(ROC$AUC, 3)))
 dev.off()
 ```
@@ -1032,38 +1074,52 @@ This transformation internally uses the Breslow estimator for the cumulative bas
 
 ```{r}
 # unique event times for patients in the training and validation data sets
-utimes_train = sort(unique(y_train[y_train[, 2] == 1, 1]))
-utimes_validate = sort(unique(y_validate[y_validate[, 2] == 1, 1]))
+utimes_train <- sort(unique(y_train[y_train[, 2] == 1, 1]))
+utimes_validate <- sort(unique(y_validate[y_validate[, 2] == 1, 1]))
 
 # markers from the estimated linear predictors of a Lasso Cox model
-pred_lp_train = predict(cvfit, newx = x_train, s = cvfit$lambda.min, type = "link")
-pred_lp_validate = predict(cvfit, newx = x_validate, s = cvfit$lambda.min, type = "link")
+pred_lp_train <- predict(cvfit, newx = x_train, s = cvfit$lambda.min, type = "link")
+pred_lp_validate <- predict(cvfit, newx = x_validate, s = cvfit$lambda.min, type = "link")
 
 ## compute time-dependent AUC
-AUC_train = rep(NA, length(utimes_train))
-AUC_validate = rep(NA, length(utimes_validate))
+AUC_train <- rep(NA, length(utimes_train))
+AUC_validate <- rep(NA, length(utimes_validate))
 for (j in 1:length(utimes_train)) {
-  out = risksetROC::CoxWeights(marker = pred_lp_train, Stime = y_train[, 1], 
-                               status = y_train[, 2], predict.time = utimes_train[j])
-  AUC_train[j] = out$AUC
+  out <- risksetROC::CoxWeights(
+    marker = pred_lp_train, Stime = y_train[, 1],
+    status = y_train[, 2], predict.time = utimes_train[j]
+  )
+  AUC_train[j] <- out$AUC
 }
 for (j in 1:length(utimes_validate)) {
-  out = risksetROC::CoxWeights(marker = pred_lp_validate, Stime = y_validate[, 1], 
-                               status = y_validate[, 2], predict.time = utimes_validate[j])
-  AUC_validate[j] = out$AUC
+  out <- risksetROC::CoxWeights(
+    marker = pred_lp_validate, Stime = y_validate[, 1],
+    status = y_validate[, 2], predict.time = utimes_validate[j]
+  )
+  AUC_validate[j] <- out$AUC
 }
 
 # draw the time-dependent AUC from the training and validation data sets
-dat_AUC = data.frame(tAUC = c(AUC_train, AUC_validate), 
-                      times = c(utimes_train, utimes_validate),
-                      group = c(rep("AUC_train", length(AUC_train)), rep("AUC_validate", length(AUC_validate))))
-ggplot(dat_AUC, aes(times, tAUC, group = group, color = group)) + xlab("Evaluation time points (year)") + ylab("AUC") + ylim(0.5, 1) +
-  geom_step(direction = "vh") + theme(legend.position = c(0.7, 0.8), legend.title = element_blank())
+dat_AUC <- data.frame(
+  tAUC = c(AUC_train, AUC_validate),
+  times = c(utimes_train, utimes_validate),
+  group = c(rep("AUC_train", length(AUC_train)), rep("AUC_validate", length(AUC_validate)))
+)
+ggplot(dat_AUC, aes(times, tAUC, group = group, color = group)) +
+  xlab("Evaluation time points (year)") +
+  ylab("AUC") +
+  ylim(0.5, 1) +
+  geom_step(direction = "vh") +
+  theme(legend.position = c(0.7, 0.8), legend.title = element_blank())
 ```
 ```{r, echo=FALSE}
 pdf("TCGA_surv_auc_lasso.pdf", height = 3, width = 3)
-ggplot(dat_AUC, aes(times, tAUC, group = group, color = group)) + xlab("Evaluation time points (year)") + ylab("AUC") + ylim(0.5, 1) +
-  geom_step(direction = "vh") + theme(legend.position = c(0.7, 0.8), legend.title = element_blank())
+ggplot(dat_AUC, aes(times, tAUC, group = group, color = group)) +
+  xlab("Evaluation time points (year)") +
+  ylab("AUC") +
+  ylim(0.5, 1) +
+  geom_step(direction = "vh") +
+  theme(legend.position = c(0.7, 0.8), legend.title = element_blank())
 dev.off()
 ```
 ![_Time-dependent AUC based on a Lasso Cox model applied to the BRCA patients data from TCGA. The red line shows the Time-dependent AUC calculated from the 80% training data, and the green line shows the Time-dependent AUC calculated from the 20% validation data._](fig/TCGA_surv_auc_lasso.png){width=40%}
@@ -1076,18 +1132,18 @@ The `R` package [**risksetROC**](https://CRAN.R-project.org/package=risksetROC) 
 
 ```{r}
 # Before computing integrated AUC, first estimate survival probabilities at unique survival times
-surv_prob_train = unique(survfit(Surv(y_train[, 1], y_train[, 2]) ~ 1)$surv)
-surv_prob_validate = unique(survfit(Surv(y_validate[, 1], y_validate[, 2]) ~ 1)$surv)
+surv_prob_train <- unique(survfit(Surv(y_train[, 1], y_train[, 2]) ~ 1)$surv)
+surv_prob_validate <- unique(survfit(Surv(y_validate[, 1], y_validate[, 2]) ~ 1)$surv)
 
 ## integrated AUC (e.g. over tmax=10 years) to get concordance measure based on training data
-(iAUC_train = risksetROC::IntegrateAUC(AUC_train, utimes_train, surv_prob_train, tmax = 10))
+(iAUC_train <- risksetROC::IntegrateAUC(AUC_train, utimes_train, surv_prob_train, tmax = 10))
 ```
 ```
 [1] 0.6279646
 ```
 ```{r}
 ## integrated AUC (e.g. over tmax=10 years) to get concordance measure based on validation data
-(iAUC_validate = risksetROC::IntegrateAUC(AUC_validate, utimes_validate, surv_prob_validate, tmax = 10))
+(iAUC_validate <- risksetROC::IntegrateAUC(AUC_validate, utimes_validate, surv_prob_validate, tmax = 10))
 ```
 ```
 [1] 0.6318253
@@ -1107,17 +1163,17 @@ See an example calculation for both C-indexes using a Lasso Cox model below.
 
 ```{r}
 set.seed(123)
-cvfit = cv.glmnet(x_train, y_train, family = "cox", nfolds = 5, penalty.factor = pf)
-pred = predict(cvfit, newx = x_validate, type = "link", s = cvfit$lambda.min)
+cvfit <- cv.glmnet(x_train, y_train, family = "cox", nfolds = 5, penalty.factor = pf)
+pred <- predict(cvfit, newx = x_validate, type = "link", s = cvfit$lambda.min)
 # Harrell's C-index
-(Cindex_Harrell = Cindex(pred = pred[, 1], y = y_validate))
+(Cindex_Harrell <- Cindex(pred = pred[, 1], y = y_validate))
 ```
 ```
 [1] 0.7246466
 ```
 ```{r}
 # Uno's C-index
-(Cindex_Uno = survAUC::UnoC(y_train, y_validate, pred))
+(Cindex_Uno <- survAUC::UnoC(y_train, y_validate, pred))
 ```
 ```
 [1] 0.5772041
@@ -1144,32 +1200,38 @@ Similar to the time-dependent AUC, one needs to first calculate the linear predi
 # use the (x_train, y_train) 80% samples for training
 # and the (x_validate, y_validate) 20% samples for testing
 
-y_train_surv = Surv(y_train[, "time"], y_train[, "status"])
-y_validate_surv = Surv(y_validate[, "time"], y_validate[, "status"])
+y_train_surv <- Surv(y_train[, "time"], y_train[, "status"])
+y_validate_surv <- Surv(y_validate[, "time"], y_validate[, "status"])
 set.seed(123)
-cvfit = cv.glmnet(x_train, y_train_surv, family = "cox", nfolds = 5, penalty.factor = pf)
-lp_train = predict(cvfit, newx = x_train, s = cvfit$lambda.min, type = "link")
-lp_validate = predict(cvfit, newx = x_validate, s = cvfit$lambda.min, type = "link")
+cvfit <- cv.glmnet(x_train, y_train_surv, family = "cox", nfolds = 5, penalty.factor = pf)
+lp_train <- predict(cvfit, newx = x_train, s = cvfit$lambda.min, type = "link")
+lp_validate <- predict(cvfit, newx = x_validate, s = cvfit$lambda.min, type = "link")
 
 # prepare data format suited for function Score() from the riskRegression package
-data_train = data.frame(time = y_train[, "time"], status = y_train[, "status"], lp = as.vector(lp_train))
-data_validate = data.frame(time = y_validate[, "time"], status = y_validate[, "status"], lp = as.vector(lp_validate))
-lasso_train = coxph(Surv(time, status) ~ lp, data = data_train, y=TRUE, x = TRUE)
-lasso_validate = coxph(Surv(time, status) ~ lp, data = data_validate, y = TRUE, x = TRUE)
+data_train <- data.frame(time = y_train[, "time"], status = y_train[, "status"], lp = as.vector(lp_train))
+data_validate <- data.frame(time = y_validate[, "time"], status = y_validate[, "status"], lp = as.vector(lp_validate))
+lasso_train <- coxph(Surv(time, status) ~ lp, data = data_train, y = TRUE, x = TRUE)
+lasso_validate <- coxph(Surv(time, status) ~ lp, data = data_validate, y = TRUE, x = TRUE)
 
 # calculate Brier scores based on both training and validation data
-Brier_train = riskRegression::Score(list("Brier_train" = lasso_train), formula = Surv(time, status) ~ 1, data = data_train, conf.int = FALSE, metrics = "brier", summary = "ibs", times = sort(unique(data_train$time)))$Brier$score
-Brier_validate = riskRegression::Score(list("Brier_validate" = lasso_validate), formula = Surv(time, status) ~ 1, data = data_validate, conf.int = FALSE, metrics = "brier", summary = "ibs", times = sort(unique(data_validate$time)))$Brier$score
-Brier_score = rbind(Brier_train, Brier_validate)
-Brier_score = Brier_score[Brier_score$model != "Null model", ]
-  
-ggplot(Brier_score, aes(times, Brier, group = model, color = model)) + xlab("Evaluation time points (year)") + ylab("Brier score") + 
-  geom_step(direction = "vh") + theme(legend.position = c(0.15, 0.88), legend.title = element_blank())
+Brier_train <- riskRegression::Score(list("Brier_train" = lasso_train), formula = Surv(time, status) ~ 1, data = data_train, conf.int = FALSE, metrics = "brier", summary = "ibs", times = sort(unique(data_train$time)))$Brier$score
+Brier_validate <- riskRegression::Score(list("Brier_validate" = lasso_validate), formula = Surv(time, status) ~ 1, data = data_validate, conf.int = FALSE, metrics = "brier", summary = "ibs", times = sort(unique(data_validate$time)))$Brier$score
+Brier_score <- rbind(Brier_train, Brier_validate)
+Brier_score <- Brier_score[Brier_score$model != "Null model", ]
+
+ggplot(Brier_score, aes(times, Brier, group = model, color = model)) +
+  xlab("Evaluation time points (year)") +
+  ylab("Brier score") +
+  geom_step(direction = "vh") +
+  theme(legend.position = c(0.15, 0.88), legend.title = element_blank())
 ```
 ```{r, echo=FALSE}
 pdf("TCGA_surv_brier_t_lasso.pdf", height = 4, width = 5)
-ggplot(Brier_score, aes(times, Brier, group = model, color = model)) + xlab("Evaluation time points (year)") + ylab("Brier score") + 
-  geom_step(direction = "vh") + theme(legend.position = c(0.15, 0.88), legend.title = element_blank())
+ggplot(Brier_score, aes(times, Brier, group = model, color = model)) +
+  xlab("Evaluation time points (year)") +
+  ylab("Brier score") +
+  geom_step(direction = "vh") +
+  theme(legend.position = c(0.15, 0.88), legend.title = element_blank())
 dev.off()
 ```
 ![_Time-dependent Brier score based on a Lasso Cox model applied to the BRCA patients data from TCGA. The red line shows the Time-dependent Brier score calculated from the 80% training data, and the green line shows the Time-dependent Brier score calculated from the 20% validation data._](fig/TCGA_surv_brier_t_lasso.png){width=60%}
@@ -1182,7 +1244,7 @@ The function `riskRegression::Score()` also summarizes IBS when specifying argum
 We can extract the IBS corresponding to the largest evaluation time point.
 
 ```{r}
-Brier_validate_ibs = Brier_validate[Brier_validate$model == "Brier_validate", ]
+Brier_validate_ibs <- Brier_validate[Brier_validate$model == "Brier_validate", ]
 Brier_validate_ibs$IBS[which.max(Brier_validate_ibs$times)]
 ```
 ```
@@ -1205,35 +1267,43 @@ However, most of the Bayesian Cox models introduced previously are computational
 ```{r}
 # split the data 100 times
 set.seed(123)
-k = 100
-iAUC = rep(NA, k)
+k <- 100
+iAUC <- rep(NA, k)
 for (i in 1:k) {
-  idx = sample(1:n, n * 0.8, replace = FALSE)
-  x_train = x[idx, ]
-  y_train = y[idx, ]
-  x_validate = x[-idx, ]
-  y_validate = y[-idx, ]
-  cvfit = cv.glmnet(x_train, y_train, family = "cox", nfolds = 5, penalty.factor = pf)
-  pred_lp = predict(cvfit, newx = x_validate, s = cvfit$lambda.min, type = "link")
-  utimes = sort(unique(y_validate[y_validate[, 2] == 1, 1]))
-  AUC = rep(NA, length(utimes))
+  idx <- sample(1:n, n * 0.8, replace = FALSE)
+  x_train <- x[idx, ]
+  y_train <- y[idx, ]
+  x_validate <- x[-idx, ]
+  y_validate <- y[-idx, ]
+  cvfit <- cv.glmnet(x_train, y_train, family = "cox", nfolds = 5, penalty.factor = pf)
+  pred_lp <- predict(cvfit, newx = x_validate, s = cvfit$lambda.min, type = "link")
+  utimes <- sort(unique(y_validate[y_validate[, 2] == 1, 1]))
+  AUC <- rep(NA, length(utimes))
   for (j in 1:length(utimes)) {
-    out = CoxWeights(marker = pred_lp, Stime = y_validate[, 1], status = y_validate[, 2], predict.time = utimes[j])
-    AUC[j] = out$AUC
+    out <- CoxWeights(marker = pred_lp, Stime = y_validate[, 1], status = y_validate[, 2], predict.time = utimes[j])
+    AUC[j] <- out$AUC
   }
-  surv_prob = unique(survfit(Surv(y_validate[, 1], y_validate[, 2]) ~ 1)$surv)
-  iAUC[i] = IntegrateAUC(AUC, utimes, surv_prob, tmax = 10)
+  surv_prob <- unique(survfit(Surv(y_validate[, 1], y_validate[, 2]) ~ 1)$surv)
+  iAUC[i] <- IntegrateAUC(AUC, utimes, surv_prob, tmax = 10)
 }
-dat_tmp = data.frame(x = "Lasso Cox", y = iAUC)
+dat_tmp <- data.frame(x = "Lasso Cox", y = iAUC)
 
 set.seed(123)
-ggplot(dat_tmp, aes(x, y)) + geom_boxplot() + ylim(0.5, 1) + xlab("") + ylab("Integrated AUC") +
+ggplot(dat_tmp, aes(x, y)) +
+  geom_boxplot() +
+  ylim(0.5, 1) +
+  xlab("") +
+  ylab("Integrated AUC") +
   geom_jitter(color = "blue", size = 0.5, alpha = 0.5)
 ```
 ```{r, echo=FALSE}
 pdf("TCGA_surv_iauc_lasso.pdf", height = 3, width = 2)
 set.seed(123)
-ggplot(dat_tmp, aes(x, y)) + geom_boxplot() + ylim(0.5, 1) + xlab("") + ylab("Integrated AUC") +
+ggplot(dat_tmp, aes(x, y)) +
+  geom_boxplot() +
+  ylim(0.5, 1) +
+  xlab("") +
+  ylab("Integrated AUC") +
   geom_jitter(color = "blue", size = 0.5, alpha = 0.5)
 dev.off()
 ```
@@ -1246,30 +1316,40 @@ Similar to obtaining uncertainty of the integrated AUC, we can also estimate the
 ```{r}
 # split the data 100 times
 set.seed(123)
-k = 100
-Cindex_all = data.frame(Harrell = rep(NA, k), Uno = rep(NA, k))
+k <- 100
+Cindex_all <- data.frame(Harrell = rep(NA, k), Uno = rep(NA, k))
 for (i in 1:k) {
-  idx = sample(1:n, n * 0.8, replace = FALSE)
-  x_train = x[idx, ]
-  y_train = y[idx, ]
-  x_validate = x[-idx, ]
-  y_validate = y[-idx, ]
-  cvfit = cv.glmnet(x_train, y_train, family = "cox", nfolds = 5, penalty.factor = pf)
-  pred = predict(cvfit, newx = x_validate, type = "response", s = cvfit$lambda.min)
-  Cindex_all$Harrell[i] = mean(apply(pred, 2, Cindex, y = y_validate))
-  Cindex_all$Uno[i] = UnoC(y_train, y_validate, pred)
+  idx <- sample(1:n, n * 0.8, replace = FALSE)
+  x_train <- x[idx, ]
+  y_train <- y[idx, ]
+  x_validate <- x[-idx, ]
+  y_validate <- y[-idx, ]
+  cvfit <- cv.glmnet(x_train, y_train, family = "cox", nfolds = 5, penalty.factor = pf)
+  pred <- predict(cvfit, newx = x_validate, type = "response", s = cvfit$lambda.min)
+  Cindex_all$Harrell[i] <- mean(apply(pred, 2, Cindex, y = y_validate))
+  Cindex_all$Uno[i] <- UnoC(y_train, y_validate, pred)
 }
-dat_tmp = data.frame(x = rep(c("Harrell", "Uno"), each = k), y = unlist(Cindex_all))
+dat_tmp <- data.frame(x = rep(c("Harrell", "Uno"), each = k), y = unlist(Cindex_all))
 
 set.seed(123)
-ggplot(dat_tmp, aes(x, y, col = x)) + geom_boxplot() + geom_jitter(size = 0.5, alpha = 0.5) +
-   ylim(0, 1) + xlab("") + ylab("C-index") + theme(legend.position = "none")
+ggplot(dat_tmp, aes(x, y, col = x)) +
+  geom_boxplot() +
+  geom_jitter(size = 0.5, alpha = 0.5) +
+  ylim(0, 1) +
+  xlab("") +
+  ylab("C-index") +
+  theme(legend.position = "none")
 ```
 ```{r, echo=FALSE}
 pdf("TCGA_surv_cindex_lasso.pdf", height = 3, width = 3)
 set.seed(123)
-ggplot(dat_tmp, aes(x, y, col = x)) + geom_boxplot() + geom_jitter(size = 0.5, alpha = 0.5) +
-   ylim(0, 1) + xlab("") + ylab("C-index") + theme(legend.position = "none")
+ggplot(dat_tmp, aes(x, y, col = x)) +
+  geom_boxplot() +
+  geom_jitter(size = 0.5, alpha = 0.5) +
+  ylim(0, 1) +
+  xlab("") +
+  ylab("C-index") +
+  theme(legend.position = "none")
 dev.off()
 ```
 ![_C-index (Harrell's and Uno's) based on randomly split validation data 100 times._](fig/TCGA_surv_cindex_lasso.png){width=40%}
@@ -1285,11 +1365,13 @@ Note that resampling-based methods here are similar to splitting $80\%/20\%$ the
 ```{r}
 ## time-dependent Brier score by subsampling from the whole data
 set.seed(123)
-peperr_object = peperr::peperr(response = y_surv, x = x, fit.fun = fit.glmnet, 
-                               args.fit = list(family = "cox", penalty.factor = pf), 
-                               complexity = complexity.glmnet,  
-                               args.complexity = list(family = "cox", nfolds = 5, penalty.factor = pf),
-                               indices = resample.indices(n = n, method = "sub632", sample.n = 100))
+peperr_object <- peperr::peperr(
+  response = y_surv, x = x, fit.fun = fit.glmnet,
+  args.fit = list(family = "cox", penalty.factor = pf),
+  complexity = complexity.glmnet,
+  args.complexity = list(family = "cox", nfolds = 5, penalty.factor = pf),
+  indices = resample.indices(n = n, method = "sub632", sample.n = 100)
+)
 c060::Plot.peperr.curves(peperr_object)
 ```
 ```{r, echo=FALSE}
@@ -1309,18 +1391,18 @@ Similarly, this approach can be applied to other Lasso-type or Bayesian Cox mode
 
 ```{r}
 # specify the number of resamples k
-k = 10
-beta_all = matrix(nrow = ncol(x), ncol = k)
+k <- 10
+beta_all <- matrix(nrow = ncol(x), ncol = k)
 set.seed(123)
 for (j in 1:k) {
-  resample_id = sample(1:nrow(y), nrow(y), replace = TRUE)
-  resample_x = x[resample_id, ]
-  resample_y = y[resample_id, ]
-  cvfit = cv.glmnet(resample_x, resample_y, family = "cox", nfolds = 5, penalty.factor = pf)
-  beta_all[, j] = as.vector(coef(cvfit, s = cvfit$lambda.min))
+  resample_id <- sample(1:nrow(y), nrow(y), replace = TRUE)
+  resample_x <- x[resample_id, ]
+  resample_y <- y[resample_id, ]
+  cvfit <- cv.glmnet(resample_x, resample_y, family = "cox", nfolds = 5, penalty.factor = pf)
+  beta_all[, j] <- as.vector(coef(cvfit, s = cvfit$lambda.min))
 }
 
-(stable_features = colnames(x)[rowSums(beta_all != 0) >= 2])
+(stable_features <- colnames(x)[rowSums(beta_all != 0) >= 2])
 ```
 ```
  [1] "age"       "ethnicity" "ANLN"      "UBE2T"     "NDC80"     "PGR"       "ORC6"     
@@ -1331,7 +1413,7 @@ for (j in 1:k) {
 [36] "TYMS"      "KRT5"      "MAPT"      "MIA"
 ```
 ```{r}
-(stable_features = colnames(x)[rowSums(beta_all != 0) >= 5])
+(stable_features <- colnames(x)[rowSums(beta_all != 0) >= 5])
 ```
 ```
  [1] "age"       "ethnicity" "ANLN"      "ORC6"      "MMP11"     "BLVRA"     "BAG1"     
@@ -1342,9 +1424,9 @@ Alternatively for a Bayesian Cox model, its median probability model (MPM) can b
 The following code shows how to obtain the MPM's coefficients of the penalized semiparametric Bayesian Cox model with Elastic Net prior run previously.
 
 ```{r}
-gammas = colMeans(matrix(as.numeric(EN_beta_p != 0), ncol = ncol(EN_beta_p)))
-beta_MPM = (gammas >= 0.5) * colMeans(EN_beta_p) / gammas
-beta_MPM[is.na(beta_MPM)] = 0
+gammas <- colMeans(matrix(as.numeric(EN_beta_p != 0), ncol = ncol(EN_beta_p)))
+beta_MPM <- (gammas >= 0.5) * colMeans(EN_beta_p) / gammas
+beta_MPM[is.na(beta_MPM)] <- 0
 beta_MPM
 ```
 ```
@@ -1381,38 +1463,46 @@ The `R` package **regplot** draws an enhanced regression nomogram based on the *
 
 ```{r}
 # remove patients without reporting ethnicity
-yy = y[x[, 2] != 3, ]
-xx = x[x[, 2] != 3, ]
+yy <- y[x[, 2] != 3, ]
+xx <- x[x[, 2] != 3, ]
 # specify the number of resamples k
-k = 10
-beta_all = matrix(nrow = ncol(xx), ncol = k)
+k <- 10
+beta_all <- matrix(nrow = ncol(xx), ncol = k)
 set.seed(123)
 for (j in 1:k) {
-  resample_id = sample(1:nrow(yy), nrow(yy), replace = TRUE)
-  resample_x = xx[resample_id, ]
-  resample_y = yy[resample_id, ]
-  cvfit = cv.glmnet(resample_x, resample_y, family = "cox", nfolds = 5, penalty.factor = pf)
-  beta_all[, j] = as.vector(coef(cvfit, s = cvfit$lambda.min))
+  resample_id <- sample(1:nrow(yy), nrow(yy), replace = TRUE)
+  resample_x <- xx[resample_id, ]
+  resample_y <- yy[resample_id, ]
+  cvfit <- cv.glmnet(resample_x, resample_y, family = "cox", nfolds = 5, penalty.factor = pf)
+  beta_all[, j] <- as.vector(coef(cvfit, s = cvfit$lambda.min))
 }
 
 # identify features at least 80% frequently selected
-x_stable = data.frame(xx[, rowSums(beta_all != 0) >= k * 0.8])
-x_stable$ethnicity = factor(x_stable$ethnicity) 
-levels(x_stable$ethnicity) = c("Hispanic/latino", "Not hispanic/latino")
+x_stable <- data.frame(xx[, rowSums(beta_all != 0) >= k * 0.8])
+x_stable$ethnicity <- factor(x_stable$ethnicity)
+levels(x_stable$ethnicity) <- c("Hispanic/latino", "Not hispanic/latino")
 
-data_tmp = data.frame(times = yy[, "time"], status = yy[, "status"], x_stable)
-f = cph(formula = Surv(times, status) ~ age + ethnicity + ANLN + BLVRA + EGFR,  
-             data = data_tmp, x = TRUE, y = TRUE, surv = TRUE)
-ddist = datadist(data_tmp)
-oldoption = options(datadist = 'ddist')
-surv = Survival(f)
-nom = nomogram(f, fun = list(function(x) surv(1, x), function(x) surv(3, x), function(x) surv(5, x)),
-                    funlabel = c("1-Year Survival Probability", 
-                                 "3-Year Survival Probability", 
-                                 "5-Year Survival Probability"),
-                    lp = FALSE)
-regplot::regplot(f, observation = data_tmp[1,], failtime = c(1, 3, 5), title = "",
-                 prfail = FALSE, points = TRUE, showP = FALSE, subticks = TRUE) 
+data_tmp <- data.frame(times = yy[, "time"], status = yy[, "status"], x_stable)
+f <- cph(
+  formula = Surv(times, status) ~ age + ethnicity + ANLN + BLVRA + EGFR,
+  data = data_tmp, x = TRUE, y = TRUE, surv = TRUE
+)
+ddist <- datadist(data_tmp)
+oldoption <- options(datadist = "ddist")
+surv <- Survival(f)
+nom <- nomogram(f,
+  fun = list(function(x) surv(1, x), function(x) surv(3, x), function(x) surv(5, x)),
+  funlabel = c(
+    "1-Year Survival Probability",
+    "3-Year Survival Probability",
+    "5-Year Survival Probability"
+  ),
+  lp = FALSE
+)
+regplot::regplot(f,
+  observation = data_tmp[1, ], failtime = c(1, 3, 5), title = "",
+  prfail = FALSE, points = TRUE, showP = FALSE, subticks = TRUE
+)
 ```
 ![_Nomogram developed to estimate the overall survival probability for TCGA's BRAC patients based on demographic and Lasso Cox selected mRNA features. The red coloured symbols represent one patient’s information and predicted probabilities of 1-year, 3-year and 5-year survival._](fig/TCGA_surv_nomogram.png){width=80%}
 
@@ -1429,39 +1519,49 @@ We demonstrate below calibration plots based on training and validation data set
 # prepare suitable data format for calibration plot
 set.seed(123)
 train_id <- sample(1:nrow(yy), nrow(yy) * 0.8, replace = FALSE)
-data_train = data_tmp[train_id, ]
-data_validate = data_tmp[-train_id, ]
+data_train <- data_tmp[train_id, ]
+data_validate <- data_tmp[-train_id, ]
 
-ddist = datadist(data_train)
-options(datadist = 'ddist')
-f_train = cph(formula = Surv(times, status) ~ age + ethnicity + ANLN + BLVRA + EGFR, 
-              data = data_train, x = TRUE, y = TRUE, surv = TRUE, time.inc = 5)
-f_validate = update(f_train, data = data_validate)
-cal_train = calibrate(f_train, u = 5, cmethod = "KM", m = nrow(data_train) / 4, B = 200)
-cal_validate = calibrate(f_validate, u = 5, cmethod = "KM", m = nrow(data_validate) / 4, B = 200)
+ddist <- datadist(data_train)
+options(datadist = "ddist")
+f_train <- cph(
+  formula = Surv(times, status) ~ age + ethnicity + ANLN + BLVRA + EGFR,
+  data = data_train, x = TRUE, y = TRUE, surv = TRUE, time.inc = 5
+)
+f_validate <- update(f_train, data = data_validate)
+cal_train <- calibrate(f_train, u = 5, cmethod = "KM", m = nrow(data_train) / 4, B = 200)
+cal_validate <- calibrate(f_validate, u = 5, cmethod = "KM", m = nrow(data_validate) / 4, B = 200)
 
 layout(matrix(1:2, nrow = 1))
-plot(cal_train, lwd = 2, lty = 1, errbar.col = "seagreen3",
-     xlab = 'Predicted survival probability', ylab = 'Actual survival probability',
-     xlim = c(0, 1), ylim = c(0, 1), col = "seagreen3", subtitles = FALSE)
+plot(cal_train,
+  lwd = 2, lty = 1, errbar.col = "seagreen3",
+  xlab = "Predicted survival probability", ylab = "Actual survival probability",
+  xlim = c(0, 1), ylim = c(0, 1), col = "seagreen3", subtitles = FALSE
+)
 title(main = "Calibration on training data")
 
-plot(cal_validate, lwd = 2, lty = 1, errbar.col = "seagreen3",
-     xlab = 'Predicted survival probability', ylab = 'Actual survival probability',
-     xlim = c(0, 1), ylim = c(0, 1), col = "seagreen3", subtitles = FALSE)
+plot(cal_validate,
+  lwd = 2, lty = 1, errbar.col = "seagreen3",
+  xlab = "Predicted survival probability", ylab = "Actual survival probability",
+  xlim = c(0, 1), ylim = c(0, 1), col = "seagreen3", subtitles = FALSE
+)
 title(main = "Calibration on validation data")
 ```
 ```{r, echo=FALSE}
 pdf("TCGA_surv_calibration.pdf", width = 7, height = 4)
 layout(matrix(1:2, nrow = 1))
-plot(cal_train, lwd = 2, lty = 1, errbar.col = "seagreen3",
-     xlab = 'Predicted survival probability', ylab = 'Actual survival probability',
-     xlim = c(0,1), ylim = c(0,1), col = "seagreen3", subtitles = FALSE)
+plot(cal_train,
+  lwd = 2, lty = 1, errbar.col = "seagreen3",
+  xlab = "Predicted survival probability", ylab = "Actual survival probability",
+  xlim = c(0, 1), ylim = c(0, 1), col = "seagreen3", subtitles = FALSE
+)
 title(main = "Calibration on training data")
 
-plot(cal_validate, lwd = 2, lty = 1, errbar.col = "seagreen3",
-     xlab = 'Predicted survival probability', ylab = 'Actual survival probability',
-     xlim = c(0,1), ylim = c(0,1), col = "seagreen3", subtitles = FALSE)
+plot(cal_validate,
+  lwd = 2, lty = 1, errbar.col = "seagreen3",
+  xlab = "Predicted survival probability", ylab = "Actual survival probability",
+  xlim = c(0, 1), ylim = c(0, 1), col = "seagreen3", subtitles = FALSE
+)
 title(main = "Calibration on validation data")
 dev.off()
 ```
@@ -1501,15 +1601,17 @@ We construct an [**mlr3**](https://mlr3.mlr-org.com) *survival task* (TCGA BRCA 
 # x => gene expression matrix (50 PAM50 genes) + 2 clinical variables
 # y => (time, status) target matrix
 
-data = cbind.data.frame(x, y)
+data <- cbind.data.frame(x, y)
 # data = readRDS(file = 'data.rds')
-task = mlr3proba::as_task_surv(x = data, 
-  time = 'time', event = 'status', id = 'BRCA-TCGA')
+task <- mlr3proba::as_task_surv(
+  x = data,
+  time = "time", event = "status", id = "BRCA-TCGA"
+)
 task # see useful info about the dataset (#features, #samples, target variables)
 
 # split to train and test sets
 set.seed(42)
-split = mlr3::partition(task, ratio = 0.8)
+split <- mlr3::partition(task, ratio = 0.8)
 # split$train # train indices
 # split$test # test indices
 ```
@@ -1527,23 +1629,25 @@ split = mlr3::partition(task, ratio = 0.8)
 
 We create a Lasso Cox [**mlr3**](https://mlr3.mlr-org.com) *graph learner* (a wrapper around the `glmnet::cv.glmnet()` function with the capacity to provide survival predictions), where we specify the two clinical variables to be *mandatory* (i.e. no penalization) and the $s$ value ($\lambda$ parameter used for prediction) equal to `lambda.min`:
 ```{r}
-#tail(task$feature_names) # age, ethnicity are the 2 last features
-pf = c(rep(1, length(task$feature_names) - 2), rep(0, 2))
+# tail(task$feature_names) # age, ethnicity are the 2 last features
+pf <- c(rep(1, length(task$feature_names) - 2), rep(0, 2))
 
 # define model
-coxlasso = lrn('surv.cv_glmnet', alpha = 1, nfolds = 5, s = 'lambda.min',
-  penalty.factor = pf)
+coxlasso <- lrn("surv.cv_glmnet",
+  alpha = 1, nfolds = 5, s = "lambda.min",
+  penalty.factor = pf
+)
 # coxlasso # see details of coxlasso learner
 # coxlasso$help() # for more details
 
 # ?mlr_graphs_distrcompositor
-coxlasso_grlrn = mlr3pipelines::ppl('distrcompositor',
+coxlasso_grlrn <- mlr3pipelines::ppl("distrcompositor",
   learner = coxlasso,
-  estimator = 'kaplan', # KM estimator for the baseline
-  form = 'ph', # Proportional Hazards form since we use a Lasso Cox model
+  estimator = "kaplan", # KM estimator for the baseline
+  form = "ph", # Proportional Hazards form since we use a Lasso Cox model
   graph_learner = TRUE
 )
-coxlasso_grlrn$id = 'Lasso Cox'
+coxlasso_grlrn$id <- "Lasso Cox"
 # coxlasso_grlrn$graph_model$plot(html = TRUE) # plot the graph learner
 ```
 
@@ -1577,7 +1681,7 @@ min 0.01082    14   12.31 0.2743      15
 
 Get the survival distribution predictions ($distr$) along with the linear predictors ($lp$):
 ```{r}
-pred = coxlasso_grlrn$predict(task, row_ids = split$test)
+pred <- coxlasso_grlrn$predict(task, row_ids = split$test)
 head(as.data.table(pred))
 ```
 ```
@@ -1597,8 +1701,8 @@ See respective [documentation](https://mlr3proba.mlr-org.com/reference/Predictio
 
 An example of using the `distr` predictions would be to request for the survival probability at e.g. $1,5,10,20$ years for the first two patients in the test set:
 ```{r}
-times = c(1,5,10,20)
-pred$distr$survival(times)[,c(1,2)]
+times <- c(1, 5, 10, 20)
+pred$distr$survival(times)[, c(1, 2)]
 
 # same logic for the cumulative hazard
 # pred$distr$cumHazard(times)[,c(1,2)]
@@ -1621,8 +1725,8 @@ For this we can use the $lp$ predictions of Lasso Cox model and metrics such as 
 
 <font size="4"> **Harrell's C-index** [@Harrell1982]: </font> 
 ```{r}
-harrell_c = msr('surv.cindex')
-harrell_c$id = 'surv.cindex.harrell'
+harrell_c <- msr("surv.cindex")
+harrell_c$id <- "surv.cindex.harrell"
 
 # harrell_c # get some details about the measure
 # harrell_c$minimize # FALSE => higher C-index is better
@@ -1640,8 +1744,8 @@ surv.cindex.harrell
 
 <font size="4"> **Uno's C-index** [@Uno2011]: (across all time points of the test set): </font> 
 ```{r}
-uno_c = msr('surv.cindex', weight_meth = 'G2')
-uno_c$id = 'surv.cindex.uno'
+uno_c <- msr("surv.cindex", weight_meth = "G2")
+uno_c$id <- "surv.cindex.uno"
 
 # Uno's C needs the train data
 pred$score(uno_c, task = task, train_set = split$train)
@@ -1655,8 +1759,8 @@ surv.cindex.uno
 
 <font size="4"> **Uno's Integrated AUC** [@Uno2007] (across all time points of the test set): </font> 
 ```{r}
-uno_iauc = msr('surv.uno_auc')
-uno_iauc$id = 'surv.uno_iauc'
+uno_iauc <- msr("surv.uno_auc")
+uno_iauc$id <- "surv.uno_iauc"
 # uno_iauc$param_set$values$integrated # integrated = TRUE by default
 # sort(unique(pred$truth[,1])) # time points used
 
@@ -1672,8 +1776,8 @@ surv.uno_iauc
 
 <font size="4"> **Uno's AUC at a specific time point**, e.g. $10$ years: </font> 
 ```{r}
-uno_auc = msr('surv.uno_auc', integrated = FALSE, times = 10)
-uno_auc$id = 'surv.uno_auc.10'
+uno_auc <- msr("surv.uno_auc", integrated = FALSE, times = 10)
+uno_auc$id <- "surv.uno_auc.10"
 
 # needs the train data
 pred$score(uno_auc, task = task, train_set = split$train)
@@ -1691,7 +1795,7 @@ We want to test how well our Lasso Cox model was **calibrated**. @Andres2018 and
 
 <font size="4"> **D-calibration** </font> 
 ```{r}
-dcal = msr('surv.dcalib')
+dcal <- msr("surv.dcalib")
 pred$score(dcal)
 ```
 ```
@@ -1709,7 +1813,7 @@ The most frequently used metric is the Brier Score [@Graf1999]:
 
 <font size="4"> **Integrated Brier Score (IBS)** (across all time points of the test set): </font> 
 ```{r}
-ibrier = msr('surv.brier', proper = TRUE)
+ibrier <- msr("surv.brier", proper = TRUE)
 # ibrier$help() # see documentation
 # ibrier$predict_type # uses the `distr` predictions
 
@@ -1723,7 +1827,7 @@ surv.graf
 
 We can also get the *standard error* of IBS (the above result is the mean across all the test set's patients) as follows:
 ```{r}
-ibrier_se = msr('surv.brier', proper = TRUE, se = TRUE)
+ibrier_se <- msr("surv.brier", proper = TRUE, se = TRUE)
 pred$score(ibrier_se, task = task, train_set = split$train)
 ```
 ```
@@ -1735,8 +1839,8 @@ pred$score(ibrier_se, task = task, train_set = split$train)
 
 <font size="4"> **Brier Score at a specific time point**, e.g. $10$ years: </font> 
 ```{r}
-brier10 = msr('surv.brier', proper = TRUE, integrated = FALSE, times = 10)
-brier10$id = 'surv.graf.10'
+brier10 <- msr("surv.brier", proper = TRUE, integrated = FALSE, times = 10)
+brier10$id <- "surv.graf.10"
 
 # better to use the train data for the Kaplan-Meier estimation of the censoring distribution, but can use the test set as well
 pred$score(brier10, task = task, train_set = split$train)
@@ -1750,7 +1854,7 @@ surv.graf.10
 
 <font size="4"> **Right-censored Logarithmic Loss score** (RCLL) [@Avati2020;@Sonabend2022]: </font> 
 ```{r}
-rcll = msr('surv.rcll')
+rcll <- msr("surv.rcll")
 pred$score(rcll)
 ```
 ```
@@ -1778,26 +1882,28 @@ Stratify survival task by `status`:
 ```{r}
 coxlasso_grlrn$reset() # un-train model
 
-task$col_roles$stratum = 'status'
+task$col_roles$stratum <- "status"
 # task
 ```
 
 Next, we define the type of resampling (`?mlr_resamplings_subsampling`), train the Lasso Cox model on all training sets ($100$) and store the fitted models for feature selection and evaluation:
 ```{r, results='hide'}
 # 100 times train/test split (80% for training, 20% for validation)
-subsampling = rsmp('subsampling', repeats = 100, ratio = 0.8)
+subsampling <- rsmp("subsampling", repeats = 100, ratio = 0.8)
 
 set.seed(42)
-rr = mlr3::resample(task = task, learner = coxlasso_grlrn, 
-  resampling = subsampling, store_models = TRUE, store_backends = TRUE)
+rr <- mlr3::resample(
+  task = task, learner = coxlasso_grlrn,
+  resampling = subsampling, store_models = TRUE, store_backends = TRUE
+)
 ```
 
 We can use all the aforementioned evaluation metrics to measure the performance of the Lasso Cox models on the $100$ different test sets.
 Note that if a metric needs the training dataset it is automatically provided by the `ResampleResult` object (`rr`):
 ```{r}
-measures = list(harrell_c, uno_c, uno_iauc, uno_auc, ibrier, brier10, rcll, dcal)
+measures <- list(harrell_c, uno_c, uno_iauc, uno_auc, ibrier, brier10, rcll, dcal)
 
-res = rr$score(measures = measures)
+res <- rr$score(measures = measures)
 head(res)
 ```
 ```
@@ -1822,51 +1928,57 @@ We extract and visualize the discrimination and calibration (resampled) performa
 set.seed(42)
 
 # C-indexes, AUCs (integrated and at t = 10 years)
-res[, .(surv.cindex.harrell, surv.cindex.uno, surv.uno_iauc, surv.uno_auc.10)] %>% 
-  tidyr::pivot_longer(cols = tidyselect::everything(), 
-    names_to = 'Measure', values_to = 'Value') %>%
+res[, .(surv.cindex.harrell, surv.cindex.uno, surv.uno_iauc, surv.uno_auc.10)] %>%
+  tidyr::pivot_longer(
+    cols = tidyselect::everything(),
+    names_to = "Measure", values_to = "Value"
+  ) %>%
   mutate(Measure = case_when(
-    Measure == 'surv.cindex.harrell' ~ 'Harrell\'s C-index',
-    Measure == 'surv.cindex.uno' ~ 'Uno\'s C-index',
-    Measure == 'surv.uno_iauc' ~ 'Uno\'s Integrated AUC',
-    Measure == 'surv.uno_auc.10' ~ 'Uno\'s AUC (t = 10 years)',
+    Measure == "surv.cindex.harrell" ~ "Harrell's C-index",
+    Measure == "surv.cindex.uno" ~ "Uno's C-index",
+    Measure == "surv.uno_iauc" ~ "Uno's Integrated AUC",
+    Measure == "surv.uno_auc.10" ~ "Uno's AUC (t = 10 years)",
   )) %>%
-   mutate(Measure = factor(Measure, levels = c(
-     'Harrell\'s C-index',
-     'Uno\'s C-index',
-     'Uno\'s Integrated AUC',
-     'Uno\'s AUC (t = 10 years)'))) %>%
+  mutate(Measure = factor(Measure, levels = c(
+    "Harrell's C-index",
+    "Uno's C-index",
+    "Uno's Integrated AUC",
+    "Uno's AUC (t = 10 years)"
+  ))) %>%
   ggplot(aes(x = Measure, y = Value, fill = Measure)) +
-    geom_boxplot() + 
-    ylim(c(0.2, 0.8)) + 
-    geom_hline(yintercept = 0.5, color = 'red', linetype = 'dashed') +
-    theme_bw(base_size = 14) + 
-    labs(title = 'Discrimination Measures') +
-    theme(axis.text.x = element_blank())
+  geom_boxplot() +
+  ylim(c(0.2, 0.8)) +
+  geom_hline(yintercept = 0.5, color = "red", linetype = "dashed") +
+  theme_bw(base_size = 14) +
+  labs(title = "Discrimination Measures") +
+  theme(axis.text.x = element_blank())
 ```
 ```{r, echo=FALSE}
 pdf("mlr3_discrimination_msrs.pdf", width = 6, height = 3)
-res[, .(surv.cindex.harrell, surv.cindex.uno, surv.uno_iauc, surv.uno_auc.10)] %>% 
-  tidyr::pivot_longer(cols = tidyselect::everything(), 
-    names_to = 'Measure', values_to = 'Value') %>%
+res[, .(surv.cindex.harrell, surv.cindex.uno, surv.uno_iauc, surv.uno_auc.10)] %>%
+  tidyr::pivot_longer(
+    cols = tidyselect::everything(),
+    names_to = "Measure", values_to = "Value"
+  ) %>%
   mutate(Measure = case_when(
-    Measure == 'surv.cindex.harrell' ~ 'Harrell\'s C-index',
-    Measure == 'surv.cindex.uno' ~ 'Uno\'s C-index',
-    Measure == 'surv.uno_iauc' ~ 'Uno\'s Integrated AUC',
-    Measure == 'surv.uno_auc.10' ~ 'Uno\'s AUC (t = 10 years)',
+    Measure == "surv.cindex.harrell" ~ "Harrell's C-index",
+    Measure == "surv.cindex.uno" ~ "Uno's C-index",
+    Measure == "surv.uno_iauc" ~ "Uno's Integrated AUC",
+    Measure == "surv.uno_auc.10" ~ "Uno's AUC (t = 10 years)",
   )) %>%
-   mutate(Measure = factor(Measure, levels = c(
-     'Harrell\'s C-index',
-     'Uno\'s C-index',
-     'Uno\'s Integrated AUC',
-     'Uno\'s AUC (t = 10 years)'))) %>%
+  mutate(Measure = factor(Measure, levels = c(
+    "Harrell's C-index",
+    "Uno's C-index",
+    "Uno's Integrated AUC",
+    "Uno's AUC (t = 10 years)"
+  ))) %>%
   ggplot(aes(x = Measure, y = Value, fill = Measure)) +
-    geom_boxplot() + 
-    ylim(c(0.2, 0.8)) + 
-    geom_hline(yintercept = 0.5, color = 'red', linetype = 'dashed') +
-    theme_bw(base_size = 14) + 
-    labs(title = 'Discrimination Measures') +
-    theme(axis.text.x = element_blank())
+  geom_boxplot() +
+  ylim(c(0.2, 0.8)) +
+  geom_hline(yintercept = 0.5, color = "red", linetype = "dashed") +
+  theme_bw(base_size = 14) +
+  labs(title = "Discrimination Measures") +
+  theme(axis.text.x = element_blank())
 dev.off()
 ```
 ![_Discrimination performance of Lasso Cox on the TCGA-BRCA dataset (expression data of the PAM50 genes and the variables age and ethnicity). Performance metrics used are Harrell's C-index, Uno's C-index, Uno's Integrated AUC and Uno's AUC at 10 years. The dataset was split to training/validation sets 100 times to allow for the quantification of uncertainty in the different performance estimates._](fig/mlr3_discrimination_msrs.png){width=70%}
@@ -1876,65 +1988,73 @@ dev.off()
 set.seed(42)
 
 # Integrated Brier Score and Brier Score at t = 10 years
-res[, .(surv.graf, surv.graf.10)] %>% 
-  tidyr::pivot_longer(cols = tidyselect::everything(), 
-    names_to = 'Measure', values_to = 'Value') %>%
+res[, .(surv.graf, surv.graf.10)] %>%
+  tidyr::pivot_longer(
+    cols = tidyselect::everything(),
+    names_to = "Measure", values_to = "Value"
+  ) %>%
   mutate(Measure = case_when(
-    Measure == 'surv.graf' ~ 'IBS',
-    Measure == 'surv.graf.10' ~ 'BS(t=10)'
+    Measure == "surv.graf" ~ "IBS",
+    Measure == "surv.graf.10" ~ "BS(t=10)"
   )) %>%
   ggplot(aes(x = Measure, y = Value, fill = Measure)) +
-    geom_boxplot(show.legend = FALSE) + 
-    geom_jitter(color = 'blue', size = 0.5, alpha = 0.5, show.legend = FALSE) +
-    labs(title = 'Integrated Brier Score vs Brier Score (t = 10 years)') +
-    theme_bw(base_size = 14) + 
-    theme(axis.title.x = element_blank())
+  geom_boxplot(show.legend = FALSE) +
+  geom_jitter(color = "blue", size = 0.5, alpha = 0.5, show.legend = FALSE) +
+  labs(title = "Integrated Brier Score vs Brier Score (t = 10 years)") +
+  theme_bw(base_size = 14) +
+  theme(axis.title.x = element_blank())
 
 # RCLL
-res[, .(surv.rcll)] %>% 
-  tidyr::pivot_longer(cols = tidyselect::everything(), 
-    names_to = 'Measure', values_to = 'Value') %>%
+res[, .(surv.rcll)] %>%
+  tidyr::pivot_longer(
+    cols = tidyselect::everything(),
+    names_to = "Measure", values_to = "Value"
+  ) %>%
   mutate(Measure = case_when(
-    Measure == 'surv.rcll' ~ 'RCLL'
+    Measure == "surv.rcll" ~ "RCLL"
   )) %>%
   ggplot(aes(x = Measure, y = Value)) +
-    geom_boxplot(show.legend = FALSE) + 
-    geom_jitter(color = 'blue', size = 0.5, alpha = 0.5, show.legend = FALSE) +
-    labs(title = 'Right-censored Log Loss') +
-    theme_bw(base_size = 14) +
-    theme(axis.title.x = element_blank())
+  geom_boxplot(show.legend = FALSE) +
+  geom_jitter(color = "blue", size = 0.5, alpha = 0.5, show.legend = FALSE) +
+  labs(title = "Right-censored Log Loss") +
+  theme_bw(base_size = 14) +
+  theme(axis.title.x = element_blank())
 ```
 ```{r, echo=FALSE}
 pdf("mlr3_calibration_BS.pdf", width = 6, height = 5)
 set.seed(42)
 # Integrated Brier Score and Brier Score at t = 10 years
-res[, .(surv.graf, surv.graf.10)] %>% 
-  tidyr::pivot_longer(cols = tidyselect::everything(), 
-    names_to = 'Measure', values_to = 'Value') %>%
+res[, .(surv.graf, surv.graf.10)] %>%
+  tidyr::pivot_longer(
+    cols = tidyselect::everything(),
+    names_to = "Measure", values_to = "Value"
+  ) %>%
   mutate(Measure = case_when(
-    Measure == 'surv.graf' ~ 'IBS',
-    Measure == 'surv.graf.10' ~ 'BS(t=10)'
+    Measure == "surv.graf" ~ "IBS",
+    Measure == "surv.graf.10" ~ "BS(t=10)"
   )) %>%
   ggplot(aes(x = Measure, y = Value, fill = Measure)) +
-    geom_boxplot(show.legend = FALSE) + 
-    geom_jitter(color = 'blue', size = 0.5, alpha = 0.5, show.legend = FALSE) +
-    labs(title = 'Integrated Brier Score vs Brier Score (t = 10 years)') +
-    theme_bw(base_size = 14) + 
-    theme(axis.title.x = element_blank())
+  geom_boxplot(show.legend = FALSE) +
+  geom_jitter(color = "blue", size = 0.5, alpha = 0.5, show.legend = FALSE) +
+  labs(title = "Integrated Brier Score vs Brier Score (t = 10 years)") +
+  theme_bw(base_size = 14) +
+  theme(axis.title.x = element_blank())
 dev.off()
 pdf("mlr3_calibration_RCLL.pdf", width = 6, height = 5)
-res[, .(surv.rcll)] %>% 
-  tidyr::pivot_longer(cols = tidyselect::everything(), 
-    names_to = 'Measure', values_to = 'Value') %>%
+res[, .(surv.rcll)] %>%
+  tidyr::pivot_longer(
+    cols = tidyselect::everything(),
+    names_to = "Measure", values_to = "Value"
+  ) %>%
   mutate(Measure = case_when(
-    Measure == 'surv.rcll' ~ 'RCLL'
+    Measure == "surv.rcll" ~ "RCLL"
   )) %>%
   ggplot(aes(x = Measure, y = Value)) +
-    geom_boxplot(show.legend = FALSE) + 
-    geom_jitter(color = 'blue', size = 0.5, alpha = 0.5, show.legend = FALSE) +
-    labs(title = 'Right-censored Log Loss') +
-    theme_bw(base_size = 14) +
-    theme(axis.title.x = element_blank())
+  geom_boxplot(show.legend = FALSE) +
+  geom_jitter(color = "blue", size = 0.5, alpha = 0.5, show.legend = FALSE) +
+  labs(title = "Right-censored Log Loss") +
+  theme_bw(base_size = 14) +
+  theme(axis.title.x = element_blank())
 dev.off()
 ```
 <p align="left">
@@ -1948,15 +2068,15 @@ dev.off()
 We can extract the selected features from all $100$ trained Lasso Cox models and create a frequency selection table:
 ```{r}
 # get selected features from all trained learners in a list
-sf_list = lapply(rr$learners, function(learner) {
+sf_list <- lapply(rr$learners, function(learner) {
   learner$graph_model$pipeops$surv.cv_glmnet$learner_model$selected_features()
 })
 
 # make frequency selection table
-n = length(sf_list)
-fs_res = sort(table(unlist(sf_list)), decreasing = TRUE)
-times = as.vector(unname(fs_res))
-tibble::tibble(feat_name = names(fs_res), times = times, freq = times/n)
+n <- length(sf_list)
+fs_res <- sort(table(unlist(sf_list)), decreasing = TRUE)
+times <- as.vector(unname(fs_res))
+tibble::tibble(feat_name = names(fs_res), times = times, freq = times / n)
 ```
 ```
 # A tibble: 33 × 3
@@ -1987,13 +2107,15 @@ We will demonstrate the use of three metrics which measure the *stability* of th
 
 ```{r, warning=FALSE}
 set.seed(42)
-jac = stabm::stabilityJaccard(features = sf_list, correction.for.chance = 'none')
-nog = stabm::stabilityNogueira(features = sf_list, p = length(task$feature_names))
+jac <- stabm::stabilityJaccard(features = sf_list, correction.for.chance = "none")
+nog <- stabm::stabilityNogueira(features = sf_list, p = length(task$feature_names))
 
 # Similarity of each pair of features using Pearson correlation
-sim.mat = abs(stats::cor(x = task$data(cols = task$feature_names), method = 'p'))
-zuck = stabm::stabilityZucknick(features = sf_list, sim.mat = sim.mat, 
-  threshold = 0.9, correction.for.chance = 'estimate', N = 100)
+sim.mat <- abs(stats::cor(x = task$data(cols = task$feature_names), method = "p"))
+zuck <- stabm::stabilityZucknick(
+  features = sf_list, sim.mat = sim.mat,
+  threshold = 0.9, correction.for.chance = "estimate", N = 100
+)
 
 tibble::tibble(jaccard = jac, nogueira = nog, zucknick = zuck)
 ```
