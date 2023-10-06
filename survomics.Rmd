@@ -2075,7 +2075,7 @@ other attached packages:
 [37] DESeq2_1.40.2               SummarizedExperiment_1.30.2 Biobase_2.60.0             
 [40] GenomicRanges_1.52.0        GenomeInfoDb_1.36.1         IRanges_2.34.1             
 [43] S4Vectors_0.38.1            BiocGenerics_0.46.0         MatrixGenerics_1.12.2      
-[46] matrixStats_1.0.0           TCGAbiolinks_2.28.3        
+[46] matrixStats_1.0.0           TCGAbiolinks_2.29.6        
 
 loaded via a namespace (and not attached):
   [1] tgp_2.4-21                  progress_1.2.2              mlr3hyperband_0.4.5        
