@@ -1890,7 +1890,7 @@ measures <- list(harrell_c, uno_c, uno_iauc, uno_auc, ibrier, brier10, rcll, dca
 res <- rr$score(measures = measures)
 head(res)
 ```
-```
+```{.border}
     task_id learner_id resampling_id iteration surv.cindex.harrell surv.cindex.uno 
 1: BRCA-TCGA  Lasso Cox   subsampling         1           0.5679167       0.6090304
 2: BRCA-TCGA  Lasso Cox   subsampling         2           0.5422131       0.4884603
@@ -2062,7 +2062,7 @@ fs_res <- sort(table(unlist(sf_list)), decreasing = TRUE)
 times <- as.vector(unname(fs_res))
 tibble::tibble(feat_name = names(fs_res), times = times, freq = times / n)
 ```
-```
+```{.border}
 # A tibble: 35 × 3
    feat_name times  freq
    <chr>     <int> <dbl>
