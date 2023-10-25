@@ -1658,8 +1658,8 @@ Call:  (if (cv) glmnet::cv.glmnet else glmnet::glmnet)(x = data, y = target,    
 Measure: Partial Likelihood Deviance 
 
      Lambda Index Measure     SE Nonzero
-min 0.00994    15   12.30 0.2719      15
-1se 0.03656     1   12.35 0.2562       2
+min 0.01082    14   12.31 0.2743      15
+1se 0.03626     1   12.35 0.2564       2
 ```
 
 Get the survival distribution predictions ($distr$) along with the linear predictors ($lp$):
@@ -1669,12 +1669,12 @@ head(as.data.table(pred))
 ```
 ```{.border}
    row_ids      time status     crank        lp     distr
-1:       5 0.9527721  FALSE -3.329133 -3.329133 <list[1]>
-2:       6 4.0438056  FALSE -3.800766 -3.800766 <list[1]>
-3:      15 1.7385352  FALSE -2.786662 -2.786662 <list[1]>
-4:      45 4.5804244  FALSE -2.761110 -2.761110 <list[1]>
-5:      50 5.1279945  FALSE -3.736211 -3.736211 <list[1]>
-6:      54 6.6858316  FALSE -3.499691 -3.499691 <list[1]>
+1:       5 0.9527721  FALSE -2.346574 -2.346574 <list[1]>
+2:       6 4.0438056  FALSE -2.806708 -2.806708 <list[1]>
+3:      15 1.7385352  FALSE -1.845042 -1.845042 <list[1]>
+4:      45 4.5804244  FALSE -1.715041 -1.715041 <list[1]>
+5:      50 5.1279945  FALSE -2.790122 -2.790122 <list[1]>
+6:      54 6.6858316  FALSE -2.466360 -2.466360 <list[1]>
 ```
 
 So for every patient in the test set, the Lasso Cox model prediction is a linear predictor of the form $lp = \hat{\beta} X_{new}$.
@@ -1693,10 +1693,10 @@ pred$distr[ids]$survival(times)
 ```
 ```{.border}
         [,1]      [,2]
-1  0.9892130 0.9932554
-5  0.8729293 0.9186963
-10 0.6729105 0.7809952
-20 0.4564805 0.6130351
+1  0.9889822 0.9930314
+5  0.8711262 0.9165987
+10 0.6708848 0.7772850
+20 0.4540815 0.6075516
 ```
 
 <br>
@@ -1721,7 +1721,7 @@ pred$score(harrell_c)
 ```
 ```{.border}
 surv.cindex.harrell 
-          0.6188244
+          0.6224306
 ```
 
 <br>
@@ -1736,7 +1736,7 @@ pred$score(uno_c, task = task, train_set = split$train)
 ```
 ```{.border}
 surv.cindex.uno 
-      0.6004459
+      0.5932426
 ```
 
 <br>
@@ -1753,7 +1753,7 @@ pred$score(uno_iauc, task = task, train_set = split$train)
 ```
 ```{.border}
 surv.uno_iauc 
-    0.6645719
+    0.6585791
 ```
 
 <br>
@@ -1768,7 +1768,7 @@ pred$score(uno_auc, task = task, train_set = split$train)
 ```
 ```{.border}
 surv.uno_auc.10 
-      0.6749081
+      0.667014
 ```
 
 <br>
@@ -1784,7 +1784,7 @@ pred$score(dcal)
 ```
 ```{.border}
 surv.dcalib
-   0.936446
+   0.8342449
 ```
 
 <br>
@@ -1806,7 +1806,7 @@ pred$score(ibrier, task = task, train_set = split$train)
 ```
 ```{.border}
 surv.graf 
-0.1159411
+0.1157316
 ```
 
 We can also get the *standard error* of IBS (the above result is the mean across all the test set's patients) as follows:
@@ -1816,7 +1816,7 @@ pred$score(ibrier_se, task = task, train_set = split$train)
 ```
 ```{.border}
  surv.graf 
-0.01762152
+0.01795861
 ```
 
 <br>
@@ -1831,7 +1831,7 @@ pred$score(brier10, task = task, train_set = split$train)
 ```
 ```{.border}
 surv.graf.10 
-   0.1741325
+   0.1755639
 ```
 
 <br>
@@ -1843,7 +1843,7 @@ pred$score(rcll)
 ```
 ```{.border}
 surv.rcll 
- 4.781191
+ 4.781513
 ```
 
 <br>
@@ -2066,16 +2066,16 @@ tibble::tibble(feat_name = names(fs_res), times = times, freq = times / n)
 # A tibble: 35 × 3
    feat_name times  freq
    <chr>     <int> <dbl>
- 1 age         100  1   
- 2 ethnicity   100  1   
- 3 UBE2T        53  0.53
- 4 ORC6L        48  0.48
- 5 ANLN         42  0.42
- 6 ERBB2        40  0.4 
- 7 GPR160       35  0.35
- 8 FGFR4        33  0.33
- 9 CEP55        32  0.32
-10 UBE2C        30  0.3 
+1 age         100  1
+2 ethnicity   100  1
+3 ANLN         43  0.43
+4 BLVRA        41  0.41
+5 BAG1         37  0.37
+6 MIA          34  0.34
+7 TYMS         30  0.3
+8 KRT5         27  0.27
+9 MMP11        27  0.27
+10 BCL2         26  0.26
 # ℹ 25 more rows
 ```
 
@@ -2106,7 +2106,7 @@ tibble::tibble(jaccard = jac, nogueira = nog, zucknick = zuck)
 # A tibble: 1 × 3
   jaccard nogueira zucknick
     <dbl>    <dbl>    <dbl>
-1   0.439    0.412    0.402
+1   0.474    0.412    0.442
 ```
 
 From the above values we conclude that the stability of Lasso Cox's feature selection is neither poor nor excellent but somewhere in between.
