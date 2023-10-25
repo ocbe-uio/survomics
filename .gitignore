@@ -1,3 +1,6 @@
 .DS_Store
 .vscode
 .Rproj.user
+GDCdata/
+MANIFEST.txt
+TCGA_data.rda
