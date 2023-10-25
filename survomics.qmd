@@ -92,7 +92,7 @@ clin <- clin[(clin$time > 0) & (clin$status %in% c("Alive", "Dead")), ]
 
 # frequency table of the patients w.r.t. status, gender and ethnicity
 clin %>%
-  count(status, gender, ethnicity) %>%
+  dplyr::count(status, gender, ethnicity) %>%
   group_by(status) %>%
   mutate(prop = prop.table(n))
 ```
