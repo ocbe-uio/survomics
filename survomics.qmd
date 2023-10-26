@@ -634,9 +634,10 @@ The pre-estimation can be done by a Ridge Cox model, see an example below.
 set.seed(123)
 fit <- cv.glmnet(x, y, family = "cox", alpha = 0, nfolds = 5)
 weights <- abs(1 / as.vector(coef(fit, s = "lambda.min")))
+weights[c(1,2)] = 0 # don't penalize age and ethnicity
 
 # adaptive Lasso Cox by using cv.glmnet to obtain the 5-fold CV optimal lambda.min or lambda.1se
-cvfit <- cv.glmnet(x, y, family = "cox", nfolds = 5, penalty.factor = pf)
+cvfit <- cv.glmnet(x, y, family = "cox", nfolds = 5, penalty.factor = weights)
 mod <- cvfit$glmnet.fit
 lambda_optimal <- cvfit$lambda.min # optimal lambda
 
@@ -666,7 +667,7 @@ plot_glmnet(mod,
 title("Adative Lasso    \n\n")
 dev.off()
 ```
-![_Coefficient paths of an adaptive Lasso Cox model. The verticle gray line indicates the optimal $\lambda$ and its correspondingly selected features are marked as green (positive coefficient) and red (negative coefficient) colors. Note that the demographic variables age and ethnicity were not penalized, so that their coefficient paths did not start from zero in the figure._](fig/TCGA_adaptivelasso.png){width=60%}
+![_Coefficient paths of an adaptive Lasso Cox model. The verticle gray line indicates the optimal $\lambda$ and its correspondingly selected features are marked as green (positive coefficient) and red (negative coefficient) colors. Note that the demographic variables age and ethnicity were not penalized, so that their coefficient paths did not start from zero in the figure._](fig/TCGA_adaptiveLasso.png){width=60%}
 
 <br>
 
