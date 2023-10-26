@@ -217,7 +217,8 @@ RNA_count <- RNA_count[, rownames(clin)]
 - [Bioconductor](https://bioconductor.org/packages/release/bioc/html/TCGAbiolinks.html) might provide an outdated version of **TCGAbiolinks**. 
 Here, we use the GitHub version TCGAbiolinks_2.29.6. 
 If you encounter some issues when using this tutorial, please check your installed **TCGAbiolinks** version. 
-If necessary, you can re-install the package from its [GitHub repository](https://github.com/BioinformaticsFMRP/TCGAbiolinks.git). 
+If necessary, you can re-install the package from its [GitHub repository](https://github.com/BioinformaticsFMRP/TCGAbiolinks.git).
+Otherwise, download the data from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10044741.svg)](https://doi.org/10.5281/zenodo.10044741) and load the `dat` object with: `load("TCGA_data.rda")`.
 
 - The package **TCGAbiolinks** cannot retrieve any proteomics or metabolomics data.
 It is always useful to look at your data first, in particular the data type and dimensions (i.e. numbers of rows and columns for a data frame or matrix).
