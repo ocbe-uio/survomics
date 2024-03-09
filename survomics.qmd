@@ -1,5 +1,5 @@
 ---
-title: "Supplemental information for 'Tutorial on survival modelling with omics data'"
+title: "Supplemental information for 'Tutorial on survival modeling with applications to omics data'"
 date: "last-modified"
 bibliography: "references.bib"
 toc: true
@@ -15,7 +15,7 @@ format:
 knitr::opts_chunk$set(eval = FALSE)
 ```
 <br>
-This is an [R Markdown](http://rmarkdown.rstudio.com) supplement for the article [**_Tutorial on survival modelling with omics data_**](https://arxiv.org/abs/2302.12542) [@Zhao2023a].
+This is an [R Markdown](http://rmarkdown.rstudio.com) supplement for the article [**_Tutorial on survival modeling with applications to omics data_**](https://doi.org/10.1093/bioinformatics/btae132) [@Zhao2024].
 
 ## Introduction {-}
 
