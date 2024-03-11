@@ -12,6 +12,10 @@ website:
   repo-url: https://github.com/ocbe-uio/survomics
   repo-actions: [source, issue]
   
+  search: 
+    location: navbar
+    type: overlay
+  
   navbar:
     background: light
     search: true
