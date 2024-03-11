@@ -6,5 +6,5 @@ GDCdata/
 MANIFEST.txt
 TCGA_data.rda
 
-_site/
+survomics_files/
 /.quarto/

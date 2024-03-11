@@ -1,6 +1,6 @@
-project:
-  type: website
-  output-dir: _site
+# project:
+#   type: website
+#   output-dir: _site
 
 theme:
   light: default
