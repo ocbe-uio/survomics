@@ -7,9 +7,6 @@ toc-depth: 4
 appendix-style: none
 bibliography: "references.bib"
 fig-align: left
-format:
-  html:
-    page-layout: full
 ---
 
 ```{r, include=FALSE}
