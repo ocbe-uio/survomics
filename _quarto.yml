@@ -27,11 +27,8 @@ website:
 format:
   html:
     grid: 
-      # body-width: 2000px
       sidebar-width: 350px
       margin-width: 350px
-    toc: true
-    code-overflow: wrap
     
   # sidebar:
   #   title: "Survive with Omics"

@@ -267,8 +267,6 @@ We will use TCGA data to demonstrate:
 <p>The R/Bioconductor package <a href="https://bioconductor.org/packages/TCGAbiolinks/"><strong>TCGAbiolinks</strong></a> <span class="citation" data-cites="Mounir2019">(<a href="#ref-Mounir2019" role="doc-biblioref">Mounir 2019</a>)</span> provides a few functions to download and preprocess clinical and multi-omics data from the <a href="https://gdc.cancer.gov/">Genomic Data Commons</a> (GDC) Data Portal for further analysis.</p>
 <p>First we load all necessary libraries used in this tutorial except <a href="#mlr3"><strong>mlr3</strong> libraries</a> which will be introduced later. Then we use function <code>GDCquery_clinic()</code> from <strong>TCGAbiolinks</strong> package to query and download TCGA survival and clinical data from multiple cancer types:</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load all libraries used in this tutorial except mlr3</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"TCGAbiolinks"</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"SummarizedExperiment"</span>)</span>
@@ -292,11 +290,8 @@ We will use TCGA data to demonstrate:
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"rms"</span>)</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"survAUC"</span>)</span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"regplot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># download the clinical data and extract data for multiple cancers using GDC api method</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>cancer_types <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"TCGA-BLCA"</span>, <span class="st">"TCGA-BRCA"</span>, <span class="st">"TCGA-COAD"</span>, <span class="st">"TCGA-LIHC"</span>,</span>
@@ -326,7 +321,6 @@ We will use TCGA data to demonstrate:
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(status, gender, ethnicity) <span class="sc">%&gt;%</span></span>
 <span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(status) <span class="sc">%&gt;%</span></span>
 <span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prop =</span> <span class="fu">prop.table</span>(n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code># A tibble: 12 × 5
 # Groups:   status [2]
@@ -345,8 +339,6 @@ We will use TCGA data to demonstrate:
 11 Dead   male   not hispanic or latino   327 0.378  
 12 Dead   male   not reported              80 0.0925 </code></pre>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># censoring plot by cancer types</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ID <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(clin)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>clin <span class="sc">%&gt;%</span></span>
@@ -364,7 +356,6 @@ We will use TCGA data to demonstrate:
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>, <span class="at">legend.direction =</span> <span class="st">"vertical"</span>) <span class="sc">+</span></span>
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">color =</span> <span class="fu">guide_legend</span>(<span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -378,8 +369,6 @@ We will use TCGA data to demonstrate:
 <h2 class="unnumbered anchored" data-anchor-id="tcga-omics-data">TCGA omics data</h2>
 <p>We use function <code>GDCquery()</code> to query and use <code>GDCdownload()</code> and <code>GDCprepare()</code> to download TCGA omics data from one cancer type (breast cancer). The argument <code>data.category</code> in function <code>GDCquery()</code> specifies the type of omics data, such as <code>"Copy Number Variation"</code>, <code>"DNA Methylation"</code>, <code>"Transcriptome Profiling"</code>, <code>"Simple Nucleotide Variation"</code>. Note that the downloaded omics data are accompanied by metadata including survival outcomes, clinical and demographic variables. The accompanied metadata are almost the same as the clinical data downloaded via <code>GDCquery_clinic()</code> in the previous section but here only corresponding to one cancer type.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># download TCGA breast cancer (BRCA) mRNA-Seq data using GDC api method</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>query <span class="ot">&lt;-</span> TCGAbiolinks<span class="sc">::</span><span class="fu">GDCquery</span>(</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">project =</span> <span class="st">"TCGA-BRCA"</span>,</span>
@@ -393,7 +382,6 @@ We will use TCGA data to demonstrate:
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> TCGAbiolinks<span class="sc">::</span><span class="fu">GDCprepare</span>(<span class="at">query =</span> query)</span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>SummarizedExperiment<span class="sc">::</span><span class="fu">assays</span>(dat)<span class="sc">$</span>unstranded[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>                   TCGA-A7-A26E-01B-06R-A277-07 TCGA-A2-A0CU-01A-12R-A034-07
 ENSG00000000003.15                          691                         1429
@@ -403,8 +391,6 @@ ENSG00000000457.14                         1292                         1018
 ENSG00000000460.17                          536                          450</code></pre>
 <p>It is recommended to use DESeq2 or TMM normalization method for RNA-seq data before further statistical analysis <span class="citation" data-cites="ZhaoY2021">(<a href="#ref-ZhaoY2021" role="doc-biblioref">Y. Zhao et al. 2021</a>)</span>. Here we demonstrate how to use the R/Bioconductor package <a href="https://bioconductor.org/packages/DESeq2/"><strong>DESeq2</strong></a> <span class="citation" data-cites="Love2014">(<a href="#ref-Love2014" role="doc-biblioref">Love, Huber, and Anders 2014</a>)</span> to normalize the RNA count data.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>meta <span class="ot">&lt;-</span> <span class="fu">colData</span>(dat)[, <span class="fu">c</span>(<span class="st">"project_id"</span>, <span class="st">"submitter_id"</span>, <span class="st">"age_at_diagnosis"</span>, <span class="st">"ethnicity"</span>, <span class="st">"gender"</span>, <span class="st">"days_to_death"</span>, <span class="st">"days_to_last_follow_up"</span>, <span class="st">"vital_status"</span>, <span class="st">"paper_BRCA_Subtype_PAM50"</span>, <span class="st">"treatments"</span>)]</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>meta<span class="sc">$</span>treatments <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">lapply</span>(meta<span class="sc">$</span>treatments, <span class="cf">function</span>(xx) {</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">any</span>(xx<span class="sc">$</span>treatment_or_therapy <span class="sc">==</span> <span class="st">"yes"</span>)</span>
@@ -413,7 +399,6 @@ ENSG00000000460.17                          536                          450</co
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>dds2 <span class="ot">&lt;-</span> DESeq2<span class="sc">::</span><span class="fu">estimateSizeFactors</span>(dds)</span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>RNA_count <span class="ot">&lt;-</span> DESeq2<span class="sc">::</span><span class="fu">counts</span>(dds2, <span class="at">normalized =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>RNA_count[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>                   TCGA-A7-A26E-01B-06R-A277-07 TCGA-A2-A0CU-01A-12R-A034-07
 ENSG00000000003.15                   1899.76848                   1419.51789
@@ -423,15 +408,12 @@ ENSG00000000457.14                   3552.09968                   1011.24507
 ENSG00000000460.17                   1473.62649                    447.01403</code></pre>
 <p>To perform survival analysis with both clinical/demographic variables and omics data, in the following code we extract female breast cancer patients with their corresponding survival outcomes, clinical/demographic variables and RNA-seq features.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>meta<span class="sc">$</span>time <span class="ot">&lt;-</span> <span class="fu">apply</span>(meta[, <span class="fu">c</span>(<span class="st">"days_to_death"</span>, <span class="st">"days_to_last_follow_up"</span>)], <span class="dv">1</span>, max, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">/</span> <span class="fl">365.25</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>meta<span class="sc">$</span>status <span class="ot">&lt;-</span> meta<span class="sc">$</span>vital_status</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>meta<span class="sc">$</span>age <span class="ot">&lt;-</span> meta<span class="sc">$</span>age_at_diagnosis <span class="sc">/</span> <span class="fl">365.25</span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>clin <span class="ot">&lt;-</span> <span class="fu">subset</span>(meta, gender <span class="sc">==</span> <span class="st">"female"</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">duplicated</span>(submitter_id) <span class="sc">&amp;</span> time <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(age))</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>clin <span class="ot">&lt;-</span> clin[<span class="fu">order</span>(clin<span class="sc">$</span>submitter_id), ]</span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>RNA_count <span class="ot">&lt;-</span> RNA_count[, <span class="fu">rownames</span>(clin)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -457,8 +439,6 @@ Note
 <h3 class="unnumbered anchored" data-anchor-id="nonparametric-survival-analysis">Nonparametric survival analysis</h3>
 <p>For the data of TCGA breast cancer patients that we extracted in the previous section, Kaplan-Meier estimates of the survival probabilities can be obtained via function <code>survfit()</code> from <a href="https://CRAN.R-project.org/package=survival"><strong>survival</strong></a> package. The dashed lines in the following figure indicate the median survival time.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Kaplan-Meier (KM) estimation</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>clin<span class="sc">$</span>status[clin<span class="sc">$</span>status <span class="sc">==</span> <span class="st">"Dead"</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>clin<span class="sc">$</span>status[clin<span class="sc">$</span>status <span class="sc">==</span> <span class="st">"Alive"</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
@@ -475,7 +455,6 @@ Note
 <span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>ggsurv<span class="sc">$</span>plot <span class="ot">&lt;-</span> ggsurv<span class="sc">$</span>plot <span class="sc">+</span> <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">20</span>, <span class="at">y =</span> <span class="fl">0.9</span>, <span class="at">label =</span> <span class="st">"+  Censor"</span>)</span>
 <span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>ggsurv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -486,8 +465,6 @@ Note
 <p><br></p>
 <p>To compare the survival curves of two groups of patients, for example, treatment (i.e.&nbsp;pharmaceutical or radiation therapy) or nontreatment, the <code>R</code> function <code>survival::survdiff()</code> can perform the log-rank test to compare two survival curves. Alternatively, the <code>R</code> function <code>survival::survfit</code> with a formula including the treatment group as a covariate can return the (KM) survival probabilities for each groups. Then the <code>R</code> function <code>survminer::ggsurvplot()</code> with a <code>survfit</code> object will draw the two survival curves and perform the log-rank test as shown in the following figure.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>survival<span class="sc">::</span><span class="fu">survdiff</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> treatments, <span class="at">data =</span> clin)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>sfit2 <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> treatments, <span class="at">data =</span> clin)</span>
@@ -501,7 +478,6 @@ Note
 <span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">21</span>, <span class="at">y =</span> <span class="dv">1</span>, <span class="at">label =</span> <span class="st">"+  Censor"</span>) <span class="sc">+</span></span>
 <span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">22</span>, <span class="at">y =</span> .<span class="dv">88</span>, <span class="at">label =</span> <span class="fu">paste0</span>(<span class="st">"Log-rank test:</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">surv_pvalue</span>(sfit2)<span class="sc">$</span>pval.txt))</span>
 <span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>ggsurv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -512,11 +488,8 @@ Note
 <p><br></p>
 <p>To analyze if a continuous variable, e.g.&nbsp;age, is associated with the survival outcomes, we can use the <code>R</code> function <code>coxph()</code> for fitting a Cox model, which is similar to the function <code>lm()</code> for fitting linear models.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>fit_cox <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> age, <span class="at">data =</span> clin)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_cox)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>Call:
 coxph(formula = Surv(time, status) ~ age, data = clin)
@@ -538,11 +511,8 @@ Wald test            = 26.1  on 1 df,   p=3e-07
 Score (logrank) test = 26.63  on 1 df,   p=2e-07</code></pre>
 <p>The Cox model assumes proportional hazards and log-linearity of the covariates. To check the log-linearity for a clinical or demographic variable, e.g.&nbsp;age, we can fit a penalized smoothing spline for age effect. The following code shows that the nonlinear part of the smoothing spline has a significant effect (<span class="math inline">\(p = 0.00013\)</span>). Thus, the assumption of log-linearity for age is not satisfied.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fit_cox_spline <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> <span class="fu">pspline</span>(age), <span class="at">data =</span> clin)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>fit_cox_spline</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>Call:
 coxph(formula = Surv(time, status) ~ pspline(age), data = clin)
@@ -558,10 +528,7 @@ Likelihood ratio test=46.4  on 4.03 df, p=2e-09
 n= 1047, number of events= 149 </code></pre>
 <p>To check proportional hazards of age, we can add a time-dependent covariate <span class="math inline">\(age \times g(t)\)</span>, where <span class="math inline">\(g(t)\)</span> is a known function e.g.&nbsp;<span class="math inline">\(g(t) = \log t\)</span>. The following code shows that the time-dependent age is significant using a score test (<span class="math inline">\(p = 0.0087\)</span>). Thus, the assumption of proportional hazards for age is not satisfied. The above two tests indicate a non-loglinear or time-dependent association of age with the survival outcomes.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>survival<span class="sc">::</span><span class="fu">cox.zph</span>(fit_cox, <span class="at">transform =</span> <span class="st">"log"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>       chisq df    p
 age     6.88  1 0.0087
@@ -583,18 +550,13 @@ GLOBAL  6.88  1 0.0087</code></pre>
 <h4 class="unnumbered anchored" data-anchor-id="knowledge-filter">Knowledge filter</h4>
 <p>One can be interested in only some biologically meaningful genes or only protein-coding genes in a specific study. For example, the code below filters protein-coding genes.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>filtered_rna <span class="ot">&lt;-</span> RNA_count[<span class="fu">rowData</span>(dat)<span class="sc">$</span>gene_type <span class="sc">==</span> <span class="st">"protein_coding"</span>, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </section>
 <section id="p-value-filter" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="p-value-filter">P-value filter</h4>
 <p>Before joint analyzing the associations between the thousands of omics features and survival outcomes, one can analyze the association between each omics feature and the survival outcomes, and filter omics features at a statistical significance level <span class="math inline">\(0.1\)</span> or <span class="math inline">\(0.2\)</span> (larger than 0.05 to reduce false negative identification of omics features in multivariate analysis). For demonstration, based on the <span class="math inline">\(100\)</span> mRNA-Seq features from TCGA breast cancer patients preprocessed previously, the code below filters omics features at the statistical significance level <span class="math inline">\(0.2\)</span>, i.e.&nbsp;<span class="math inline">\(p &lt; 0.2\)</span>.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>RNA_log2count <span class="ot">&lt;-</span> <span class="fu">log2</span>(RNA_count[<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, ] <span class="sc">+</span> <span class="dv">1</span>)</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>pvalues <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="fu">nrow</span>(RNA_log2count))</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(RNA_log2count)) {</span>
@@ -602,7 +564,6 @@ GLOBAL  6.88  1 0.0087</code></pre>
 <span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  pvalues[j] <span class="ot">&lt;-</span> <span class="fu">summary</span>(fit_cox)<span class="sc">$</span>coefficients[, <span class="st">"Pr(&gt;|z|)"</span>]</span>
 <span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>filtered_rna <span class="ot">&lt;-</span> RNA_log2count[<span class="fu">which</span>(pvalues <span class="sc">&lt;</span> <span class="fl">0.2</span>), ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 </section>
 <section id="variance-filter" class="level4 unnumbered">
@@ -610,12 +571,9 @@ GLOBAL  6.88  1 0.0087</code></pre>
 <p>The other common and easy way to decrease the number of omics features is to filter the most variable ones for further analysis. Note that the variance-based filtering step should be done before data standardization (i.e.&nbsp;calculating <span class="math inline">\(z\)</span>-score), but can be performed after count data normalization and log2-transformation for instance.</p>
 <p>The <code>R</code> package <a href="https://bioconductor.org/packages/M3C/"><strong>M3C</strong></a> <span class="citation" data-cites="John2020">(<a href="#ref-John2020" role="doc-biblioref">John et al. 2020</a>)</span> provides a filter function <code>featurefilter()</code> by using different variance-type metrics, for example, variance, median absolute deviation (MAD), coefficient of variation (A) and its second order derivative (A2). The simple variance filter can be used if the variance does not change with the corresponding mean, otherwise the coefficient of variation can be used. If the omics data include outliers, MAD filter is more robust than the variance filter. Based on the <span class="math inline">\(60660\)</span> mRNA-Seq features from TCGA breast cancer patients preprocessed previously, the code below extracts the <span class="math inline">\(1\%\)</span> most variable features using variance as a filtering metric.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>RNA_log2count <span class="ot">&lt;-</span> <span class="fu">log2</span>(RNA_count <span class="sc">+</span> <span class="dv">1</span>)</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>filtered <span class="ot">&lt;-</span> M3C<span class="sc">::</span><span class="fu">featurefilter</span>(RNA_log2count, <span class="at">percentile =</span> <span class="dv">1</span>, <span class="at">method =</span> <span class="st">"var"</span>, <span class="at">topN =</span> <span class="dv">5</span>)</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>filtered_rna1 <span class="ot">&lt;-</span> filtered<span class="sc">$</span>filtered_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>***feature filter function***
 extracting the most variable: 1 percent
@@ -631,12 +589,9 @@ ENSG00000160182.3   ENSG00000160182.3  9.902195 21.41407 4.627534
 features remaining: 607</code></pre>
 <p>Another variance-type filter is to remain features with certain percentage of <strong>cumulative variances</strong>, which will usually filter fewer features than the approaches above. The code below extracts the most variable features explaining <span class="math inline">\(1\%\)</span> <strong>cumulative variances</strong>.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>cumsum_var <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(filtered<span class="sc">$</span>statistics<span class="sc">$</span>var)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>cumsum_cutoff <span class="ot">&lt;-</span> cumsum_var[<span class="fu">length</span>(cumsum_var)] <span class="sc">*</span> <span class="fl">0.01</span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>filtered_names <span class="ot">&lt;-</span> filtered<span class="sc">$</span>statistics<span class="sc">$</span>feature[cumsum_var <span class="sc">&lt;</span> cumsum_cutoff]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p><br></p>
 </section>
@@ -649,8 +604,6 @@ features remaining: 607</code></pre>
 <p>In this section we will use the mRNA-Seq data of breast cancer patients from TCGA. The following unsupervised methods can be applied to other omics data as well (the same applies to the supervised learning methods). One important thing is that the input omics data, especially the data type and dimensions, should be suited to the methods.</p>
 <p>Unsupervised learning for omics data can be helpful to explore subpopulations of the data, for example, patients from one cancer type can be divided to several omics-related subtypes. We demonstrate three unsupervised learning methods, i.e.&nbsp;principal component analysis (PCA), <span class="math inline">\(t\)</span>-stochastic neighbour embedding (<span class="math inline">\(t\)</span>-SNE) and uniform manifold approximation and projection (UMAP), based on the PAM50 genes <span class="citation" data-cites="Parker2009">(<a href="#ref-Parker2009" role="doc-biblioref">Parker et al. 2009</a>)</span>. The <code>R</code> package <a href="https://bioconductor.org/packages/M3C/"><strong>M3C</strong></a> <span class="citation" data-cites="John2020">(<a href="#ref-John2020" role="doc-biblioref">John et al. 2020</a>)</span> provides the analyses and visualization of all the three methods.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># identify indexes of the PAM50 genes in the TCGA-BRCA data</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>idx <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">rowData</span>(dat)<span class="sc">$</span>gene_name <span class="sc">%in%</span></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">"UBE2T"</span>, <span class="st">"BIRC5"</span>, <span class="st">"NUF2"</span>, <span class="st">"CDC6"</span>, <span class="st">"CCNB1"</span>, <span class="st">"TYMS"</span>, <span class="st">"MYBL2"</span>, <span class="st">"CEP55"</span>, <span class="st">"MELK"</span>, <span class="st">"NDC80"</span>, <span class="st">"RRM2"</span>, <span class="st">"UBE2C"</span>, <span class="st">"CENPF"</span>, <span class="st">"PTTG1"</span>, <span class="st">"EXO1"</span>, <span class="st">"ORC6"</span>, <span class="st">"ANLN"</span>, <span class="st">"CCNE1"</span>, <span class="st">"CDC20"</span>, <span class="st">"MKI67"</span>, <span class="st">"KIF2C"</span>, <span class="st">"ACTR3B"</span>, <span class="st">"MYC"</span>, <span class="st">"EGFR"</span>, <span class="st">"KRT5"</span>, <span class="st">"PHGDH"</span>, <span class="st">"CDH3"</span>, <span class="st">"MIA"</span>, <span class="st">"KRT17"</span>, <span class="st">"FOXC1"</span>, <span class="st">"SFRP1"</span>, <span class="st">"KRT14"</span>, <span class="st">"ESR1"</span>, <span class="st">"SLC39A6"</span>, <span class="st">"BAG1"</span>, <span class="st">"MAPT"</span>, <span class="st">"PGR"</span>, <span class="st">"CXXC5"</span>, <span class="st">"MLPH"</span>, <span class="st">"BCL2"</span>, <span class="st">"MDM2"</span>, <span class="st">"NAT1"</span>, <span class="st">"FOXA1"</span>, <span class="st">"BLVRA"</span>, <span class="st">"MMP11"</span>, <span class="st">"GPR160"</span>, <span class="st">"FGFR4"</span>, <span class="st">"GRB7"</span>, <span class="st">"TMEM45B"</span>, <span class="st">"ERBB2"</span>))</span>
@@ -664,7 +617,6 @@ features remaining: 607</code></pre>
 <span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>pam50 <span class="ot">&lt;-</span> <span class="fu">factor</span>(clin<span class="sc">$</span>paper_BRCA_Subtype_PAM50)</span>
 <span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>M3C<span class="sc">::</span><span class="fu">pca</span>(TCGA_PAM50, <span class="at">labels =</span> pam50, <span class="at">dotsize =</span> <span class="dv">3</span>, <span class="at">legendtitle =</span> <span class="st">"Subtype"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -673,10 +625,7 @@ features remaining: 607</code></pre>
 </figure>
 </div>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>M3C<span class="sc">::</span><span class="fu">tsne</span>(TCGA_PAM50, <span class="at">labels =</span> pam50, <span class="at">dotsize =</span> <span class="dv">3</span>, <span class="at">legendtitle =</span> <span class="st">"Subtype"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -685,10 +634,7 @@ features remaining: 607</code></pre>
 </figure>
 </div>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>M3C<span class="sc">::</span><span class="fu">umap</span>(TCGA_PAM50, <span class="at">labels =</span> pam50, <span class="at">dotsize =</span> <span class="dv">3</span>, <span class="at">legendtitle =</span> <span class="st">"Subtype"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -705,8 +651,6 @@ features remaining: 607</code></pre>
 <h4 class="unnumbered anchored" data-anchor-id="dimension-reduction-for-cox-models">Dimension reduction for Cox models</h4>
 <p>The following code demonstrates the use of the first two principal components of PCA as covariates for the <strong>purpose of survival prediction</strong>. Similarly, the first components from <span class="math inline">\(t\)</span>-SNE or UMAP can also be extracted as covariates.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># principal component regression</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>x_tmp <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(<span class="fu">t</span>(TCGA_PAM50))</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -716,7 +660,6 @@ features remaining: 607</code></pre>
 <span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>data_tmp <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">time =</span> clin<span class="sc">$</span>time, <span class="at">status =</span> clin<span class="sc">$</span>status, X_PC)</span>
 <span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> PC1 <span class="sc">+</span> PC2, <span class="at">data =</span> data_tmp)</span>
 <span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>Call:
 coxph(formula = Surv(time, status) ~ PC1 + PC2, data = data_tmp)
@@ -743,8 +686,6 @@ Score (logrank) test = 8.66  on 2 df,   p=0.01</code></pre>
 <p>For computational efficiency, we will use only the mRNA-Seq features corresponding to the PAM50 genes <span class="citation" data-cites="Parker2009">(<a href="#ref-Parker2009" role="doc-biblioref">Parker et al. 2009</a>)</span> instead of the variance filtered genes from the previous section. We perform an investigation of the relationships between the mRNA-Seq features, two clinical variables (i.e.&nbsp;the patients’ age at diagnosis and their ethnicity) and the survival outcomes.</p>
 <p>The <code>R</code> package <a href="https://CRAN.R-project.org/package=glmnet"><strong>glmnet</strong></a> <span class="citation" data-cites="Friedman2010">(<a href="#ref-Friedman2010" role="doc-biblioref">Friedman, Hastie, and Tibshirani 2010</a>)</span> is very computationally efficient to run Lasso and Elastic Net Cox models. Lasso has a tuning parameter <span class="math inline">\(\lambda\)</span> to control the penalty strength of the coefficients which can be optimized by cross-validation (CV) via function <code>cv.glmnet()</code>. The <code>glmnet()</code> and <code>cv.glmnet()</code> functions provide the argument <code>penalty.factor</code> to allow different shrinkage for different features, which makes sense if one includes both clinical/demographic variables and omics features and does not want to perform feature selection for the clinical/demographic variables.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Lasso Cox model</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="do">## for demonstration simplicity, PAM50 genes are used here</span></span>
@@ -777,7 +718,6 @@ Score (logrank) test = 8.66  on 2 df,   p=0.01</code></pre>
 <span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="fu">expression</span>(log <span class="sc">~</span> <span class="er">~</span>lambda), <span class="at">ylab =</span> <span class="fu">expression</span>(beta)</span>
 <span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="st">"Lasso    </span><span class="sc">\n\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -788,8 +728,6 @@ Score (logrank) test = 8.66  on 2 df,   p=0.01</code></pre>
 <p><br></p>
 <p>Elastic Net Cox model includes the <span class="math inline">\(\lambda\)</span> and an additional penalty parameter <span class="math inline">\(\alpha \in [0,1]\)</span>. The parameter <span class="math inline">\(\alpha\)</span> can be fixed as <span class="math inline">\(0\)</span> (Ridge), <span class="math inline">\(1\)</span> (Lasso) or any value between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span> for making a compromise between Ridge and Lasso, which can also be optimized by cross-validation manually, see the example below.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Elastic Net Cox model</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co"># set penalty parameter alpha which comprises between Lasso and ridge regressions</span></span>
@@ -822,7 +760,6 @@ Score (logrank) test = 8.66  on 2 df,   p=0.01</code></pre>
 <span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="fu">expression</span>(log <span class="sc">~</span> <span class="er">~</span>lambda), <span class="at">ylab =</span> <span class="fu">expression</span>(beta)</span>
 <span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb29-32"><a href="#cb29-32" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="st">"Elastic Net     </span><span class="sc">\n\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -833,8 +770,6 @@ Score (logrank) test = 8.66  on 2 df,   p=0.01</code></pre>
 <p><br></p>
 <p>Adaptive Lasso Cox model needs to pre-estimate all coefficients which will be used as weights via the argument <code>penalty.factor</code> in the <code>glmnet()</code> and <code>cv.glmnet()</code> functions to fit a Lasso Cox model. The pre-estimation can be done by a Ridge Cox model, see an example below.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Adaptive Lasso Cox model</span></span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
@@ -863,7 +798,6 @@ Score (logrank) test = 8.66  on 2 df,   p=0.01</code></pre>
 <span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="fu">expression</span>(log <span class="sc">~</span> lambda), <span class="at">ylab =</span> <span class="fu">expression</span>(beta)</span>
 <span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="st">"Adative Lasso    </span><span class="sc">\n\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -880,15 +814,12 @@ Score (logrank) test = 8.66  on 2 df,   p=0.01</code></pre>
 </ul>
 <p>Note that the <code>R</code> package <a href="https://CRAN.R-project.org/package=grpreg"><strong>grpreg</strong></a> <span class="citation" data-cites="Breheny2015">(<a href="#ref-Breheny2015" role="doc-biblioref">Breheny and Huang 2015</a>)</span> also implements group smoothly clipped absolute deviation (SCAD) model and some others, see <span class="citation" data-cites="Breheny2021">Breheny, Zeng, and Kurth (<a href="#ref-Breheny2021" role="doc-biblioref">2021</a>)</span> for details.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># group Lasso Cox model</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>group <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"demographic"</span>, <span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">"PAM50_1"</span>, <span class="dv">10</span>), <span class="fu">rep</span>(<span class="st">"PAM50_2"</span>, <span class="dv">40</span>))</span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>group <span class="ot">&lt;-</span> <span class="fu">factor</span>(group)</span>
 <span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>cvfit <span class="ot">&lt;-</span> grpreg<span class="sc">::</span><span class="fu">cv.grpsurv</span>(<span class="at">X =</span> x, <span class="at">y =</span> y, <span class="at">group =</span> group, <span class="at">penalty =</span> <span class="st">"grLasso"</span>, <span class="at">returnY =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(cvfit<span class="sc">$</span>fit<span class="sc">$</span>beta[, <span class="fu">c</span>(<span class="fu">which.min</span>(cvfit<span class="sc">$</span>cve), <span class="dv">10</span>, <span class="dv">20</span>)], <span class="at">digits =</span> <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>           0.0143  0.0217  0.0108
 age        0.0218  0.0154  0.0247
@@ -945,8 +876,6 @@ MAPT       0.0000  0.0000 -0.0071
 MIA        0.0000  0.0000 -0.0180</code></pre>
 <p>Sparse group Lasso Cox model is implemented in the <code>R</code> package <a href="https://CRAN.R-project.org/package=SGL"><strong>SGL</strong></a> <span class="citation" data-cites="Simon2019">(<a href="#ref-Simon2019" role="doc-biblioref">N. Simon et al. 2019</a>)</span>. The function <code>cvSGL()</code> uses cross validation to optimize the penalty parameter <span class="math inline">\(\lambda\)</span>. The following example shows that it induces sparsity in each group of covariates.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># sparse group Lasso Cox model</span></span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>group <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"demographic"</span>, <span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">"PAM50_1"</span>, <span class="dv">10</span>), <span class="fu">rep</span>(<span class="st">"PAM50_2"</span>, <span class="dv">40</span>))</span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>group <span class="ot">&lt;-</span> <span class="fu">factor</span>(group)</span>
@@ -956,7 +885,6 @@ MIA        0.0000  0.0000 -0.0180</code></pre>
 <span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>beta.hat <span class="ot">&lt;-</span> cvfit<span class="sc">$</span>fit<span class="sc">$</span>beta[, <span class="fu">which.min</span>(cvfit<span class="sc">$</span>lldiff)]</span>
 <span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(beta.hat) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"group"</span>, <span class="fu">as.numeric</span>(group), <span class="st">"."</span>, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">40</span>))</span>
 <span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>beta.hat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>     group1.1      group1.2      group2.1      group2.2      group2.3      group2.4 
  5.6584838488  0.0000000000  0.4812006103  0.0000000000  0.0000000000  0.2481830177 
@@ -981,8 +909,6 @@ MIA        0.0000  0.0000 -0.0180</code></pre>
 <h4 class="anchored" data-anchor-id="sparse-bayesian-cox-models">Sparse Bayesian Cox models</h4>
 <p>The <code>R</code> package <a href="https://CRAN.R-project.org/package=psbcGroup"><strong>psbcGroup</strong></a> <span class="citation" data-cites="Lee2021">(<a href="#ref-Lee2021" role="doc-biblioref">Lee, Chakraborty, and Sun 2021</a>)</span> integrates a large set of sparse Bayesian Cox models. The function <code>psbcGL()</code> implements Bayesian Cox models with Lasso and group Lasso priors for feature selection and group selection respectively. For the Lasso prior, set the hyperparameter <code>priorPara$groupInd = 1:p</code> where <span class="math inline">\(p\)</span> is the total number of covariates. For the group Lasso prior, set the hyperparameter <code>priorPara$groupInd</code> as a vector of size <span class="math inline">\(p\)</span>, where each element denotes which group each covariate corresponds to.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bayesian Cox model with Lasso prior</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
@@ -1012,7 +938,6 @@ MIA        0.0000  0.0000 -0.0180</code></pre>
 <span id="cb35-27"><a href="#cb35-27" aria-hidden="true" tabindex="-1"></a>beta_p <span class="ot">&lt;-</span> BayesLassofit<span class="sc">$</span>beta.p[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">51</span>), ]</span>
 <span id="cb35-28"><a href="#cb35-28" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(beta_p) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(x)</span>
 <span id="cb35-29"><a href="#cb35-29" aria-hidden="true" tabindex="-1"></a>psbcSpeedUp<span class="sc">:::</span><span class="fu">plot.psbcSpeedUp</span>(beta_p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -1023,8 +948,6 @@ MIA        0.0000  0.0000 -0.0180</code></pre>
 <p><br></p>
 <p>Note that <strong>psbcGroup</strong> cannot distinguish mandatory (unpenalized) covariates with omics features, see <span class="citation" data-cites="Zucknick2015">Zucknick, Saadati, and Benner (<a href="#ref-Zucknick2015" role="doc-biblioref">2015</a>)</span> for an extended Bayesian Lasso Cox model. <span id="psbcSpeedUp"></span> The following code implements the Bayesian Lasso Cox model with mandatory covariates through the <code>R</code> package <a href="https://CRAN.R-project.org/package=psbcSpeedUp"><strong>psbcSpeedUp</strong></a> <span class="citation" data-cites="Zhao2023b">(<a href="#ref-Zhao2023b" role="doc-biblioref">Z. Zhao et al. 2023</a>)</span>.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bayesian Cox model with Lasso prior and mandatory covariates</span></span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>survObjM <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">t =</span> clin<span class="sc">$</span>time, <span class="at">di =</span> clin<span class="sc">$</span>status, <span class="at">x =</span> x[, <span class="fu">c</span>(<span class="dv">3</span><span class="sc">:</span><span class="dv">52</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)])</span>
@@ -1034,7 +957,6 @@ MIA        0.0000  0.0000 -0.0180</code></pre>
 <span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">nIter =</span> <span class="dv">100</span>, <span class="at">burnin =</span> <span class="dv">50</span>, <span class="at">thin =</span> <span class="dv">1</span>, <span class="at">rw =</span> <span class="cn">FALSE</span>, <span class="at">outFilePath =</span> <span class="st">"tmp"</span></span>
 <span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(BayesLassoMfit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>Running MCMC iterations ...
 [##################################################] 100%
@@ -1048,8 +970,6 @@ DONE, exiting! </code></pre>
 <p><br></p>
 <p>In the <code>R</code> package <a href="https://CRAN.R-project.org/package=psbcGroup"><strong>psbcGroup</strong></a> <span class="citation" data-cites="Lee2021">(<a href="#ref-Lee2021" role="doc-biblioref">Lee, Chakraborty, and Sun 2021</a>)</span>, function <code>psbcEN()</code> implements Bayesian Cox models with Elastic Net prior for feature selection with grouping effect of correlated features. Function <code>psbcFL()</code> implements Bayesian Cox models with fused Lasso prior.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bayesian Cox model with Elastic Net prior</span></span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="co"># set hyperparameters</span></span>
@@ -1073,7 +993,6 @@ DONE, exiting! </code></pre>
 <span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a>EN_beta_p <span class="ot">&lt;-</span> BayesENfit<span class="sc">$</span>beta.p[<span class="dv">52</span><span class="sc">:</span><span class="dv">101</span>, ]</span>
 <span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(EN_beta_p) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(x)</span>
 <span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a>psbcSpeedUp<span class="sc">:::</span><span class="fu">plot.psbcSpeedUp</span>(EN_beta_p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -1084,15 +1003,12 @@ DONE, exiting! </code></pre>
 <p><br></p>
 <p>A penalized semiparametric Bayesian Cox model with double exponential spike-and-slab prior is implemented in the <code>R</code> package <a href="https://github.com/nyiuab/BhGLM.git"><strong>BhGLM</strong></a> <span class="citation" data-cites="Yi2019">(<a href="#ref-Yi2019" role="doc-biblioref">Yi et al. 2019</a>)</span>. Note that <strong>BhGLM</strong> provides frequentist confidence intervals of the posterior mode of the coefficients.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># penalized semiparametric Bayesian Cox model with (double exponential) spike-and-slab prior</span></span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>y_surv <span class="ot">&lt;-</span> <span class="fu">Surv</span>(clin<span class="sc">$</span>time, clin<span class="sc">$</span>status)</span>
 <span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>x_dataframe <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(x)</span>
 <span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>Bayesfit <span class="ot">&lt;-</span> BhGLM<span class="sc">::</span><span class="fu">bcoxph</span>(y_surv <span class="sc">~</span> ., x_dataframe, <span class="at">prior =</span> <span class="fu">mde</span>(<span class="dv">0</span>, <span class="fl">0.01</span>, <span class="fl">0.8</span>), <span class="at">control =</span> <span class="fu">coxph.control</span>(<span class="at">iter.max =</span> <span class="dv">200</span>))</span>
 <span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>BhGLM<span class="sc">::</span><span class="fu">plot.bh</span>(Bayesfit, <span class="at">col.pts =</span> <span class="fu">c</span>(<span class="st">"red"</span>, <span class="st">"blue"</span>), <span class="at">main =</span> <span class="st">"Cox with mixture double exponential</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -1142,8 +1058,6 @@ Note
 </div>
 <p>To evaluate the performance of a statistical model, we first split the data into training and validation data sets. For example, we can randomly split the 1047 BRCA patients from TCGA into <span class="math inline">\(80\%\)</span> as training set and <span class="math inline">\(20\%\)</span> as validation set.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(x)</span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>idx <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>n, n <span class="sc">*</span> <span class="fl">0.8</span>, <span class="at">replace =</span> <span class="cn">FALSE</span>)</span>
@@ -1151,7 +1065,6 @@ Note
 <span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>y_train <span class="ot">&lt;-</span> y[idx, ]</span>
 <span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>x_validate <span class="ot">&lt;-</span> x[<span class="sc">-</span>idx, ]</span>
 <span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>y_validate <span class="ot">&lt;-</span> y[<span class="sc">-</span>idx, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1171,8 +1084,6 @@ Important
 <p><font size="4"> <strong>Goodness-of-fit</strong> </font></p>
 <p>The simplest way to demonstrate the prognostic power of a survival model is to dichotomize the prognostic scores (i.e., linear predictor <span class="math inline">\(lp\)</span> in the Cox model) by median value, and then to use a log-rank test to compare the survival curves of the patients in the two groups. We use the built model to predict the prognostic scores based on the <span class="math inline">\(20\%\)</span> validation data. The following code shows the <strong>goodness-of-fit</strong> of a Lasso Cox model with the BRCA patients survival and PAM50 mRNA-Seq data from TCGA.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># train a Lasso Cox model, similarly for other Cox-type models</span></span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>cvfit <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(x_train, y_train, <span class="at">family =</span> <span class="st">"cox"</span>, <span class="at">nfolds =</span> <span class="dv">5</span>, <span class="at">penalty.factor =</span> pf)</span>
@@ -1195,7 +1106,6 @@ Important
 <span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="fl">2.6</span>, <span class="at">y =</span> .<span class="dv">03</span>, <span class="at">label =</span> <span class="fu">paste0</span>(<span class="st">"Log-rank test:</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">surv_pvalue</span>(sfit)<span class="sc">$</span>pval.txt))</span>
 <span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>ggsurv<span class="sc">$</span>table <span class="ot">&lt;-</span> ggsurv<span class="sc">$</span>table <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"Dichotomized</span><span class="sc">\n</span><span class="st"> groups"</span>)</span>
 <span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a>ggsurv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -1206,8 +1116,6 @@ Important
 <p><br></p>
 <p>The prognostic scores can also be divided into three or more groups based on quantiles and the log-rank test can be used to compare the difference of multiple survival curves.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>group <span class="ot">&lt;-</span> pred_lp</span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>group[pred_lp <span class="sc">&gt;=</span> <span class="fu">quantile</span>(pred_lp, <span class="dv">2</span> <span class="sc">/</span> <span class="dv">3</span>)] <span class="ot">&lt;-</span> <span class="dv">3</span></span>
 <span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>group[pred_lp <span class="sc">&gt;=</span> <span class="fu">quantile</span>(pred_lp, <span class="dv">1</span> <span class="sc">/</span> <span class="dv">3</span>) <span class="sc">&amp;</span> pred_lp <span class="sc">&lt;</span> <span class="fu">quantile</span>(pred_lp, <span class="dv">2</span> <span class="sc">/</span> <span class="dv">3</span>)] <span class="ot">&lt;-</span> <span class="dv">2</span></span>
@@ -1226,7 +1134,6 @@ Important
 <span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>ggsurv<span class="sc">$</span>plot <span class="ot">&lt;-</span> ggsurv<span class="sc">$</span>plot <span class="sc">+</span></span>
 <span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="fl">3.5</span>, <span class="at">y =</span> .<span class="dv">05</span>, <span class="at">label =</span> <span class="fu">paste0</span>(<span class="st">"Log-rank test:</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">surv_pvalue</span>(sfit)<span class="sc">$</span>pval.txt))</span>
 <span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a>ggsurv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -1238,8 +1145,6 @@ Important
 <p><font size="4"> <strong>ROC curve</strong> </font></p>
 <p>The <code>R</code> package <a href="https://CRAN.R-project.org/package=risksetROC"><strong>risksetROC</strong></a> <span class="citation" data-cites="Heagerty2005">(<a href="#ref-Heagerty2005" role="doc-biblioref">Heagerty and Zheng 2005</a>)</span> can estimate a ROC curve at an evaluation time point. The following code draws a ROC curve at 5-years survival evaluation time point for the 20% TCGA validation data and based on a Lasso Cox model learned from the 80% training data.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>ROC <span class="ot">&lt;-</span> <span class="fu">risksetROC</span>(</span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Stime =</span> y_validate[, <span class="dv">1</span>], <span class="at">status =</span> y_validate[, <span class="dv">2</span>],</span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">marker =</span> pred_lp, <span class="at">predict.time =</span> <span class="dv">5</span>, <span class="at">method =</span> <span class="st">"Cox"</span>,</span>
@@ -1247,7 +1152,6 @@ Important
 <span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">xlab =</span> <span class="st">"1 - Specificity"</span>, <span class="at">ylab =</span> <span class="st">"Sensitivity"</span></span>
 <span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="fl">0.7</span>, <span class="fl">0.2</span>, <span class="fu">paste</span>(<span class="st">"AUC ="</span>, <span class="fu">round</span>(ROC<span class="sc">$</span>AUC, <span class="dv">3</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -1272,8 +1176,6 @@ Survival prediction in Cox models
 </div>
 </div>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># unique event times for patients in the training and validation data sets</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>utimes_train <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(y_train[y_train[, <span class="dv">2</span>] <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>]))</span>
 <span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>utimes_validate <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(y_validate[y_validate[, <span class="dv">2</span>] <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>]))</span>
@@ -1312,7 +1214,6 @@ Survival prediction in Cox models
 <span id="cb44-36"><a href="#cb44-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">0.5</span>, <span class="dv">1</span>) <span class="sc">+</span></span>
 <span id="cb44-37"><a href="#cb44-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_step</span>(<span class="at">direction =</span> <span class="st">"vh"</span>) <span class="sc">+</span></span>
 <span id="cb44-38"><a href="#cb44-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.8</span>), <span class="at">legend.title =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -1324,23 +1225,17 @@ Survival prediction in Cox models
 <p><font size="4"> <strong>Integrated AUC</strong> </font></p>
 <p>The <code>R</code> package <a href="https://CRAN.R-project.org/package=risksetROC"><strong>risksetROC</strong></a> <span class="citation" data-cites="Heagerty2005">(<a href="#ref-Heagerty2005" role="doc-biblioref">Heagerty and Zheng 2005</a>)</span> provides function <code>IntegrateAUC()</code> to estimate integrated AUC.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Before computing integrated AUC, first estimate survival probabilities at unique survival times</span></span>
 <span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>surv_prob_train <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">survfit</span>(<span class="fu">Surv</span>(y_train[, <span class="dv">1</span>], y_train[, <span class="dv">2</span>]) <span class="sc">~</span> <span class="dv">1</span>)<span class="sc">$</span>surv)</span>
 <span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>surv_prob_validate <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">survfit</span>(<span class="fu">Surv</span>(y_validate[, <span class="dv">1</span>], y_validate[, <span class="dv">2</span>]) <span class="sc">~</span> <span class="dv">1</span>)<span class="sc">$</span>surv)</span>
 <span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="do">## integrated AUC (e.g. over tmax=10 years) to get concordance measure based on training data</span></span>
 <span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>(iAUC_train <span class="ot">&lt;-</span> risksetROC<span class="sc">::</span><span class="fu">IntegrateAUC</span>(AUC_train, utimes_train, surv_prob_train, <span class="at">tmax =</span> <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>[1] 0.6279646</code></pre>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="do">## integrated AUC (e.g. over tmax=10 years) to get concordance measure based on validation data</span></span>
 <span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>(iAUC_validate <span class="ot">&lt;-</span> risksetROC<span class="sc">::</span><span class="fu">IntegrateAUC</span>(AUC_validate, utimes_validate, surv_prob_validate, <span class="at">tmax =</span> <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>[1] 0.6318253</code></pre>
 <p><font size="4"> <strong>Time-dependent C-index</strong> </font></p>
@@ -1348,22 +1243,16 @@ Survival prediction in Cox models
 <p><font size="4"> <strong>C-index</strong> </font></p>
 <p>The <code>R</code> package <a href="https://CRAN.R-project.org/package=glmnet"><strong>glmnet</strong></a> provides the function <code>glmnet::Cindex()</code> to estimate Harrell’s C-index from a “coxnet” object. The <code>R</code> package <a href="https://CRAN.R-project.org/package=survAUC"><strong>survAUC</strong></a> provides the function <code>survAUC::UnoC()</code> to estimated Uno’s C-index. See an example calculation for both C-indexes using a Lasso Cox model below.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>cvfit <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(x_train, y_train, <span class="at">family =</span> <span class="st">"cox"</span>, <span class="at">nfolds =</span> <span class="dv">5</span>, <span class="at">penalty.factor =</span> pf)</span>
 <span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(cvfit, <span class="at">newx =</span> x_validate, <span class="at">type =</span> <span class="st">"link"</span>, <span class="at">s =</span> cvfit<span class="sc">$</span>lambda.min)</span>
 <span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Harrell's C-index</span></span>
 <span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>(Cindex_Harrell <span class="ot">&lt;-</span> <span class="fu">Cindex</span>(<span class="at">pred =</span> pred[, <span class="dv">1</span>], <span class="at">y =</span> y_validate))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>[1] 0.7246466</code></pre>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Uno's C-index</span></span>
 <span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>(Cindex_Uno <span class="ot">&lt;-</span> survAUC<span class="sc">::</span><span class="fu">UnoC</span>(y_train, y_validate, pred))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>[1] 0.5772041</code></pre>
 <p><br></p>
@@ -1378,8 +1267,6 @@ Survival prediction in Cox models
 <p><font size="4"> <strong>Time-dependent Brier score</strong> </font></p>
 <p>The <code>R</code> package <a href="https://CRAN.R-project.org/package=riskRegression"><strong>riskRegression</strong></a> can assess the prediction error curves of survival models based on the time-dependent Brier score. Similar to the time-dependent AUC, one needs to first calculate the linear predictors (<span class="math inline">\(lp\)</span>) from a frequentist or Bayesian Cox model, and then use <code>survival::coxph()</code> to regress the survival outcomes on the linear predictor, which is prepared as input of <code>riskRegression::Score()</code> to estimate the (time-dependent) Brier score. If the survival model was fitted via the <code>R</code> package <a href="#psbcSpeedUp"><strong>psbcSpeedUp</strong></a>, the curve of the time-dependent Brier score can be drawn by using the function <code>psbcSpeedUp::plotBrier()</code>.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="do">## time-dependent Brier score</span></span>
 <span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="co"># use the (x_train, y_train) 80% samples for training</span></span>
@@ -1409,7 +1296,6 @@ Survival prediction in Cox models
 <span id="cb53-27"><a href="#cb53-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Brier score"</span>) <span class="sc">+</span></span>
 <span id="cb53-28"><a href="#cb53-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_step</span>(<span class="at">direction =</span> <span class="st">"vh"</span>) <span class="sc">+</span></span>
 <span id="cb53-29"><a href="#cb53-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.15</span>, <span class="fl">0.88</span>), <span class="at">legend.title =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -1421,11 +1307,8 @@ Survival prediction in Cox models
 <p><font size="4"> <strong>Integrated Brier score (IBS)</strong> </font></p>
 <p>The function <code>riskRegression::Score()</code> also summarizes IBS when specifying argument <code>summary = "ibs"</code>. We can extract the IBS corresponding to the largest evaluation time point.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>Brier_validate_ibs <span class="ot">&lt;-</span> Brier_validate[Brier_validate<span class="sc">$</span>model <span class="sc">==</span> <span class="st">"Brier_validate"</span>, ]</span>
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>Brier_validate_ibs<span class="sc">$</span>IBS[<span class="fu">which.max</span>(Brier_validate_ibs<span class="sc">$</span>times)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>[1] 0.1721158</code></pre>
 <p><br></p>
@@ -1447,8 +1330,6 @@ Important
 </div>
 <p>We demonstrate how to randomly split the data, e.g.&nbsp;<span class="math inline">\(100\)</span> times, train a Lasso Cox model and estimate the integrated AUC based on the validation data in each replication. For other Cox-type models, we can just replace the model fitting part <code>cv.glmnet()</code> (and <code>predict()</code>) in the <code>for</code> loop below. However, most of the Bayesian Cox models introduced previously are computationally time-consuming when randomly splitting the data many times.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># split the data 100 times</span></span>
 <span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="dv">100</span></span>
@@ -1479,7 +1360,6 @@ Important
 <span id="cb56-28"><a href="#cb56-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span></span>
 <span id="cb56-29"><a href="#cb56-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Integrated AUC"</span>) <span class="sc">+</span></span>
 <span id="cb56-30"><a href="#cb56-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">size =</span> <span class="fl">0.5</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -1490,8 +1370,6 @@ Important
 <p><br></p>
 <p>Similar to obtaining uncertainty of the integrated AUC, we can also estimate the uncertainty of the C-index for evaluating the global performance of our model’s discrimination.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># split the data 100 times</span></span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="dv">100</span></span>
@@ -1517,7 +1395,6 @@ Important
 <span id="cb57-23"><a href="#cb57-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">""</span>) <span class="sc">+</span></span>
 <span id="cb57-24"><a href="#cb57-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"C-index"</span>) <span class="sc">+</span></span>
 <span id="cb57-25"><a href="#cb57-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -1528,8 +1405,6 @@ Important
 <p><br></p>
 <p>The <code>R</code> package <a href="https://CRAN.R-project.org/package=c060"><strong>c060</strong></a> <span class="citation" data-cites="Sill2014">(<a href="#ref-Sill2014" role="doc-biblioref">Sill et al. 2014</a>)</span> includes wrapper functions for the <a href="https://CRAN.R-project.org/package=glmnet"><strong>glmnet</strong></a> algorithm and implements resampling-based methods (e.g.&nbsp;cross-validation and bootstrap - with and without replacement) based on the <a href="https://CRAN.R-project.org/package=peperr"><strong>peperr</strong></a> package to calculate the time-dependent Brier score. <a href="https://CRAN.R-project.org/package=c060"><strong>c060</strong></a> extends <a href="https://CRAN.R-project.org/package=peperr"><strong>peperr</strong></a> package to allow mandatory features without penalization. <span class="citation" data-cites="Binder2008">Binder and Schumacher (<a href="#ref-Binder2008" role="doc-biblioref">2008</a>)</span> recommends to draw bootstrap samples without replacement (i.e.&nbsp;subsampling), because bootstrap samples with replacement often result in too complex models in high-dimensional settings. To use resampling by CV properly for survival data, see <span class="citation" data-cites="Simon2011">R. M. Simon et al. (<a href="#ref-Simon2011" role="doc-biblioref">2011</a>)</span>. Note that resampling-based methods here are similar to splitting <span class="math inline">\(80\%/20\%\)</span> the data many times which allows us to quantify the uncertainty of the time-dependent Brier score.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="do">## time-dependent Brier score by subsampling from the whole data</span></span>
 <span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>peperr_object <span class="ot">&lt;-</span> peperr<span class="sc">::</span><span class="fu">peperr</span>(</span>
@@ -1540,7 +1415,6 @@ Important
 <span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">indices =</span> <span class="fu">resample.indices</span>(<span class="at">n =</span> n, <span class="at">method =</span> <span class="st">"sub632"</span>, <span class="at">sample.n =</span> <span class="dv">100</span>)</span>
 <span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>c060<span class="sc">::</span><span class="fu">Plot.peperr.curves</span>(peperr_object)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -1554,8 +1428,6 @@ Important
 <h4 class="unnumbered anchored" data-anchor-id="feature-stability-analysis">Feature stability analysis</h4>
 <p>To identify stable omics features, a straightforward way is to find the overlapped omics features with nonzero coefficients among different data subsets (e.g.&nbsp;CV folds or resamples). The following code summarizes the Lasso Cox selected omics features which were identified at least <span class="math inline">\(2\)</span> or <span class="math inline">\(5\)</span> out of <span class="math inline">\(10\)</span> resamples. Similarly, this approach can be applied to other Lasso-type or Bayesian Cox models that perform feature selection for identifying stable selected features.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># specify the number of resamples k</span></span>
 <span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="dv">10</span></span>
 <span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>beta_all <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> <span class="fu">ncol</span>(x), <span class="at">ncol =</span> k)</span>
@@ -1569,7 +1441,6 @@ Important
 <span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a>(stable_features <span class="ot">&lt;-</span> <span class="fu">colnames</span>(x)[<span class="fu">rowSums</span>(beta_all <span class="sc">!=</span> <span class="dv">0</span>) <span class="sc">&gt;=</span> <span class="dv">2</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code> [1] "age"       "ethnicity" "ANLN"      "UBE2T"     "NDC80"     "PGR"       "ORC6"     
  [8] "ESR1"      "PHGDH"     "MMP11"     "SFRP1"     "CCNE1"     "BLVRA"     "BAG1"     
@@ -1578,22 +1449,16 @@ Important
 [29] "TMEM45B"   "FGFR4"     "MELK"      "NAT1"      "CXXC5"     "BCL2"      "GPR160"   
 [36] "TYMS"      "KRT5"      "MAPT"      "MIA"</code></pre>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>(stable_features <span class="ot">&lt;-</span> <span class="fu">colnames</span>(x)[<span class="fu">rowSums</span>(beta_all <span class="sc">!=</span> <span class="dv">0</span>) <span class="sc">&gt;=</span> <span class="dv">5</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code> [1] "age"       "ethnicity" "ANLN"      "ORC6"      "MMP11"     "BLVRA"     "BAG1"     
  [8] "CCNB1"     "EGFR"      "TMEM45B"   "BCL2"      "TYMS"      "KRT5"      "MIA"</code></pre>
 <p>Alternatively for a Bayesian Cox model, its median probability model (MPM) can be obtained based on the coefficient estimates over MCMC iterations. The following code shows how to obtain the MPM’s coefficients of the penalized semiparametric Bayesian Cox model with Elastic Net prior run previously.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>gammas <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(<span class="fu">matrix</span>(<span class="fu">as.numeric</span>(EN_beta_p <span class="sc">!=</span> <span class="dv">0</span>), <span class="at">ncol =</span> <span class="fu">ncol</span>(EN_beta_p)))</span>
 <span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>beta_MPM <span class="ot">&lt;-</span> (gammas <span class="sc">&gt;=</span> <span class="fl">0.5</span>) <span class="sc">*</span> <span class="fu">colMeans</span>(EN_beta_p) <span class="sc">/</span> gammas</span>
 <span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>beta_MPM[<span class="fu">is.na</span>(beta_MPM)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
 <span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>beta_MPM</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>          age     ethnicity          ANLN         FOXC1          CDH3         UBE2T 
  1.305162e-02  5.348458e-03 -1.299443e-03 -1.857811e-02 -6.123574e-03 -5.467111e-03 
@@ -1621,8 +1486,6 @@ Important
 <p><font size="4"> <strong>Nomogram</strong> </font></p>
 <p>We demonstrate a nomogram using the stable selected features from TCGA breast cancer data preprocessed previously. The <code>R</code> package <strong>regplot</strong> draws an enhanced regression nomogram based on the <strong>rms</strong> package.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># remove patients without reporting ethnicity</span></span>
 <span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>yy <span class="ot">&lt;-</span> y[x[, <span class="dv">2</span>] <span class="sc">!=</span> <span class="dv">3</span>, ]</span>
 <span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>xx <span class="ot">&lt;-</span> x[x[, <span class="dv">2</span>] <span class="sc">!=</span> <span class="dv">3</span>, ]</span>
@@ -1664,7 +1527,6 @@ Important
 <span id="cb65-39"><a href="#cb65-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">observation =</span> data_tmp[<span class="dv">1</span>, ], <span class="at">failtime =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>), <span class="at">title =</span> <span class="st">""</span>,</span>
 <span id="cb65-40"><a href="#cb65-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">prfail =</span> <span class="cn">FALSE</span>, <span class="at">points =</span> <span class="cn">TRUE</span>, <span class="at">showP =</span> <span class="cn">FALSE</span>, <span class="at">subticks =</span> <span class="cn">TRUE</span></span>
 <span id="cb65-41"><a href="#cb65-41" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -1676,8 +1538,6 @@ Important
 <p><font size="4"> <span id="slopeCali"><strong>Calibration plot</strong></span> </font></p>
 <p>A calibration plot is a straightforward visualization to show the prediction ability of the nomogram, i.e., the agreement between predicted survival probabilities from the final model and the KM estimated survival probabilities in different percentiles of the predicted values at a time point of interest. We demonstrate below calibration plots based on training and validation data sets, respectively.</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calibration at 5-year time-point</span></span>
 <span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a><span class="co"># prepare suitable data format for calibration plot</span></span>
@@ -1710,7 +1570,6 @@ Important
 <span id="cb66-30"><a href="#cb66-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">col =</span> <span class="st">"seagreen3"</span>, <span class="at">subtitles =</span> <span class="cn">FALSE</span></span>
 <span id="cb66-31"><a href="#cb66-31" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb66-32"><a href="#cb66-32" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main =</span> <span class="st">"Calibration on validation data"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -1745,20 +1604,15 @@ We will use the <a href="https://mlr3.mlr-org.com"><strong>mlr3</strong></a> ML 
 <p>For the rest of the analysis, we will borrow the terminology from the <a href="https://mlr3.mlr-org.com"><strong>mlr3</strong></a> ecosystem of machine learning packages (e.g.&nbsp;<em>task</em> is a dataset, <em>learner</em> is a model, etc.). See <a href="https://mlr3book.mlr-org.com/">mlr3 book</a> for more details.</p>
 <p>First, we load the necessary <a href="https://mlr3.mlr-org.com"><strong>mlr3</strong></a> libraries <span class="citation" data-cites="Lang2019 Sonabend2021">(<a href="#ref-Lang2019" role="doc-biblioref">Lang et al. 2019</a>; <a href="#ref-Sonabend2021" role="doc-biblioref">Sonabend et al. 2021</a>)</span> and some other useful ones:</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"mlr3verse"</span>) <span class="co"># mlr3, mlr3pipeplines, mlr3learners, mlr3tuning, paradox, etc.</span></span>
 <span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"mlr3proba"</span>) <span class="co"># probabilistic learning and survival analysis</span></span>
 <span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"mlr3extralearners"</span>) <span class="co"># for lrn('surv.glmnet')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p><br></p>
 <section id="workflow" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="workflow">Workflow</h4>
 <p>We construct an <a href="https://mlr3.mlr-org.com"><strong>mlr3</strong></a> <em>survival task</em> (TCGA BRCA dataset essentially, with normalized PAM50 gene expression features and two clinical/demographic variables) and split it into training and test sets (<span class="math inline">\(80\%/20\%\)</span>):</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="co"># From 'Penalized Cox models' section:</span></span>
 <span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="co"># x =&gt; gene expression matrix (50 PAM50 genes) + 2 clinical variables</span></span>
 <span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="co"># y =&gt; (time, status) target matrix</span></span>
@@ -1776,7 +1630,6 @@ We will use the <a href="https://mlr3.mlr-org.com"><strong>mlr3</strong></a> ML 
 <span id="cb68-15"><a href="#cb68-15" aria-hidden="true" tabindex="-1"></a>split <span class="ot">&lt;-</span> mlr3<span class="sc">::</span><span class="fu">partition</span>(task, <span class="at">ratio =</span> <span class="fl">0.8</span>)</span>
 <span id="cb68-16"><a href="#cb68-16" aria-hidden="true" tabindex="-1"></a><span class="co"># split$train # train indices</span></span>
 <span id="cb68-17"><a href="#cb68-17" aria-hidden="true" tabindex="-1"></a><span class="co"># split$test # test indices</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>&lt;TaskSurv:BRCA-TCGA&gt; (1047 x 54)
 * Target: time, status
@@ -1789,8 +1642,6 @@ We will use the <a href="https://mlr3.mlr-org.com"><strong>mlr3</strong></a> ML 
     UBE2C, UBE2T, age, ethnicity</code></pre>
 <p>We create a Lasso Cox <a href="https://mlr3.mlr-org.com"><strong>mlr3</strong></a> learner (a wrapper around the <code>glmnet::cv.glmnet()</code> function with the capacity to provide survival predictions), where we specify the two clinical variables to be <em>mandatory</em> (i.e.&nbsp;no penalization) and the <span class="math inline">\(s\)</span> value (<span class="math inline">\(\lambda\)</span> parameter used for prediction) equal to <code>lambda.min</code>:</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tail(task$feature_names) # age, ethnicity are the 2 last features</span></span>
 <span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>pf <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">length</span>(task<span class="sc">$</span>feature_names) <span class="sc">-</span> <span class="dv">2</span>), <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">2</span>))</span>
 <span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1801,7 +1652,6 @@ We will use the <a href="https://mlr3.mlr-org.com"><strong>mlr3</strong></a> ML 
 <span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a><span class="co"># coxlasso # see learner details</span></span>
 <span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a><span class="co"># coxlasso$help() # see learner documentation</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1819,13 +1669,10 @@ Note
 <p><br></p>
 <p>Train the Lasso Cox model:</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">3</span>)</span>
 <span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>coxlasso<span class="sc">$</span><span class="fu">train</span>(task, <span class="at">row_ids =</span> split<span class="sc">$</span>train)</span>
 <span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a><span class="co"># view `cv.glmnet` fit</span></span>
 <span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>coxlasso<span class="sc">$</span>model<span class="sc">$</span>model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>Call:  (if (cv) glmnet::cv.glmnet else glmnet::glmnet)(x = data, y = target,      nfolds = 5L, alpha = 1, penalty.factor = c(1, 1,..., 1, 0, 0), family = "cox")
 
@@ -1836,11 +1683,8 @@ min 0.01082    14   12.31 0.2743      15
 1se 0.03626     1   12.35 0.2564       2</code></pre>
 <p>Get the survival distribution predictions (<span class="math inline">\(distr\)</span>) along with the linear predictors (<span class="math inline">\(lp\)</span>):</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> coxlasso<span class="sc">$</span><span class="fu">predict</span>(task, <span class="at">row_ids =</span> split<span class="sc">$</span>test)</span>
 <span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">as.data.table</span>(pred))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>   row_ids      time status     crank        lp     distr
 1:       5 0.9527721  FALSE -2.346574 -2.346574 &lt;list[1]&gt;
@@ -1852,15 +1696,12 @@ min 0.01082    14   12.31 0.2743      15
 <p>So for every patient in the test set, the Lasso Cox model prediction is a linear predictor of the form <span class="math inline">\(lp = \hat{\beta} X_{new}\)</span>. <span class="math inline">\(crank\)</span> stands for continuous ranking score and it’s the same as <span class="math inline">\(lp\)</span> for the Lasso Cox model. The <span class="math inline">\(distr\)</span> predictions are the per-patient survival distribution predictions, implemented by the <code>R</code> package <a href="https://github.com/alan-turing-institute/distr6">distr6</a> which the <a href="https://mlr3proba.mlr-org.com"><strong>mlr3proba</strong></a> imports. See respective <a href="https://mlr3proba.mlr-org.com/reference/PredictionSurv.html">documentation</a> on the different prediction types supported.</p>
 <p>An example of using the <code>distr</code> predictions would be to request for the survival probability at e.g.&nbsp;<span class="math inline">\(1,5,10,20\)</span> years for the first two patients in the test set:</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>)</span>
 <span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>ids <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)</span>
 <span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>pred<span class="sc">$</span>distr[ids]<span class="sc">$</span><span class="fu">survival</span>(times)</span>
 <span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a><span class="co"># same logic for the cumulative hazard</span></span>
 <span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a><span class="co"># pred$distr[ids]$cumHazard(times)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>        [,1]      [,2]
 1  0.9889822 0.9930314
@@ -1874,8 +1715,6 @@ min 0.01082    14   12.31 0.2743      15
 <p>We want to test our Lasso Cox model and see how well it was able to <strong>discriminate the patients in the test set</strong>. For this we can use the <span class="math inline">\(lp\)</span> predictions of Lasso Cox model and metrics such as the (time-dependent) C-index and (time-dependent) AUC. <br></p>
 <p><font size="4"> <strong>Harrell’s C-index</strong> <span class="citation" data-cites="Harrell1982">(<a href="#ref-Harrell1982" role="doc-biblioref">Harrell et al. 1982</a>)</span>: </font></p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>harrell_c <span class="ot">&lt;-</span> <span class="fu">msr</span>(<span class="st">"surv.cindex"</span>)</span>
 <span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>harrell_c<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="st">"surv.cindex.harrell"</span></span>
 <span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1885,29 +1724,23 @@ min 0.01082    14   12.31 0.2743      15
 <span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a><span class="co"># harrell_c$predict_type # uses the $crank$ predictions (equal to $lp$ for Lasso Cox</span></span>
 <span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a>pred<span class="sc">$</span><span class="fu">score</span>(harrell_c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>surv.cindex.harrell 
           0.6224306</code></pre>
 <p><br></p>
 <p><font size="4"> <strong>Uno’s C-index</strong> <span class="citation" data-cites="Uno2011">(<a href="#ref-Uno2011" role="doc-biblioref">Uno et al. 2011</a>)</span>: (across all time points of the test set): </font></p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>uno_c <span class="ot">&lt;-</span> <span class="fu">msr</span>(<span class="st">"surv.cindex"</span>, <span class="at">weight_meth =</span> <span class="st">"G2"</span>)</span>
 <span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>uno_c<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="st">"surv.cindex.uno"</span></span>
 <span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Uno's C needs the train data</span></span>
 <span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>pred<span class="sc">$</span><span class="fu">score</span>(uno_c, <span class="at">task =</span> task, <span class="at">train_set =</span> split<span class="sc">$</span>train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>surv.cindex.uno 
       0.5932426</code></pre>
 <p><br></p>
 <p><font size="4"> <strong>Uno’s Integrated AUC</strong> <span class="citation" data-cites="Uno2007">(<a href="#ref-Uno2007" role="doc-biblioref">Uno et al. 2007</a>)</span> (across all time points of the test set): </font></p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>uno_iauc <span class="ot">&lt;-</span> <span class="fu">msr</span>(<span class="st">"surv.uno_auc"</span>)</span>
 <span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>uno_iauc<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="st">"surv.uno_iauc"</span></span>
 <span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a><span class="co"># uno_iauc$param_set$values$integrated # integrated = TRUE by default</span></span>
@@ -1915,21 +1748,17 @@ min 0.01082    14   12.31 0.2743      15
 <span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb81-6"><a href="#cb81-6" aria-hidden="true" tabindex="-1"></a><span class="co"># uno_iauc$properties # needs the train data</span></span>
 <span id="cb81-7"><a href="#cb81-7" aria-hidden="true" tabindex="-1"></a>pred<span class="sc">$</span><span class="fu">score</span>(uno_iauc, <span class="at">task =</span> task, <span class="at">train_set =</span> split<span class="sc">$</span>train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>surv.uno_iauc 
     0.6585791</code></pre>
 <p><br></p>
 <p><font size="4"> <strong>Uno’s AUC at a specific time point</strong>, e.g.&nbsp;<span class="math inline">\(10\)</span> years: </font></p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>uno_auc <span class="ot">&lt;-</span> <span class="fu">msr</span>(<span class="st">"surv.uno_auc"</span>, <span class="at">integrated =</span> <span class="cn">FALSE</span>, <span class="at">times =</span> <span class="dv">10</span>)</span>
 <span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>uno_auc<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="st">"surv.uno_auc.10"</span></span>
 <span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a><span class="co"># needs the train data</span></span>
 <span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>pred<span class="sc">$</span><span class="fu">score</span>(uno_auc, <span class="at">task =</span> task, <span class="at">train_set =</span> split<span class="sc">$</span>train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>surv.uno_auc.10 
       0.667014</code></pre>
@@ -1940,11 +1769,8 @@ min 0.01082    14   12.31 0.2743      15
 <p>We want to test how well our Lasso Cox model was <strong>calibrated</strong>. <span class="citation" data-cites="Andres2018">Andres et al. (<a href="#ref-Andres2018" role="doc-biblioref">2018</a>)</span> and <span class="citation" data-cites="Haider2020">Haider et al. (<a href="#ref-Haider2020" role="doc-biblioref">2020</a>)</span> suggested the distributional (D)-calibration accounting survival probabilities across all times. This can be useful when assessing the entire post-treatment survival prognosis, for example, assessing the post liver transplantation survival utility in <span class="citation" data-cites="Andres2018">Andres et al. (<a href="#ref-Andres2018" role="doc-biblioref">2018</a>)</span>.</p>
 <p><font size="4"> <strong>D-calibration</strong> </font></p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>dcal <span class="ot">&lt;-</span> <span class="fu">msr</span>(<span class="st">"surv.dcalib"</span>)</span>
 <span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>pred<span class="sc">$</span><span class="fu">score</span>(dcal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>surv.dcalib
    0.8342449</code></pre>
@@ -1955,50 +1781,38 @@ min 0.01082    14   12.31 0.2743      15
 <p>Usually we derive an estimation of the error between the survival distributions (<span class="math inline">\(distr\)</span> predictions) of the patients in the test set and their actual survival outcomes (corresponding to the survival task’s <code>time</code> and <code>status</code> variables). The most frequently used metric is the Brier Score <span class="citation" data-cites="Graf1999">(<a href="#ref-Graf1999" role="doc-biblioref">Graf et al. 1999</a>)</span>: <br></p>
 <p><font size="4"> <strong>Integrated Brier Score (IBS)</strong> (across all time points of the test set): </font></p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>ibrier <span class="ot">&lt;-</span> <span class="fu">msr</span>(<span class="st">"surv.brier"</span>, <span class="at">proper =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ibrier$help() # see documentation</span></span>
 <span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ibrier$predict_type # uses the `distr` predictions</span></span>
 <span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a><span class="co"># better to use the train data for the Kaplan-Meier estimation of the censoring distribution, but can use the test set as well</span></span>
 <span id="cb87-6"><a href="#cb87-6" aria-hidden="true" tabindex="-1"></a>pred<span class="sc">$</span><span class="fu">score</span>(ibrier, <span class="at">task =</span> task, <span class="at">train_set =</span> split<span class="sc">$</span>train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>surv.graf 
 0.1157316</code></pre>
 <p>We can also get the <em>standard error</em> of IBS (the above result is the mean across all the test set’s patients) as follows:</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>ibrier_se <span class="ot">&lt;-</span> <span class="fu">msr</span>(<span class="st">"surv.brier"</span>, <span class="at">proper =</span> <span class="cn">TRUE</span>, <span class="at">se =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>pred<span class="sc">$</span><span class="fu">score</span>(ibrier_se, <span class="at">task =</span> task, <span class="at">train_set =</span> split<span class="sc">$</span>train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code> surv.graf 
 0.01795861</code></pre>
 <p><br></p>
 <p><font size="4"> <strong>Brier Score at a specific time point</strong>, e.g.&nbsp;<span class="math inline">\(10\)</span> years: </font></p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>brier10 <span class="ot">&lt;-</span> <span class="fu">msr</span>(<span class="st">"surv.brier"</span>, <span class="at">proper =</span> <span class="cn">TRUE</span>, <span class="at">integrated =</span> <span class="cn">FALSE</span>, <span class="at">times =</span> <span class="dv">10</span>)</span>
 <span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>brier10<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="st">"surv.graf.10"</span></span>
 <span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a><span class="co"># better to use the train data for the Kaplan-Meier estimation of the censoring distribution, but can use the test set as well</span></span>
 <span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a>pred<span class="sc">$</span><span class="fu">score</span>(brier10, <span class="at">task =</span> task, <span class="at">train_set =</span> split<span class="sc">$</span>train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>surv.graf.10 
    0.1755639</code></pre>
 <p><br></p>
 <p><font size="4"> <strong>Right-censored Logarithmic Loss score</strong> (RCLL) <span class="citation" data-cites="Avati2020 Sonabend2022">(<a href="#ref-Avati2020" role="doc-biblioref">Avati et al. 2020</a>; <a href="#ref-Sonabend2022" role="doc-biblioref">Sonabend 2022</a>)</span>: </font></p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>rcll <span class="ot">&lt;-</span> <span class="fu">msr</span>(<span class="st">"surv.rcll"</span>)</span>
 <span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a>pred<span class="sc">$</span><span class="fu">score</span>(rcll)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>surv.rcll 
  4.781513</code></pre>
@@ -2024,18 +1838,13 @@ Note
 <p>We will perform a <strong>stratified split</strong> of the BRCA-TCGA survival task to training and test sets (with a <span class="math inline">\(80\%/20\%\)</span> ratio as before). Stratification on the censoring indicator <code>status</code> is important because we want our training and test sets to have the same censoring distribution as the initial dataset. Thus we can avoid measuring performance on test sets with severely different censoring distributions that might influence the performance scores.</p>
 <p>Stratify survival task by <code>status</code>:</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>coxlasso<span class="sc">$</span><span class="fu">reset</span>() <span class="co"># un-train model</span></span>
 <span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a>task<span class="sc">$</span>col_roles<span class="sc">$</span>stratum <span class="ot">&lt;-</span> <span class="st">"status"</span></span>
 <span id="cb95-4"><a href="#cb95-4" aria-hidden="true" tabindex="-1"></a><span class="co"># task</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>Next, we define the type of resampling (<code>?mlr_resamplings_subsampling</code>), train the Lasso Cox model on all training sets (<span class="math inline">\(100\)</span>) and store the fitted models for feature selection and evaluation:</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 100 times train/test split (80% for training, 20% for validation)</span></span>
 <span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a>subsampling <span class="ot">&lt;-</span> <span class="fu">rsmp</span>(<span class="st">"subsampling"</span>, <span class="at">repeats =</span> <span class="dv">100</span>, <span class="at">ratio =</span> <span class="fl">0.8</span>)</span>
 <span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2044,17 +1853,13 @@ Note
 <span id="cb96-6"><a href="#cb96-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">task =</span> task, <span class="at">learner =</span> coxlasso,</span>
 <span id="cb96-7"><a href="#cb96-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> subsampling, <span class="at">store_models =</span> <span class="cn">TRUE</span>, <span class="at">store_backends =</span> <span class="cn">TRUE</span></span>
 <span id="cb96-8"><a href="#cb96-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p>We can use all the aforementioned evaluation metrics to measure the performance of the Lasso Cox models on the <span class="math inline">\(100\)</span> different test sets. Note that if a metric needs the training dataset it is automatically provided by the <code>ResampleResult</code> object (<code>rr</code>):</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>measures <span class="ot">&lt;-</span> <span class="fu">list</span>(harrell_c, uno_c, uno_iauc, uno_auc, ibrier, brier10, rcll, dcal)</span>
 <span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb97-3"><a href="#cb97-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> rr<span class="sc">$</span><span class="fu">score</span>(<span class="at">measures =</span> measures)</span>
 <span id="cb97-4"><a href="#cb97-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>    task_id learner_id resampling_id iteration surv.cindex.harrell surv.cindex.uno 
 1: BRCA-TCGA  Lasso Cox   subsampling         1           0.5679167       0.6090304
@@ -2073,8 +1878,6 @@ Note
 Hidden columns: task, learner, resampling, prediction</code></pre>
 <p>We extract and visualize the discrimination and calibration (resampled) performance of our Lasso Cox model using several evaluation metrics:</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
 <span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb99-3"><a href="#cb99-3" aria-hidden="true" tabindex="-1"></a><span class="co"># C-indexes, AUCs (integrated and at t = 10 years)</span></span>
@@ -2102,7 +1905,6 @@ Hidden columns: task, learner, resampling, prediction</code></pre>
 <span id="cb99-25"><a href="#cb99-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
 <span id="cb99-26"><a href="#cb99-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Discrimination Measures"</span>) <span class="sc">+</span></span>
 <span id="cb99-27"><a href="#cb99-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -2111,8 +1913,6 @@ Hidden columns: task, learner, resampling, prediction</code></pre>
 </figure>
 </div>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="co"># different scales for each measure, so we separate the plots</span></span>
 <span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
 <span id="cb100-3"><a href="#cb100-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2148,7 +1948,6 @@ Hidden columns: task, learner, resampling, prediction</code></pre>
 <span id="cb100-33"><a href="#cb100-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Right-censored Log Loss"</span>) <span class="sc">+</span></span>
 <span id="cb100-34"><a href="#cb100-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
 <span id="cb100-35"><a href="#cb100-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.title.x =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <p align="left">
 <img alt="1" src="./fig/mlr3_calibration_BS.png" width="49%"> <img alt="2" src="./fig/mlr3_calibration_RCLL.png" width="49%"> <i>Calibration performance of Lasso Cox on the TCGA-BRCA dataset (expression data of the PAM50 genes and the variables age and ethnicity). Performance metrics used are the Integrated Brier Score (IBS), the Brier Score at 10 years and the Right-Censored Logarithmic Loss (RCLL). The dataset was split to training/validation sets 100 times to allow for the quantification of uncertainty in the different performance estimates.</i>
@@ -2158,8 +1957,6 @@ Hidden columns: task, learner, resampling, prediction</code></pre>
 <h4 class="unnumbered anchored" data-anchor-id="feature-stability-analysis-1">Feature stability analysis</h4>
 <p>We can extract the selected features from all <span class="math inline">\(100\)</span> trained Lasso Cox models and create a frequency selection table:</p>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get selected features from all trained learners in a list</span></span>
 <span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a>sf_list <span class="ot">&lt;-</span> <span class="fu">lapply</span>(rr<span class="sc">$</span>learners, <span class="cf">function</span>(learner) {</span>
 <span id="cb101-3"><a href="#cb101-3" aria-hidden="true" tabindex="-1"></a>  learner<span class="sc">$</span><span class="fu">selected_features</span>()</span>
@@ -2170,7 +1967,6 @@ Hidden columns: task, learner, resampling, prediction</code></pre>
 <span id="cb101-8"><a href="#cb101-8" aria-hidden="true" tabindex="-1"></a>fs_res <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">table</span>(<span class="fu">unlist</span>(sf_list)), <span class="at">decreasing =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb101-9"><a href="#cb101-9" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">as.vector</span>(<span class="fu">unname</span>(fs_res))</span>
 <span id="cb101-10"><a href="#cb101-10" aria-hidden="true" tabindex="-1"></a>tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">feat_name =</span> <span class="fu">names</span>(fs_res), <span class="at">times =</span> times, <span class="at">freq =</span> times <span class="sc">/</span> n)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code># A tibble: 35 × 3
    feat_name times  freq
@@ -2194,8 +1990,6 @@ Hidden columns: task, learner, resampling, prediction</code></pre>
 <li>Zucknick’s metric (extension of Jaccard index that considers the correlation between the features; <span class="citation" data-cites="Zucknick2008">Zucknick, Richardson, and Stronach (<a href="#ref-Zucknick2008" role="doc-biblioref">2008</a>)</span>):</li>
 </ol>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
 <span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>jac <span class="ot">&lt;-</span> stabm<span class="sc">::</span><span class="fu">stabilityJaccard</span>(<span class="at">features =</span> sf_list, <span class="at">correction.for.chance =</span> <span class="st">"none"</span>)</span>
 <span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a>nog <span class="ot">&lt;-</span> stabm<span class="sc">::</span><span class="fu">stabilityNogueira</span>(<span class="at">features =</span> sf_list, <span class="at">p =</span> <span class="fu">length</span>(task<span class="sc">$</span>feature_names))</span>
@@ -2208,7 +2002,6 @@ Hidden columns: task, learner, resampling, prediction</code></pre>
 <span id="cb103-10"><a href="#cb103-10" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb103-11"><a href="#cb103-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb103-12"><a href="#cb103-12" aria-hidden="true" tabindex="-1"></a>tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">jaccard =</span> jac, <span class="at">nogueira =</span> nog, <span class="at">zucknick =</span> zuck)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code># A tibble: 1 × 3
   jaccard nogueira zucknick
@@ -2228,10 +2021,7 @@ Hidden columns: task, learner, resampling, prediction</code></pre>
 <section id="r-session-info" class="level1 unlisted unnumbered">
 <h1 class="unlisted unnumbered">R session info</h1>
 <div class="cell">
-<details open="">
-<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
 <pre class="border"><code>R version 4.3.1 (2023-06-16)
 Platform: x86_64-apple-darwin20 (64-bit)
