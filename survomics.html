@@ -2,11 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.353">
+<meta name="generator" content="quarto-1.3.450">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-03-09">
+<meta name="dcterms.date" content="2024-03-11">
 
 <title>Supplemental information for ‘Tutorial on survival modeling with applications to omics data’</title>
 <style>
@@ -145,6 +145,7 @@ div.csl-indent {
   <li><a href="#feature-stability-analysis-1" id="toc-feature-stability-analysis-1" class="nav-link" data-scroll-target="#feature-stability-analysis-1">Feature stability analysis</a></li>
   </ul></li>
   </ul></li>
+  <li><a href="#multi-omics-integrative-modeling" id="toc-multi-omics-integrative-modeling" class="nav-link" data-scroll-target="#multi-omics-integrative-modeling">Multi-omics integrative modeling</a></li>
   <li><a href="#r-session-info" id="toc-r-session-info" class="nav-link" data-scroll-target="#r-session-info">R session info</a></li>
   </ul>
 </nav>
@@ -164,7 +165,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 9, 2024</p>
+      <p class="date">March 11, 2024</p>
     </div>
   </div>
   
@@ -174,10 +175,10 @@ div.csl-indent {
 
 </header>
 
-<p><br> This is an <a href="http://rmarkdown.rstudio.com">R Markdown</a> supplement for the article <a href="https://doi.org/10.1093/bioinformatics/btae132"><strong><em>Tutorial on survival modeling with applications to omics data</em></strong></a> <span class="citation" data-cites="Zhao2024">(<a href="#ref-Zhao2024" role="doc-biblioref">Z. Zhao et al. 2024</a>)</span>.</p>
+<p><br> This is a step-by-step R tutorial using <a href="https://www.cancer.gov/about-nci/organization/ccg/research/structural-genomics/tcga">The Cancer Genome Atlas</a> (TCGA) survival and omics data for the article <a href="https://doi.org/10.1093/bioinformatics/btae132"><strong><em>Tutorial on survival modeling with applications to omics data</em></strong></a> <span class="citation" data-cites="Zhao2024">(<a href="#ref-Zhao2024" role="doc-biblioref">Z. Zhao et al. 2024</a>)</span>.</p>
 <section id="introduction" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="introduction">Introduction</h2>
-<p><a href="https://www.cancer.gov/about-nci/organization/ccg/research/structural-genomics/tcga">The Cancer Genome Atlas</a> (TCGA) provides an enormous collection of cancer data sets, including survival, clinical and multi-omics data.</p>
+<p>The TCGA database provides an enormous collection of cancer data sets, including survival, clinical and multi-omics data.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -220,15 +221,14 @@ We will use TCGA data to demonstrate:
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"SGL"</span>)</span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"psbcGroup"</span>)</span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"psbcSpeedUp"</span>)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"GGally"</span>)</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"BhGLM"</span>)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"risksetROC"</span>)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"riskRegression"</span>)</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"peperr"</span>)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"c060"</span>)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"rms"</span>)</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"survAUC"</span>)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"regplot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"BhGLM"</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"risksetROC"</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"riskRegression"</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"peperr"</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"c060"</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"rms"</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"survAUC"</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"regplot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
@@ -678,7 +678,7 @@ Score (logrank) test = 8.66  on 2 df,   p=0.01</code></pre>
 <section id="penalized-cox-models" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="penalized-cox-models">Penalized Cox models</h4>
 <p>For computational efficiency, we will use only the mRNA-Seq features corresponding to the PAM50 genes <span class="citation" data-cites="Parker2009">(<a href="#ref-Parker2009" role="doc-biblioref">Parker et al. 2009</a>)</span> instead of the variance filtered genes from the previous section. We perform an investigation of the relationships between the mRNA-Seq features, two clinical variables (i.e.&nbsp;the patients’ age at diagnosis and their ethnicity) and the survival outcomes.</p>
-<p>The <code>R</code> package <a href="https://CRAN.R-project.org/package=glmnet"><strong>glmnet</strong></a> <span class="citation" data-cites="Friedman2010">(<a href="#ref-Friedman2010" role="doc-biblioref">Friedman, Hastie, and Tibshirani 2010</a>)</span> is very computationally efficient to run Lasso and Elastic Net Cox models. Lasso has a tuning parameter <span class="math inline">\(\lambda\)</span> to control the penalty strength of the coefficients which can be optimized by cross-validation (CV) via function <code>cv.glmnet()</code>. The <code>glmnet()</code> and <code>cv.glmnet()</code> functions provide the argument <code>penalty.factor</code> to allow different shrinkages for different features, which makes sense if one includes both clinical/demographic variables and omics features and does not want to perform feature selection for the clinical/demographic variables.</p>
+<p>The <code>R</code> package <a href="https://CRAN.R-project.org/package=glmnet"><strong>glmnet</strong></a> <span class="citation" data-cites="Friedman2010">(<a href="#ref-Friedman2010" role="doc-biblioref">Friedman, Hastie, and Tibshirani 2010</a>)</span> is very computationally efficient to run Lasso and Elastic Net Cox models. Lasso has a tuning parameter <span class="math inline">\(\lambda\)</span> to control the penalty strength of the coefficients which can be optimized by cross-validation (CV) via function <code>cv.glmnet()</code>. The <code>glmnet()</code> and <code>cv.glmnet()</code> functions provide the argument <code>penalty.factor</code> to allow different shrinkage for different features, which makes sense if one includes both clinical/demographic variables and omics features and does not want to perform feature selection for the clinical/demographic variables.</p>
 <div class="cell">
 <details open="">
 <summary>Code</summary>
@@ -708,7 +708,7 @@ Score (logrank) test = 8.66  on 2 df,   p=0.01</code></pre>
 <span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>cols[allnames <span class="sc">%in%</span> beta.positive] <span class="ot">&lt;-</span> <span class="st">"seagreen3"</span></span>
 <span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>cols[allnames <span class="sc">%in%</span> beta.negative] <span class="ot">&lt;-</span> <span class="st">"hotpink"</span></span>
 <span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a><span class="co"># drwa coefficient paths of a Lasso Cox model</span></span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a><span class="co"># draw coefficient paths of a Lasso Cox model</span></span>
 <span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>plotmo<span class="sc">::</span><span class="fu">plot_glmnet</span>(mod,</span>
 <span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">s =</span> lambda_optimal, <span class="at">col =</span> cols,</span>
 <span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="fu">expression</span>(log <span class="sc">~</span> <span class="er">~</span>lambda), <span class="at">ylab =</span> <span class="fu">expression</span>(beta)</span>
@@ -958,7 +958,7 @@ MIA        0.0000  0.0000 -0.0180</code></pre>
 </figure>
 </div>
 <p><br></p>
-<p>Note that <strong>psbcGroup</strong> cannot distinguish mandatory (unpenalized) covariates with omics features, see <span class="citation" data-cites="Zucknick2015">Zucknick, Saadati, and Benner (<a href="#ref-Zucknick2015" role="doc-biblioref">2015</a>)</span> for an extended Bayesian Lasso Cox model. The following code implements the Bayesian Lasso Cox model with mandatory covariates through the <code>R</code> package <a href="https://CRAN.R-project.org/package=psbcSpeedUp"><strong>psbcSpeedUp</strong></a> <span class="citation" data-cites="Zhao2023b">(<a href="#ref-Zhao2023b" role="doc-biblioref">Z. Zhao et al. 2023</a>)</span>.</p>
+<p>Note that <strong>psbcGroup</strong> cannot distinguish mandatory (unpenalized) covariates with omics features, see <span class="citation" data-cites="Zucknick2015">Zucknick, Saadati, and Benner (<a href="#ref-Zucknick2015" role="doc-biblioref">2015</a>)</span> for an extended Bayesian Lasso Cox model. <span id="psbcSpeedUp"></span> The following code implements the Bayesian Lasso Cox model with mandatory covariates through the <code>R</code> package <a href="https://CRAN.R-project.org/package=psbcSpeedUp"><strong>psbcSpeedUp</strong></a> <span class="citation" data-cites="Zhao2023b">(<a href="#ref-Zhao2023b" role="doc-biblioref">Z. Zhao et al. 2023</a>)</span>.</p>
 <div class="cell">
 <details open="">
 <summary>Code</summary>
@@ -1313,7 +1313,7 @@ Survival prediction in Cox models
 <section id="overall-metrics" class="level4 unnumbered">
 <h4 class="unnumbered anchored" data-anchor-id="overall-metrics">Overall metrics</h4>
 <p><font size="4"> <strong>Time-dependent Brier score</strong> </font></p>
-<p>The <code>R</code> package <a href="https://CRAN.R-project.org/package=riskRegression"><strong>riskRegression</strong></a> can assess the prediction error curves of survival models based on the time-dependent Brier score. Similar to the time-dependent AUC, one needs to first calculate the linear predictors (<span class="math inline">\(lp\)</span>) from a frequentist or Bayesian Cox model, and then use <code>survival::coxph()</code> to regress the survival outcomes on the linear predictor, which is prepared as input of <code>riskRegression::Score()</code> to estimate the (time-dependent) Brier score.</p>
+<p>The <code>R</code> package <a href="https://CRAN.R-project.org/package=riskRegression"><strong>riskRegression</strong></a> can assess the prediction error curves of survival models based on the time-dependent Brier score. Similar to the time-dependent AUC, one needs to first calculate the linear predictors (<span class="math inline">\(lp\)</span>) from a frequentist or Bayesian Cox model, and then use <code>survival::coxph()</code> to regress the survival outcomes on the linear predictor, which is prepared as input of <code>riskRegression::Score()</code> to estimate the (time-dependent) Brier score. If the survival model was fitted via the <code>R</code> package <a href="#psbcSpeedUp"><strong>psbcSpeedUp</strong></a>, the curve of the time-dependent Brier score can be drawn by using the function <code>psbcSpeedUp::plotBrier()</code>.</p>
 <div class="cell">
 <details open="">
 <summary>Code</summary>
@@ -2155,6 +2155,13 @@ Hidden columns: task, learner, resampling, prediction</code></pre>
 </section>
 </section>
 </section>
+<section id="multi-omics-integrative-modeling" class="level1 unnumbered">
+<h1 class="unnumbered">Multi-omics integrative modeling</h1>
+<p>Integration of multi-omics data from various types of omics profiling technologies can improve our understanding of complex disease mechanisms holistically, and hence improve prediction of disease progression and survival <span class="citation" data-cites="Hasin2017 Subramanian2020 Vandereyken2023">(<a href="#ref-Hasin2017" role="doc-biblioref">Hasin, Seldin, and Lusis 2017</a>; <a href="#ref-Subramanian2020" role="doc-biblioref">Subramanian et al. 2020</a>; <a href="#ref-Vandereyken2023" role="doc-biblioref">Vandereyken et al. 2023</a>)</span>. One obvious benefit of multi-omics data is the availability of biological information from multiple, partly redundant levels, i.e., different modalities, which allows for the assessment of associations within and between different omics datasets.</p>
+<p>A naive strategy for multi-omics data analysis is to treat all the omics features equally and independently, which may lead to a worse performance in comparison to methods that take into account the group structure. A recent large-scale benchmarking study for survival prediction using TCGA multi-omics data demonstrated a slightly improved survival prediction performance when taking into account the group structure of the multi-omics data sets <span class="citation" data-cites="Herrmann2021">(<a href="#ref-Herrmann2021" role="doc-biblioref">Herrmann et al. 2021</a>)</span>. However, <span class="citation" data-cites="Herrmann2021">Herrmann et al. (<a href="#ref-Herrmann2021" role="doc-biblioref">2021</a>)</span> did not evaluate the survival model performance in terms of feature selection, i.e., selection of the most prognostic omics variables or features. To capture associations within modalities of omics features, penalized regressions with a <span class="math inline">\(\ell_2\)</span>-norm penalty or Bayesian methods with a group lasso prior can become useful. Focusing on feature selection or parsimonious effects is often beneficial for the purpose of clinical implementation, where one can use the sparse Group-Lasso Cox <span class="citation" data-cites="Simon2013">(<a href="#ref-Simon2013" role="doc-biblioref">N. Simon et al. 2013</a>)</span> and Bayesian Cox with elastic priors <span class="citation" data-cites="Lee2015">(<a href="#ref-Lee2015" role="doc-biblioref">Lee, Chakraborty, and Sun 2015</a>)</span>.</p>
+<p>To capture associations between modalities of omics features, including their overlapping or nested and hierarchical relationships, the use of biological network structures can become useful, as for example in the Bayesian Cox model with spike-and-slab and MRF priors <span class="citation" data-cites="Madjar2021">(<a href="#ref-Madjar2021" role="doc-biblioref">Madjar et al. 2021</a>)</span>. There is an increasing knowledge of biological interconnections across various molecular profiles, and systems biology approaches are being developed that try to capture these deep insights when modeling or predicting disease mechanisms <span class="citation" data-cites="Yan2018 Karimi2022">(<a href="#ref-Yan2018" role="doc-biblioref">Yan et al. 2018</a>; <a href="#ref-Karimi2022" role="doc-biblioref">Karimi et al. 2022</a>)</span>. There is a number of review and benchmarking studies of the methodologies for multi-omics integration, although these reviews do not focus specifically on survival applications; for example, <span class="citation" data-cites="Herrmann2021">Herrmann et al. (<a href="#ref-Herrmann2021" role="doc-biblioref">2021</a>)</span> for penalized regression-based methods, boosting-based methods and random forest-based methods; <span class="citation" data-cites="Agamah2022">Agamah et al. (<a href="#ref-Agamah2022" role="doc-biblioref">2022</a>)</span> for network analyses, <span class="citation" data-cites="Ickstadt2018">Ickstadt, Schäfer, and Zucknick (<a href="#ref-Ickstadt2018" role="doc-biblioref">2018</a>)</span> and <span class="citation" data-cites="Chu2022">Chu et al. (<a href="#ref-Chu2022" role="doc-biblioref">2022</a>)</span> for Bayesian approaches; and <span class="citation" data-cites="Kang2022">Kang, Ko, and Mersha (<a href="#ref-Kang2022" role="doc-biblioref">2022</a>)</span> for deep learning methods.</p>
+<p>However, to achieve a comprehensive and biologically meaningful integration of high-dimensional multi-omics data, there is a need for continued development of computational and statistical approaches that consider both technical and biological intricacies of the data and technologies, respectively <span class="citation" data-cites="Wissel2023">(<a href="#ref-Wissel2023" role="doc-biblioref">Wissel, Rowson, and Boeva 2023</a>)</span>. This is currently a very active research field, and we expect to see many improved multi-omics methods for survival prediction in the future.</p>
+</section>
 <section id="r-session-info" class="level1 unnumbered">
 <h1 class="unnumbered">R session info</h1>
 <div class="cell">
@@ -2265,6 +2272,9 @@ loaded via a namespace (and not attached):
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-Agamah2022" class="csl-entry" role="listitem">
+Agamah, Francis E., Jumamurat R. Bayjanov, Anna Niehues, Kelechi F. Njoku, Michelle Skelton, Gaston K. Mazandu, Thomas H. A. Ederveen, Nicola Mulder, Emile R. Chimusa, and Peter A. C. ’t Hoen. 2022. <span>“Computational Approaches for Network-Based Integrative Multi-Omics Analysis.”</span> <em>Frontiers in Molecular Biosciences</em> 9 (November): 967205. <a href="https://doi.org/10.3389/fmolb.2022.967205">https://doi.org/10.3389/fmolb.2022.967205</a>.
+</div>
 <div id="ref-Andres2018" class="csl-entry" role="listitem">
 Andres, Axel, Aldo Montano-Loza, Russell Greiner, Max Uhlich, Ping Jin, Bret Hoehn, David Bigam, James Andrew Mark Shapiro, and Norman Mark Kneteman. 2018. <span>“A Novel Learning Algorithm to Predict Individual Survival After Liver Transplantation for Primary Sclerosing Cholangitis.”</span> Edited by Yinglin Xia. <em><span>PLOS</span> <span>ONE</span></em> 13 (3): e0193523. <a href="https://doi.org/10.1371/journal.pone.0193523">https://doi.org/10.1371/journal.pone.0193523</a>.
 </div>
@@ -2289,6 +2299,9 @@ Breheny, Patrick, and Jian Huang. 2015. <span>“Group Descent Algorithms for No
 <div id="ref-Breheny2021" class="csl-entry" role="listitem">
 Breheny, Patrick, Yaohui Zeng, and Ryan Kurth. 2021. <span>“Grpreg: Regularization Paths for Regression Models with Grouped Covariates.”</span> <em>R Package Version 3.4.0.</em> <a href="https://CRAN.R-project.org/package=grpreg" class="uri">https://CRAN.R-project.org/package=grpreg</a> (23 January 2023, date last accessed).
 </div>
+<div id="ref-Chu2022" class="csl-entry" role="listitem">
+Chu, Jiadong et al. 2022. <span>“The Application of <span>B</span>ayesian Methods in Cancer Prognosis and Prediction.”</span> <em>Cancer Genom. Proteom.</em> 19 (1): 1–11. <a href="https://doi.org/10.21873/cgp.20298">https://doi.org/10.21873/cgp.20298</a>.
+</div>
 <div id="ref-Friedman2010" class="csl-entry" role="listitem">
 Friedman, Jerome, Trevor Hastie, and Robert Tibshirani. 2010. <span>“Regularization Paths for Generalized Linear Models via Coordinate Descent.”</span> <em>Journal of Statistical Software</em> 33 (1): 1–22. <a href="https://doi.org/10.18637/jss.v033.i01">https://doi.org/10.18637/jss.v033.i01</a>.
 </div>
@@ -2301,20 +2314,41 @@ Haider, Humza, Bret Hoehn, Sarah Davis, and Russell Greiner. 2020. <span>“<spa
 <div id="ref-Harrell1982" class="csl-entry" role="listitem">
 Harrell, Frank E., Robert M. Califf, David B. Pryor, Kerry L. Lee, and Robert A. Rosati. 1982. <span>“<span class="nocase">Evaluating the Yield of Medical Tests</span>.”</span> <em>JAMA: The Journal of the American Medical Association</em> 247 (18): 2543–46. <a href="https://doi.org/10.1001/jama.1982.03320430047030">https://doi.org/10.1001/jama.1982.03320430047030</a>.
 </div>
+<div id="ref-Hasin2017" class="csl-entry" role="listitem">
+Hasin, Yehudit, Marcus Seldin, and Aldons Lusis. 2017. <span>“Multi-Omics Approaches to Disease.”</span> <em>Genome Biol.</em> 18 (August): 83. <a href="https://doi.org/10.1186/s13059-017-1215-1">https://doi.org/10.1186/s13059-017-1215-1</a>.
+</div>
 <div id="ref-Heagerty2005" class="csl-entry" role="listitem">
 Heagerty, Patrick J., and Yingye Zheng. 2005. <span>“<span class="nocase">Survival Model Predictive Accuracy and ROC Curves</span>.”</span> <em>Biometrics</em> 61 (1): 92–105. <a href="https://doi.org/10.1111/J.0006-341X.2005.030814.X">https://doi.org/10.1111/J.0006-341X.2005.030814.X</a>.
+</div>
+<div id="ref-Herrmann2021" class="csl-entry" role="listitem">
+Herrmann, Moritz et al. 2021. <span>“Large-Scale Benchmark Study of Survival Prediction Methods Using Multi-Omics Data.”</span> <em>Brief. Bioinform.</em> 22 (3): bbaa167. <a href="https://doi.org/10.1093/bib/bbaa167">https://doi.org/10.1093/bib/bbaa167</a>.
+</div>
+<div id="ref-Ickstadt2018" class="csl-entry" role="listitem">
+Ickstadt, Katja, Martin Schäfer, and Manuela Zucknick. 2018. <span>“Toward Integrative Bayesian Analysis in Molecular Biology.”</span> <em>Annual Review of Statistics and Its Application</em> 5 (1): 141–67. <a href="https://doi.org/10.1146/annurev-statistics-031017-100438">https://doi.org/10.1146/annurev-statistics-031017-100438</a>.
 </div>
 <div id="ref-John2020" class="csl-entry" role="listitem">
 John, Christopher R, David Watson, Dominic Russ, Katriona Goldmann, Michael Ehrenstein, Costantino Pitzalis, Myles Lewis, and Michael Barnes. 2020. <span>“<span>M3C</span>: Monte Carlo Reference-Based Consensus Clustering.”</span> <em>Scientific Reports</em> 10 (1): 1816. <a href="https://doi.org/10.1038/s41598-020-58766-1">https://doi.org/10.1038/s41598-020-58766-1</a>.
 </div>
+<div id="ref-Kang2022" class="csl-entry" role="listitem">
+Kang, Mingon, Euiseong Ko, and Tesfaye B Mersha. 2022. <span>“A Roadmap for Multi-Omics Data Integration Using Deep Learning.”</span> <em>Briefings in Bioinformatics</em> 23 (1): bbab454. <a href="https://doi.org/10.1093/bib/bbab454">https://doi.org/10.1093/bib/bbab454</a>.
+</div>
+<div id="ref-Karimi2022" class="csl-entry" role="listitem">
+Karimi, Mohammad Reza, Amir Hossein Karimi, Shamsozoha Abolmaali, Mehdi Sadeghi, and Ulf Schmitz. 2022. <span>“Prospects and Challenges of Cancer Systems Medicine: From Genes to Disease Networks.”</span> <em>Briefings in Bioinformatics</em> 23 (1): bbab343. <a href="https://doi.org/10.1093/bib/bbab343">https://doi.org/10.1093/bib/bbab343</a>.
+</div>
 <div id="ref-Lang2019" class="csl-entry" role="listitem">
 Lang, Michel, Martin Binder, Jakob Richter, Patrick Schratz, Florian Pfisterer, Stefan Coors, Quay Au, Giuseppe Casalicchio, Lars Kotthoff, and Bernd Bischl. 2019. <span>“<span class="nocase">mlr3: A modern object-oriented machine learning framework in R</span>.”</span> <em>Journal of Open Source Software</em> 4 (44): 1903. <a href="https://doi.org/10.21105/JOSS.01903">https://doi.org/10.21105/JOSS.01903</a>.
 </div>
+<div id="ref-Lee2015" class="csl-entry" role="listitem">
+Lee, Kyu Ha, Sounak Chakraborty, and Jianguo Sun. 2015. <span>“Survival Prediction and Variable Selection with Simultaneous Shrinkage and Grouping Priors.”</span> <em>Stat. Anal. Data Min.</em> 8 (2): 114–27. <a href="https://doi.org/10.1002/sam.11266">https://doi.org/10.1002/sam.11266</a>.
+</div>
 <div id="ref-Lee2021" class="csl-entry" role="listitem">
-Lee, Kyu Ha, Sounak Chakraborty, and Jianguo Sun. 2021. <span>“<span class="nocase">psbcGroup: Penalized Parametric and Semiparametric Bayesian Survival Models with Shrinkage and Grouping Priors</span>.”</span> <em>R Package Version 1.5.</em> <a href="https://CRAN.R-project.org/package=psbcGroup" class="uri">https://CRAN.R-project.org/package=psbcGroup</a> (23 January 2023, date last accessed).
+———. 2021. <span>“<span class="nocase">psbcGroup: Penalized Parametric and Semiparametric Bayesian Survival Models with Shrinkage and Grouping Priors</span>.”</span> <em>R Package Version 1.5.</em> <a href="https://CRAN.R-project.org/package=psbcGroup" class="uri">https://CRAN.R-project.org/package=psbcGroup</a> (23 January 2023, date last accessed).
 </div>
 <div id="ref-Love2014" class="csl-entry" role="listitem">
 Love, Michael I., Wolfgang Huber, and Simon Anders. 2014. <span>“Moderated Estimation of Fold Change and Dispersion for RNA-Seq Data with DESeq2.”</span> <em>Genome Biology</em> 15: 550. <a href="https://doi.org/10.1186/s13059-014-0550-8">https://doi.org/10.1186/s13059-014-0550-8</a>.
+</div>
+<div id="ref-Madjar2021" class="csl-entry" role="listitem">
+Madjar, Katrin et al. 2021. <span>“Combining Heterogeneous Subgroups with Graph-Structured Variable Selection Priors for <span>C</span>ox Regression.”</span> <em>BMC Bioinformatics</em> 22: 586. <a href="https://doi.org/10.1186/s12859-021-04483-z">https://doi.org/10.1186/s12859-021-04483-z</a>.
 </div>
 <div id="ref-Mounir2019" class="csl-entry" role="listitem">
 Mounir, Marta AND Silva, Mohamed AND Lucchetta. 2019. <span>“New Functionalities in the TCGAbiolinks Package for the Study and Integration of Cancer Data from GDC and GTEx.”</span> <em>PLOS Computational Biology</em> 15 (3): 1–18. <a href="https://doi.org/10.1371/journal.pcbi.1006701">https://doi.org/10.1371/journal.pcbi.1006701</a>.
@@ -2328,6 +2362,9 @@ Parker, Joel S., Michael Mullins, Maggie C. U. Cheang, Samuel Leung, David Voduc
 <div id="ref-Sill2014" class="csl-entry" role="listitem">
 Sill, Martin, Thomas Hielscher, Natalia Becker, and Manuela Zucknick. 2014. <span>“<span class="nocase">c060</span>: Extended Inference with Lasso and Elastic-Net Regularized Cox and Generalized Linear Models.”</span> <em>Journal of Statistical Software</em> 62 (5): 1–22. <a href="https://doi.org/10.18637/jss.v062.i05">https://doi.org/10.18637/jss.v062.i05</a>.
 </div>
+<div id="ref-Simon2013" class="csl-entry" role="listitem">
+Simon, Noah et al. 2013. <span>“A Sparse-Group Lasso.”</span> <em>J. Comput. Graph Stat.</em> 22 (2): 231–45. <a href="https://doi.org/10.1080/10618600.2012.681250">https://doi.org/10.1080/10618600.2012.681250</a>.
+</div>
 <div id="ref-Simon2019" class="csl-entry" role="listitem">
 Simon, Noah, Jerome Friedman, Trevor Hastie, and Rob Tibshirani. 2019. <span>“<span class="nocase">SGL: Fit a GLM (or Cox Model) with a Combination of Lasso and Group Lasso Regularization</span>.”</span> <em>R Package Version 1.3.</em> <a href="https://CRAN.R-project.org/package=SGL" class="uri">https://CRAN.R-project.org/package=SGL</a> (23 January 2023, date last accessed).
 </div>
@@ -2340,11 +2377,23 @@ Sonabend, Raphael. 2022. <span>“Scoring Rules in Survival Analysis.”</span> 
 <div id="ref-Sonabend2021" class="csl-entry" role="listitem">
 Sonabend, Raphael, Franz J. Király, Andreas Bender, Bernd Bischl, and Michel Lang. 2021. <span>“<span class="nocase">mlr3proba: an R package for machine learning in survival analysis</span>.”</span> <em>Bioinformatics</em> 37 (17): 2789–91. <a href="https://doi.org/10.1093/BIOINFORMATICS/BTAB039">https://doi.org/10.1093/BIOINFORMATICS/BTAB039</a>.
 </div>
+<div id="ref-Subramanian2020" class="csl-entry" role="listitem">
+Subramanian, Indhupriya, Srikant Verma, Shiva Kumar, Abhay Jere, and Krishanpal Anamika. 2020. <span>“Multi-Omics Data Integration, Interpretation, and Its Application.”</span> <em>Bioinformatics and Biology Insights</em> 14 (January): 117793221989905. <a href="https://doi.org/10.1177/1177932219899051">https://doi.org/10.1177/1177932219899051</a>.
+</div>
 <div id="ref-Uno2011" class="csl-entry" role="listitem">
 Uno, Hajime, Tianxi Cai, Michael J. Pencina, Ralph B. D’Agostino, and L. J. Wei. 2011. <span>“<span class="nocase">On the C-statistics for evaluating overall adequacy of risk prediction procedures with censored survival data</span>.”</span> <em>Statistics in Medicine</em> 30 (10): 1105–17. <a href="https://doi.org/10.1002/SIM.4154">https://doi.org/10.1002/SIM.4154</a>.
 </div>
 <div id="ref-Uno2007" class="csl-entry" role="listitem">
 Uno, Hajime, Tianxi Cai, Lu Tian, and L. J. Wei. 2007. <span>“<span class="nocase">Evaluating Prediction Rules for t-Year Survivors With Censored Regression Models</span>.”</span> <em>Journal of the American Statistical Association</em> 102 (478): 527–37. <a href="https://doi.org/10.1198/016214507000000149">https://doi.org/10.1198/016214507000000149</a>.
+</div>
+<div id="ref-Vandereyken2023" class="csl-entry" role="listitem">
+Vandereyken, Katy, Alejandro Sifrim, Bernard Thienpont, and Thierry Voet. 2023. <span>“Methods and Applications for Single-Cell and Spatial Multi-Omics.”</span> <em>Nature Reviews Genetics</em> 24 (8): 494–515. <a href="https://doi.org/10.1038/s41576-023-00580-2">https://doi.org/10.1038/s41576-023-00580-2</a>.
+</div>
+<div id="ref-Wissel2023" class="csl-entry" role="listitem">
+Wissel, David, Daniel Rowson, and Valentina Boeva. 2023. <span>“Systematic Comparison of Multi-Omics Survival Models Reveals a Widespread Lack of Noise Resistance.”</span> <em>Cell Reports Methods</em> 3 (4): 100461. <a href="https://doi.org/10.1016/j.crmeth.2023.100461">https://doi.org/10.1016/j.crmeth.2023.100461</a>.
+</div>
+<div id="ref-Yan2018" class="csl-entry" role="listitem">
+Yan, Jingwen, Shannon L Risacher, Li Shen, and Andrew J. Saykin. 2018. <span>“Network Approaches to Systems Biology Analysis of Complex Disease: Integrative Methods for Multi-Omics Data.”</span> <em>Briefings in Bioinformatics</em> 19 (6): 1370–81. <a href="https://doi.org/10.1093/bib/bbx066">https://doi.org/10.1093/bib/bbx066</a>.
 </div>
 <div id="ref-Yi2019" class="csl-entry" role="listitem">
 Yi, Nengjun, Zaixiang Tang, Xinyan Zhang, and Boyi Guo. 2019. <span>“<span class="nocase">BhGLM: Bayesian hierarchical GLMs and survival models, with applications to genomics and epidemiology</span>.”</span> <em>Bioinformatics</em> 35 (8): 1419–21. <a href="https://doi.org/10.1093/bioinformatics/bty803">https://doi.org/10.1093/bioinformatics/bty803</a>.
@@ -2353,7 +2402,7 @@ Yi, Nengjun, Zaixiang Tang, Xinyan Zhang, and Boyi Guo. 2019. <span>“<span cla
 Zhao, Yingdong, Ming-Chung Li, Mariam M. Konate, Li Chen, Biswajit Das, Chris Karlovich, P. Mickey Williams, Yvonne A. Evrard, James H. Doroshow, and Lisa M. McShane. 2021. <span>“TPM, FPKM, or Normalized Counts? A Comparative Study of Quantification Measures for the Analysis of RNA-Seq Data from the NCI Patient-Derived Models Repository.”</span> <em>Journal of Translational Medicine</em> 19 (1): 269. <a href="https://doi.org/10.1186/s12967-021-02936-w">https://doi.org/10.1186/s12967-021-02936-w</a>.
 </div>
 <div id="ref-Zhao2024" class="csl-entry" role="listitem">
-Zhao, Zhi, John Zobolas, Manuela Zucknick, and Tero Aittokallio. 2024. <span>“<span class="nocase">Tutorial on survival modeling with applications to omics data</span>.”</span> <em>Bioinformatics</em>, March. <a href="https://doi.org/10.1093/BIOINFORMATICS/BTAE132">https://doi.org/10.1093/BIOINFORMATICS/BTAE132</a>.
+Zhao, Zhi, John Zobolas, Manuela Zucknick, and Tero Aittokallio. 2024. <span>“<span class="nocase">Tutorial on survival modeling with applications to omics data</span>.”</span> <em>Bioinformatics</em>, March. <a href="https://doi.org/10.1093/bioinformatics/btae132">https://doi.org/10.1093/bioinformatics/btae132</a>.
 </div>
 <div id="ref-Zhao2023b" class="csl-entry" role="listitem">
 Zhao, Zhi, Manuela Zucknick, Maral Saadati, and Axel Benner. 2023. <span>“Penalized Semiparametric Bayesian Survival Models.”</span> <em>R Package Version 2.0.4.</em> <a href="https://CRAN.R-project.org/package=psbcSpeedUp" class="uri">https://CRAN.R-project.org/package=psbcSpeedUp</a>.

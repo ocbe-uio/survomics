@@ -15,11 +15,11 @@ format:
 knitr::opts_chunk$set(eval = FALSE)
 ```
 <br>
-This is an [R Markdown](http://rmarkdown.rstudio.com) supplement for the article [**_Tutorial on survival modeling with applications to omics data_**](https://doi.org/10.1093/bioinformatics/btae132) [@Zhao2024].
+This is a step-by-step R tutorial using [The Cancer Genome Atlas](https://www.cancer.gov/about-nci/organization/ccg/research/structural-genomics/tcga) (TCGA) survival and omics data for the article [**_Tutorial on survival modeling with applications to omics data_**](https://doi.org/10.1093/bioinformatics/btae132) [@Zhao2024].
 
 ## Introduction {-}
 
-[The Cancer Genome Atlas](https://www.cancer.gov/about-nci/organization/ccg/research/structural-genomics/tcga) (TCGA) provides an enormous collection of cancer data sets, including survival, clinical and multi-omics data.
+The TCGA database provides an enormous collection of cancer data sets, including survival, clinical and multi-omics data.
 
 :::{.callout-tip}
 ## We will use TCGA data to demonstrate:
@@ -54,7 +54,6 @@ library("grpreg")
 library("SGL")
 library("psbcGroup")
 library("psbcSpeedUp")
-library("GGally")
 library("BhGLM")
 library("risksetROC")
 library("riskRegression")
@@ -167,7 +166,7 @@ SummarizedExperiment::assays(dat)$unstranded[1:5, 1:2]
 # save the downloaded large data on sever
 save(dat, file = "TCGA_data.rda")
 # load the downloaded large data and work on PC
-load("/Users/zhiz/TCGA_data.rda")
+load("TCGA_data.rda")
 ```
 
 ```{.border}
@@ -527,7 +526,7 @@ We perform an investigation of the relationships between the mRNA-Seq features, 
 
 The `R` package [**glmnet**](https://CRAN.R-project.org/package=glmnet) [@Friedman2010] is very computationally efficient to run Lasso and Elastic Net Cox models.
 Lasso has a tuning parameter $\lambda$ to control the penalty strength of the coefficients which can be optimized by cross-validation (CV) via function `cv.glmnet()`.
-The `glmnet()` and `cv.glmnet()` functions provide the argument `penalty.factor` to allow different shrinkages for different features, which makes sense if one includes both clinical/demographic variables and omics features and does not want to perform feature selection for the clinical/demographic variables.
+The `glmnet()` and `cv.glmnet()` functions provide the argument `penalty.factor` to allow different shrinkage for different features, which makes sense if one includes both clinical/demographic variables and omics features and does not want to perform feature selection for the clinical/demographic variables.
 
 ```{r}
 ## Lasso Cox model
@@ -556,7 +555,7 @@ cols <- rep("gray80", length(allnames))
 cols[allnames %in% beta.positive] <- "seagreen3"
 cols[allnames %in% beta.negative] <- "hotpink"
 
-# drwa coefficient paths of a Lasso Cox model
+# draw coefficient paths of a Lasso Cox model
 plotmo::plot_glmnet(mod,
   label = TRUE, s = lambda_optimal, col = cols,
   xlab = expression(log ~ ~lambda), ylab = expression(beta)
@@ -831,8 +830,8 @@ dev.off()
 
 <br>
 
-Note that **psbcGroup** cannot distinguish mandatory (unpenalized) covariates with omics features, see @Zucknick2015 for an extended Bayesian Lasso Cox model. 
-The following code implements the Bayesian Lasso Cox model with mandatory covariates through the `R` package [**psbcSpeedUp**](https://CRAN.R-project.org/package=psbcSpeedUp) [@Zhao2023b].
+Note that **psbcGroup** cannot distinguish mandatory (unpenalized) covariates with omics features, see @Zucknick2015 for an extended Bayesian Lasso Cox model. []{#psbcSpeedUp} 
+The following code implements the Bayesian Lasso Cox model with mandatory covariates through the `R` package [**psbcSpeedUp**](https://CRAN.R-project.org/package=psbcSpeedUp) [@Zhao2023b]. 
 
 ```{r}
 # Bayesian Cox model with Lasso prior and mandatory covariates
@@ -1190,7 +1189,8 @@ See a [calibration plot](#slopeCali) in the following section [Graphical computa
 <font size="4"> **Time-dependent Brier score** </font> 
 
 The `R` package [**riskRegression**](https://CRAN.R-project.org/package=riskRegression) can assess the prediction error curves of survival models based on the time-dependent Brier score.
-Similar to the time-dependent AUC, one needs to first calculate the linear predictors ($lp$) from a frequentist or Bayesian Cox model, and then use `survival::coxph()` to regress the survival outcomes on the linear predictor, which is prepared as input of `riskRegression::Score()` to estimate the (time-dependent) Brier score.
+Similar to the time-dependent AUC, one needs to first calculate the linear predictors ($lp$) from a frequentist or Bayesian Cox model, and then use `survival::coxph()` to regress the survival outcomes on the linear predictor, which is prepared as input of `riskRegression::Score()` to estimate the (time-dependent) Brier score. 
+If the survival model was fitted via the `R` package [**psbcSpeedUp**](#psbcSpeedUp), the curve of the time-dependent Brier score can be drawn by using the function `psbcSpeedUp::plotBrier()`. 
 
 ```{r}
 ## time-dependent Brier score
@@ -2112,6 +2112,24 @@ tibble::tibble(jaccard = jac, nogueira = nog, zucknick = zuck)
 ```
 
 From the above values we conclude that the stability of Lasso Cox's feature selection is neither poor nor excellent but somewhere in between.
+
+# Multi-omics integrative modeling {-}
+
+Integration of multi-omics data from various types of omics profiling technologies can improve our understanding of complex disease mechanisms holistically, and hence improve prediction of disease progression and survival [@Hasin2017;@Subramanian2020;@Vandereyken2023]. 
+One obvious benefit of multi-omics data is the availability of biological information from multiple, partly redundant levels, i.e., different modalities, which allows for the assessment of associations within and between different omics datasets. 
+
+A naive strategy for multi-omics data analysis is to treat all the omics features equally and independently, which may lead to a worse performance in comparison to methods that take into account the group structure. 
+A recent large-scale benchmarking study for survival prediction using TCGA multi-omics data demonstrated a slightly improved survival prediction performance when taking into account the group structure of the multi-omics data sets [@Herrmann2021]. 
+However, @Herrmann2021 did not evaluate the survival model performance in terms of feature selection, i.e., selection of the most prognostic omics variables or features. 
+To capture associations within modalities of omics features, penalized regressions with a $\ell_2$-norm penalty or Bayesian methods with a group lasso prior can become useful. 
+Focusing on feature selection or parsimonious effects is often beneficial for the purpose of clinical implementation, where one can use the sparse Group-Lasso Cox [@Simon2013] and Bayesian Cox with elastic priors [@Lee2015]. 
+
+To capture associations between modalities of omics features, including their overlapping or nested and hierarchical relationships, the use of biological network structures can become useful, as for example in the Bayesian Cox model with spike-and-slab and MRF priors [@Madjar2021]. 
+There is an increasing knowledge of biological interconnections across various molecular profiles, and systems biology approaches are being developed that try to capture these deep insights when modeling or predicting disease mechanisms [@Yan2018;@Karimi2022]. 
+There is a number of review and benchmarking studies of the  methodologies for multi-omics integration, although these reviews do not focus specifically on survival applications; for example, @Herrmann2021 for penalized regression-based methods, boosting-based methods and random forest-based methods; @Agamah2022 for network analyses, @Ickstadt2018 and @Chu2022 for Bayesian approaches; and @Kang2022 for deep learning methods. 
+
+However, to achieve a comprehensive and biologically meaningful integration of high-dimensional multi-omics data, there is a need for continued development of computational and statistical approaches that consider both technical and biological intricacies of the data and technologies, respectively [@Wissel2023]. 
+This is currently a very active research field, and we expect to see many improved multi-omics methods for survival prediction in the future.
 
 # R session info {-}
 
