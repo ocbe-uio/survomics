@@ -1,6 +1,6 @@
 project:
   type: website
-  output-dir: .
+  output-dir: docs
 
 theme:
   light: default
@@ -35,11 +35,3 @@ format:
       sidebar-width: 350px
       margin-width: 350px
     
-  # sidebar:
-  #   title: "Survive with Omics"
-  #   pinned: true
-  #   tools: 
-  #     - icon: github
-  #       href: https://github.com/ocbe-uio/survomics
-  #       text: "Survive with Omics repo"
- 
