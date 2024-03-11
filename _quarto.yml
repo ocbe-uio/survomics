@@ -30,6 +30,8 @@ website:
 
 format:
   html:
+    theme: default
+    toc: true
     page-layout: full
     grid: 
       sidebar-width: 350px
