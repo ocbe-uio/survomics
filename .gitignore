@@ -7,8 +7,3 @@ MANIFEST.txt
 TCGA_data.rda
 
 .quarto/
-#site_libs/
-search.json
-index.html
-
-/.quarto/
