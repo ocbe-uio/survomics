@@ -5,3 +5,5 @@
 GDCdata/
 MANIFEST.txt
 TCGA_data.rda
+
+/.quarto/

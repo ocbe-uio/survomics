@@ -1,9 +1,11 @@
 ---
 title: "Supplemental information for 'Tutorial on survival modeling with applications to omics data'"
 date: "last-modified"
-bibliography: "references.bib"
 toc: true
+toc-title: "**Table of Contents**"
 toc-depth: 4
+appendix-style: none
+bibliography: "references.bib"
 fig-align: left
 format:
   html:
@@ -2131,7 +2133,7 @@ There is a number of review and benchmarking studies of the  methodologies for m
 However, to achieve a comprehensive and biologically meaningful integration of high-dimensional multi-omics data, there is a need for continued development of computational and statistical approaches that consider both technical and biological intricacies of the data and technologies, respectively [@Wissel2023]. 
 This is currently a very active research field, and we expect to see many improved multi-omics methods for survival prediction in the future.
 
-# R session info {-}
+# R session info {.unlisted .unnumbered}
 
 ```{r}
 sessionInfo()
@@ -2236,4 +2238,10 @@ loaded via a namespace (and not attached):
 [181] biomaRt_2.56.1              rlang_1.1.1                 uuid_1.1-1                 
 [184] fansi_1.0.4                 prodlim_2023.03.31          psbcSpeedUp_2.0.4
 ```
+
+```{r, echo=FALSE}
+knitr::write_bib("knitr", "references.bib")
+```
+
+# References 
 

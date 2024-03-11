@@ -1,0 +1,43 @@
+project:
+  type: website
+  output-dir: _site
+
+theme:
+  light: default
+  dark: [default, theme-dark.scss]
+  
+website:
+  page-navigation: true
+  title: "Survive with Omics"
+  repo-url: https://github.com/ocbe-uio/survomics
+  repo-actions: [source, issue]
+  
+  navbar:
+    background: light
+    search: true
+    tools:
+      - icon: github
+        menu:
+          - text: Source Code
+            url:  https://github.com/ocbe-uio/survomics
+          - text: Report a Bug
+            url:  https://github.com/ocbe-uio/survomics/issues/new
+
+
+format:
+  html:
+    grid: 
+      # body-width: 2000px
+      sidebar-width: 350px
+      margin-width: 350px
+    toc: true
+    code-overflow: wrap
+    
+  # sidebar:
+  #   title: "Survive with Omics"
+  #   pinned: true
+  #   tools: 
+  #     - icon: github
+  #       href: https://github.com/ocbe-uio/survomics
+  #       text: "Survive with Omics repo"
+ 
