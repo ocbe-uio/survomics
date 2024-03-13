@@ -19,7 +19,7 @@ website:
   navbar:
     background: light
     search: true
-    
+    collapse-below: sm
     left: 
       - href: survomics.html#introduction
         text: "Introduction"
