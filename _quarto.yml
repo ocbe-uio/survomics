@@ -49,6 +49,14 @@ format:
   html:
     theme: default
     toc: true
+    appendix-style: none
+    bibliography: "references.bib"
+    fig-align: left
+    
+    lang: en
+    language: 
+      title-block-published: "UPDATED"
+      
     page-layout: full
     grid: 
       sidebar-width: 350px
