@@ -19,7 +19,24 @@ website:
   navbar:
     background: light
     search: true
-    tools:
+    
+    left: 
+      - href: survomics.html#introduction
+        text: "Introduction"
+      - href: survomics.html#tcga-survival-and-clinical-data
+        text: "Clinical data"
+      - href: survomics.html#tcga-omics-data
+        text: "Omics data"
+      - href: survomics.html#survival-analysis-with-low-dimensional-input-data
+        text: "Low dimension"
+      - href: survomics.html#survival-analysis-with-high-dimensional-input-data
+        text: "High dimension"
+      - href: survomics.html#survival-model-validation
+        text: "Model validation"
+      - href: survomics.html#multi-omics-integrative-modeling
+        text: "Multi-omics"
+        
+    right: 
       - icon: github
         menu:
           - text: Source Code

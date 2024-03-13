@@ -1,6 +1,9 @@
 ---
 title: "Supplemental information for 'Tutorial on survival modeling with applications to omics data'"
-date: "last-modified"
+date: last-modified
+lang: en
+language: 
+  title-block-published: "UPDATED"
 toc: true
 toc-title: "**Table of Contents**"
 toc-depth: 4
