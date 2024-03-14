@@ -59,3 +59,10 @@ format:
       sidebar-width: 350px
       margin-width: 350px
     
+  # pdf:
+  #   geometry:
+  #     - bottom=17mm
+  #     - left=15mm
+  #     - right=15mm
+  #   fontsize: 16pt
+    

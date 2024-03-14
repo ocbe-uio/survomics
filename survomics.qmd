@@ -214,7 +214,7 @@ RNA_count <- RNA_count[, rownames(clin)]
 Here, we use the GitHub version TCGAbiolinks_2.29.6. 
 If you encounter some issues when using this tutorial, please check your installed **TCGAbiolinks** version. 
 If necessary, you can re-install the package from its [GitHub repository](https://github.com/BioinformaticsFMRP/TCGAbiolinks.git).
-Otherwise, download the data from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10044741.svg)](https://doi.org/10.5281/zenodo.10044741) and load the `dat` object with: `load("TCGA_data.rda")`.
+Otherwise, download the data from [here](https://doi.org/10.5281/zenodo.10044741) and load the `dat` object with: `load("TCGA_data.rda")`.
 
 - The package **TCGAbiolinks** cannot retrieve any proteomics or metabolomics data.
 It is always useful to look at your data first, in particular the data type and dimensions (i.e. numbers of rows and columns for a data frame or matrix).
@@ -2110,7 +2110,7 @@ tibble::tibble(jaccard = jac, nogueira = nog, zucknick = zuck)
 
 From the above values we conclude that the stability of Lasso Cox's feature selection is neither poor nor excellent but somewhere in between.
 
-# Multi-omics integrative modeling {-}
+## Multi-omics integrative modeling {-}
 
 Integration of multi-omics data from various types of omics profiling technologies can improve our understanding of complex disease mechanisms holistically, and hence improve prediction of disease progression and survival [@Hasin2017;@Subramanian2020;@Vandereyken2023]. 
 One obvious benefit of multi-omics data is the availability of biological information from multiple, partly redundant levels, i.e., different modalities, which allows for the assessment of associations within and between different omics datasets. 
@@ -2128,7 +2128,7 @@ There is a number of review and benchmarking studies of the  methodologies for m
 However, to achieve a comprehensive and biologically meaningful integration of high-dimensional multi-omics data, there is a need for continued development of computational and statistical approaches that consider both technical and biological intricacies of the data and technologies, respectively [@Wissel2023]. 
 This is currently a very active research field, and we expect to see many improved multi-omics methods for survival prediction in the future.
 
-# R session info {.unlisted .unnumbered}
+## R session info {.unlisted .unnumbered}
 
 ```{r}
 sessionInfo()
@@ -2238,5 +2238,5 @@ loaded via a namespace (and not attached):
 knitr::write_bib("knitr", "references.bib")
 ```
 
-# References 
+## References 
 
