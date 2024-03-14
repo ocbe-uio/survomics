@@ -3,7 +3,6 @@ title: "Supplemental information for 'Tutorial on survival modeling with applica
 date: last-modified
 toc: true
 toc-title: "**Table of Contents**"
-toc-depth: 4
 ---
 
 ```{r, include=FALSE}
@@ -34,15 +33,18 @@ First we load all necessary libraries used in this tutorial except [**mlr3** lib
 Then we use function `GDCquery_clinic()` from **TCGAbiolinks** package to query and download TCGA survival and clinical data from multiple cancer types:
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Show all R packages"
+
 # load all libraries used in this tutorial except mlr3
-library("TCGAbiolinks")
-library("SummarizedExperiment")
-library("DESeq2")
+library("TCGAbiolinks")         # Bioconductor package
+library("SummarizedExperiment") # Bioconductor package
+library("DESeq2")               # Bioconductor package
+library("M3C")                  # Bioconductor package
 library("dplyr")
 library("ggplot2")
 library("survival")
 library("survminer")
-library("M3C")
 library("glmnet")
 library("plotmo")
 library("grpreg")
