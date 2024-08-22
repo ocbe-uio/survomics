@@ -1678,7 +1678,7 @@ head(as.data.table(pred))
 
 So for every patient in the test set, the Lasso Cox model prediction is a linear predictor of the form $lp = \hat{\beta} X_{new}$.
 $crank$ stands for continuous ranking score and it's the same as $lp$ for the Lasso Cox model.
-The $distr$ predictions are the per-patient survival distribution predictions, implemented by the `R` package [distr6](https://github.com/alan-turing-institute/distr6) which the [**mlr3proba**](https://mlr3proba.mlr-org.com) imports.
+The $distr$ predictions are the per-patient survival distribution predictions, implemented by the `R` package [distr6](https://github.com/xoopR/distr6) which the [**mlr3proba**](https://mlr3proba.mlr-org.com) imports.
 See respective [documentation](https://mlr3proba.mlr-org.com/reference/PredictionSurv.html) on the different prediction types supported.
 
 An example of using the `distr` predictions would be to request for the survival probability at e.g. $1,5,10,20$ years for the first two patients in the test set:
@@ -1848,7 +1848,9 @@ surv.rcll
 <br>
 
 :::{.callout-note}
-View all evaluation metrics for survival data implemented in [**mlr3proba**](https://mlr3proba.mlr-org.com) [here](https://mlr3proba.mlr-org.com/reference/#survival-measures)
+View all evaluation metrics for survival data implemented in [**mlr3proba**](https://mlr3proba.mlr-org.com) [here](https://mlr3proba.mlr-org.com/reference/#survival-measures).
+Note that [RCLL](https://mlr3proba.mlr-org.com/reference/mlr_measures_surv.rcll.html) is still an experimental measure and there might be issues worth knowing about when using such a measure.
+We generally advise users to carefully read the documentation pages of the measures they are using.
 :::
 
 <br>

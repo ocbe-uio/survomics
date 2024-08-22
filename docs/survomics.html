@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-03-14">
+<meta name="dcterms.date" content="2024-08-22">
 
 <title>Survive with Omics - Supplemental information for ‘Tutorial on survival modeling with applications to omics data’</title>
 <style>
@@ -264,7 +264,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">UPDATED</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 14, 2024</p>
+      <p class="date">August 22, 2024</p>
     </div>
   </div>
   
@@ -1732,7 +1732,7 @@ min 0.01082    14   12.31 0.2743      15
 4:      45 4.5804244  FALSE -1.715041 -1.715041 &lt;list[1]&gt;
 5:      50 5.1279945  FALSE -2.790122 -2.790122 &lt;list[1]&gt;
 6:      54 6.6858316  FALSE -2.466360 -2.466360 &lt;list[1]&gt;</code></pre>
-<p>So for every patient in the test set, the Lasso Cox model prediction is a linear predictor of the form <span class="math inline">\(lp = \hat{\beta} X_{new}\)</span>. <span class="math inline">\(crank\)</span> stands for continuous ranking score and it’s the same as <span class="math inline">\(lp\)</span> for the Lasso Cox model. The <span class="math inline">\(distr\)</span> predictions are the per-patient survival distribution predictions, implemented by the <code>R</code> package <a href="https://github.com/alan-turing-institute/distr6">distr6</a> which the <a href="https://mlr3proba.mlr-org.com"><strong>mlr3proba</strong></a> imports. See respective <a href="https://mlr3proba.mlr-org.com/reference/PredictionSurv.html">documentation</a> on the different prediction types supported.</p>
+<p>So for every patient in the test set, the Lasso Cox model prediction is a linear predictor of the form <span class="math inline">\(lp = \hat{\beta} X_{new}\)</span>. <span class="math inline">\(crank\)</span> stands for continuous ranking score and it’s the same as <span class="math inline">\(lp\)</span> for the Lasso Cox model. The <span class="math inline">\(distr\)</span> predictions are the per-patient survival distribution predictions, implemented by the <code>R</code> package <a href="https://github.com/xoopR/distr6">distr6</a> which the <a href="https://mlr3proba.mlr-org.com"><strong>mlr3proba</strong></a> imports. See respective <a href="https://mlr3proba.mlr-org.com/reference/PredictionSurv.html">documentation</a> on the different prediction types supported.</p>
 <p>An example of using the <code>distr</code> predictions would be to request for the survival probability at e.g.&nbsp;<span class="math inline">\(1,5,10,20\)</span> years for the first two patients in the test set:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>)</span>
@@ -1866,7 +1866,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>View all evaluation metrics for survival data implemented in <a href="https://mlr3proba.mlr-org.com"><strong>mlr3proba</strong></a> <a href="https://mlr3proba.mlr-org.com/reference/#survival-measures">here</a></p>
+<p>View all evaluation metrics for survival data implemented in <a href="https://mlr3proba.mlr-org.com"><strong>mlr3proba</strong></a> <a href="https://mlr3proba.mlr-org.com/reference/#survival-measures">here</a>. Note that <a href="https://mlr3proba.mlr-org.com/reference/mlr_measures_surv.rcll.html">RCLL</a> is still an experimental measure and there might be issues worth knowing about when using such a measure. We generally advise users to carefully read the documentation pages of the measures they are using.</p>
 </div>
 </div>
 <p><br></p>
