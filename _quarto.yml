@@ -43,7 +43,9 @@ website:
 
 format:
   html:
-    theme: default
+    theme: 
+      light: default
+      dark: [default, theme-dark.scss]
     toc: true
     toc-depth: 4
     appendix-style: none
