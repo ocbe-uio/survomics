@@ -1064,8 +1064,7 @@ We demonstrate the calculation based on both training and validation data.
 ## Survival prediction in Cox models
 
 A Cox proportional hazards model (and Lasso Cox as a consequence) is a semi-parametric model, which means that it does not produce survival distribution predictions by default.
-However, using the function `risksetROC::CoxWeights()` you can transform the `cv.glmnet`'s output linear predictors (`lp`) to survival distribution predictions.
-This transformation internally uses the **Breslow estimator** for the cumulative baseline hazard.
+The function `risksetROC::risksetAUC()` can use `cv.glmnet`'s output linear predictors (`lp`) as markers for estimating time-dependent AUC, i.e. areas under ROC curve at given evaluation time points.
 :::
 
 ```{r}
@@ -1077,35 +1076,34 @@ utimes_validate <- sort(unique(y_validate[y_validate[, 2] == 1, 1]))
 pred_lp_train <- predict(cvfit, newx = x_train, s = cvfit$lambda.min, type = "link")
 pred_lp_validate <- predict(cvfit, newx = x_validate, s = cvfit$lambda.min, type = "link")
 
-## compute time-dependent AUC
-AUC_train <- rep(NA, length(utimes_train))
-AUC_validate <- rep(NA, length(utimes_validate))
-for (j in 1:length(utimes_train)) {
-  out <- risksetROC::CoxWeights(
-    marker = pred_lp_train, Stime = y_train[, 1],
-    status = y_train[, 2], predict.time = utimes_train[j]
-  )
-  AUC_train[j] <- out$AUC
-}
-for (j in 1:length(utimes_validate)) {
-  out <- risksetROC::CoxWeights(
-    marker = pred_lp_validate, Stime = y_validate[, 1],
-    status = y_validate[, 2], predict.time = utimes_validate[j]
-  )
-  AUC_validate[j] <- out$AUC
-}
-
-# draw the time-dependent AUC from the training and validation data sets
+# calculate the time-dependent AUC from the training and validation data sets
+AUC_train <- risksetROC::risksetAUC(
+  Stime = y_train[, "time"],
+  status = y_train[, "status"],
+  marker = pred_lp_train,
+  tmax = max(y_train[, "time"])
+)
+AUC_validate <- risksetROC::risksetAUC(
+  Stime = y_validate[, "time"],
+  status = y_validate[, "status"],
+  marker = pred_lp_validate,
+  tmax = max(y_validate[, "time"])
+)
+# draw the time-dependent AUC
 dat_AUC <- data.frame(
-  tAUC = c(AUC_train, AUC_validate),
+  tAUC = c(AUC_train$AUC, AUC_validate$AUC),
   times = c(utimes_train, utimes_validate),
-  group = c(rep("AUC_train", length(AUC_train)), rep("AUC_validate", length(AUC_validate)))
+  group = c(
+    rep("AUC_train", length(AUC_train$AUC)),
+    rep("AUC_validate", length(AUC_validate$AUC))
+  )
 )
 ggplot(dat_AUC, aes(times, tAUC, group = group, color = group)) +
   xlab("Evaluation time points (year)") +
   ylab("AUC") +
   ylim(0.5, 1) +
   geom_step(direction = "vh") +
+  theme_bw() +
   theme(legend.position = c(0.7, 0.8), legend.title = element_blank())
 ```
 ```{r, echo=FALSE}
@@ -1115,6 +1113,7 @@ ggplot(dat_AUC, aes(times, tAUC, group = group, color = group)) +
   ylab("AUC") +
   ylim(0.5, 1) +
   geom_step(direction = "vh") +
+  theme_bw() +
   theme(legend.position = c(0.7, 0.8), legend.title = element_blank())
 dev.off()
 ```
@@ -1127,22 +1126,18 @@ dev.off()
 The `R` package [**risksetROC**](https://CRAN.R-project.org/package=risksetROC) [@Heagerty2005] provides function `IntegrateAUC()` to estimate integrated AUC.
 
 ```{r}
-# Before computing integrated AUC, first estimate survival probabilities at unique survival times
-surv_prob_train <- unique(survfit(Surv(y_train[, 1], y_train[, 2]) ~ 1)$surv)
-surv_prob_validate <- unique(survfit(Surv(y_validate[, 1], y_validate[, 2]) ~ 1)$surv)
-
 ## integrated AUC (e.g. over tmax=10 years) to get concordance measure based on training data
-(iAUC_train <- risksetROC::IntegrateAUC(AUC_train, utimes_train, surv_prob_train, tmax = 10))
+(iAUC_train <- risksetROC::IntegrateAUC(AUC_train$AUC, AUC_train$utimes, AUC_train$St, tmax = 10))
 ```
 ```{.border}
-[1] 0.6279646
+[1] 0.6758971
 ```
 ```{r}
 ## integrated AUC (e.g. over tmax=10 years) to get concordance measure based on validation data
-(iAUC_validate <- risksetROC::IntegrateAUC(AUC_validate, utimes_validate, surv_prob_validate, tmax = 10))
+(iAUC_validate <- risksetROC::IntegrateAUC(AUC_validate$AUC, AUC_validate$utimes, AUC_validate$St, tmax = 10))
 ```
 ```{.border}
-[1] 0.6318253
+[1] 0.6602153
 ```
 
 <font size="4"> **Time-dependent C-index** </font> 

@@ -1186,7 +1186,7 @@ Important
 <p><font size="4"> <strong>ROC curve</strong> </font></p>
 <p>The <code>R</code> package <a href="https://CRAN.R-project.org/package=risksetROC"><strong>risksetROC</strong></a> <span class="citation" data-cites="Heagerty2005">(<a href="#ref-Heagerty2005" role="doc-biblioref">Heagerty and Zheng 2005</a>)</span> can estimate a ROC curve at an evaluation time point. The following code draws a ROC curve at 5-years survival evaluation time point for the 20% TCGA validation data and based on a Lasso Cox model learned from the 80% training data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>ROC <span class="ot">&lt;-</span> <span class="fu">risksetROC</span>(</span>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>ROC <span class="ot">&lt;-</span> risksetROC<span class="sc">::</span><span class="fu">risksetROC</span>(</span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">Stime =</span> y_validate[, <span class="dv">1</span>], <span class="at">status =</span> y_validate[, <span class="dv">2</span>],</span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">marker =</span> pred_lp, <span class="at">predict.time =</span> <span class="dv">5</span>, <span class="at">method =</span> <span class="st">"Cox"</span>,</span>
 <span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"ROC Curve"</span>, <span class="at">col =</span> <span class="st">"seagreen3"</span>, <span class="at">type =</span> <span class="st">"s"</span>,</span>
@@ -1202,59 +1202,42 @@ Important
 </div>
 <p><br></p>
 <p><font size="4"> <strong>Time-dependent AUC</strong> </font></p>
-<p>Both time-dependent and integrated AUCs can be estimated by the <code>R</code> package <a href="https://CRAN.R-project.org/package=risksetROC"><strong>risksetROC</strong></a>. We demonstrate the calculation based on both training and validation data.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Survival prediction in Cox models
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>A Cox proportional hazards model (and Lasso Cox as a consequence) is a semi-parametric model, which means that it does not produce survival distribution predictions by default. However, using the function <code>risksetROC::CoxWeights()</code> you can transform the <code>cv.glmnet</code>’s output linear predictors (<code>lp</code>) to survival distribution predictions. This transformation internally uses the <strong>Breslow estimator</strong> for the cumulative baseline hazard.</p>
-</div>
-</div>
+<p>With the <code>R</code> package <a href="https://CRAN.R-project.org/package=risksetROC"><strong>risksetROC</strong></a>, the function <code>risksetROC::risksetAUC()</code> can use <code>cv.glmnet</code>’s output linear predictors (<code>lp</code>) as markers for estimating time-dependent AUC, i.e.&nbsp;areas under ROC curve at given evaluation time points. We demonstrate the calculation based on both training and validation data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># unique event times for patients in the training and validation data sets</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>utimes_train <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(y_train[y_train[, <span class="dv">2</span>] <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>]))</span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>utimes_validate <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(y_validate[y_validate[, <span class="dv">2</span>] <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>]))</span>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># markers from the estimated linear predictors of a Lasso Cox model</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>pred_lp_train <span class="ot">&lt;-</span> <span class="fu">predict</span>(cvfit, <span class="at">newx =</span> x_train, <span class="at">s =</span> cvfit<span class="sc">$</span>lambda.min, <span class="at">type =</span> <span class="st">"link"</span>)</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>pred_lp_validate <span class="ot">&lt;-</span> <span class="fu">predict</span>(cvfit, <span class="at">newx =</span> x_validate, <span class="at">s =</span> cvfit<span class="sc">$</span>lambda.min, <span class="at">type =</span> <span class="st">"link"</span>)</span>
 <span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="co"># markers from the estimated linear predictors of a Lasso Cox model</span></span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>pred_lp_train <span class="ot">&lt;-</span> <span class="fu">predict</span>(cvfit, <span class="at">newx =</span> x_train, <span class="at">s =</span> cvfit<span class="sc">$</span>lambda.min, <span class="at">type =</span> <span class="st">"link"</span>)</span>
-<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>pred_lp_validate <span class="ot">&lt;-</span> <span class="fu">predict</span>(cvfit, <span class="at">newx =</span> x_validate, <span class="at">s =</span> cvfit<span class="sc">$</span>lambda.min, <span class="at">type =</span> <span class="st">"link"</span>)</span>
-<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a><span class="do">## compute time-dependent AUC</span></span>
-<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>AUC_train <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="fu">length</span>(utimes_train))</span>
-<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>AUC_validate <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="fu">length</span>(utimes_validate))</span>
-<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(utimes_train)) {</span>
-<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> risksetROC<span class="sc">::</span><span class="fu">CoxWeights</span>(</span>
-<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">marker =</span> pred_lp_train, <span class="at">Stime =</span> y_train[, <span class="dv">1</span>],</span>
-<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">status =</span> y_train[, <span class="dv">2</span>], <span class="at">predict.time =</span> utimes_train[j]</span>
-<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>  AUC_train[j] <span class="ot">&lt;-</span> out<span class="sc">$</span>AUC</span>
-<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(utimes_validate)) {</span>
-<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> risksetROC<span class="sc">::</span><span class="fu">CoxWeights</span>(</span>
-<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">marker =</span> pred_lp_validate, <span class="at">Stime =</span> y_validate[, <span class="dv">1</span>],</span>
-<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">status =</span> y_validate[, <span class="dv">2</span>], <span class="at">predict.time =</span> utimes_validate[j]</span>
-<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a>  AUC_validate[j] <span class="ot">&lt;-</span> out<span class="sc">$</span>AUC</span>
-<span id="cb44-25"><a href="#cb44-25" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb44-26"><a href="#cb44-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-27"><a href="#cb44-27" aria-hidden="true" tabindex="-1"></a><span class="co"># draw the time-dependent AUC from the training and validation data sets</span></span>
-<span id="cb44-28"><a href="#cb44-28" aria-hidden="true" tabindex="-1"></a>dat_AUC <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb44-29"><a href="#cb44-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">tAUC =</span> <span class="fu">c</span>(AUC_train, AUC_validate),</span>
-<span id="cb44-30"><a href="#cb44-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">times =</span> <span class="fu">c</span>(utimes_train, utimes_validate),</span>
-<span id="cb44-31"><a href="#cb44-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">group =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">"AUC_train"</span>, <span class="fu">length</span>(AUC_train)), <span class="fu">rep</span>(<span class="st">"AUC_validate"</span>, <span class="fu">length</span>(AUC_validate)))</span>
-<span id="cb44-32"><a href="#cb44-32" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb44-33"><a href="#cb44-33" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dat_AUC, <span class="fu">aes</span>(times, tAUC, <span class="at">group =</span> group, <span class="at">color =</span> group)) <span class="sc">+</span></span>
-<span id="cb44-34"><a href="#cb44-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Evaluation time points (year)"</span>) <span class="sc">+</span></span>
-<span id="cb44-35"><a href="#cb44-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"AUC"</span>) <span class="sc">+</span></span>
-<span id="cb44-36"><a href="#cb44-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">0.5</span>, <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb44-37"><a href="#cb44-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_step</span>(<span class="at">direction =</span> <span class="st">"vh"</span>) <span class="sc">+</span></span>
-<span id="cb44-38"><a href="#cb44-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.8</span>), <span class="at">legend.title =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the time-dependent AUC from the training and validation data sets</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>AUC_train <span class="ot">&lt;-</span> risksetROC<span class="sc">::</span><span class="fu">risksetAUC</span>(</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Stime =</span> y_train[, <span class="st">"time"</span>],</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">status =</span> y_train[, <span class="st">"status"</span>],</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">marker =</span> pred_lp_train,</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">tmax =</span> <span class="fu">max</span>(y_train[, <span class="st">"time"</span>])</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>AUC_validate <span class="ot">&lt;-</span> risksetROC<span class="sc">::</span><span class="fu">risksetAUC</span>(</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">Stime =</span> y_validate[, <span class="st">"time"</span>],</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">status =</span> y_validate[, <span class="st">"status"</span>],</span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">marker =</span> pred_lp_validate,</span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">tmax =</span> <span class="fu">max</span>(y_validate[, <span class="st">"time"</span>])</span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a><span class="co"># draw the time-dependent AUC</span></span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>dat_AUC <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">tAUC =</span> <span class="fu">c</span>(AUC_train<span class="sc">$</span>AUC, AUC_validate<span class="sc">$</span>AUC),</span>
+<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">times =</span> <span class="fu">c</span>(AUC_train<span class="sc">$</span>utimes, AUC_validate<span class="sc">$</span>utimes),</span>
+<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">group =</span> <span class="fu">c</span>(</span>
+<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rep</span>(<span class="st">"AUC_train"</span>, <span class="fu">length</span>(AUC_train<span class="sc">$</span>AUC)),</span>
+<span id="cb44-25"><a href="#cb44-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rep</span>(<span class="st">"AUC_validate"</span>, <span class="fu">length</span>(AUC_validate<span class="sc">$</span>AUC))</span>
+<span id="cb44-26"><a href="#cb44-26" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb44-27"><a href="#cb44-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-28"><a href="#cb44-28" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dat_AUC, <span class="fu">aes</span>(times, tAUC, <span class="at">group =</span> group, <span class="at">color =</span> group)) <span class="sc">+</span></span>
+<span id="cb44-29"><a href="#cb44-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Evaluation time points (year)"</span>) <span class="sc">+</span></span>
+<span id="cb44-30"><a href="#cb44-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"AUC"</span>) <span class="sc">+</span></span>
+<span id="cb44-31"><a href="#cb44-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="fl">0.5</span>, <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb44-32"><a href="#cb44-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_step</span>(<span class="at">direction =</span> <span class="st">"vh"</span>) <span class="sc">+</span></span>
+<span id="cb44-33"><a href="#cb44-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb44-34"><a href="#cb44-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.7</span>, <span class="fl">0.8</span>), <span class="at">legend.title =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -1264,21 +1247,17 @@ Survival prediction in Cox models
 </div>
 <p><br></p>
 <p><font size="4"> <strong>Integrated AUC</strong> </font></p>
-<p>The <code>R</code> package <a href="https://CRAN.R-project.org/package=risksetROC"><strong>risksetROC</strong></a> <span class="citation" data-cites="Heagerty2005">(<a href="#ref-Heagerty2005" role="doc-biblioref">Heagerty and Zheng 2005</a>)</span> provides function <code>IntegrateAUC()</code> to estimate integrated AUC.</p>
+<p>The <code>R</code> package <a href="https://CRAN.R-project.org/package=risksetROC"><strong>risksetROC</strong></a> provides function <code>risksetROC::IntegrateAUC()</code> to estimate integrated AUC.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Before computing integrated AUC, first estimate survival probabilities at unique survival times</span></span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>surv_prob_train <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">survfit</span>(<span class="fu">Surv</span>(y_train[, <span class="dv">1</span>], y_train[, <span class="dv">2</span>]) <span class="sc">~</span> <span class="dv">1</span>)<span class="sc">$</span>surv)</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>surv_prob_validate <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">survfit</span>(<span class="fu">Surv</span>(y_validate[, <span class="dv">1</span>], y_validate[, <span class="dv">2</span>]) <span class="sc">~</span> <span class="dv">1</span>)<span class="sc">$</span>surv)</span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="do">## integrated AUC (e.g. over tmax=10 years) to get concordance measure based on training data</span></span>
-<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>(iAUC_train <span class="ot">&lt;-</span> risksetROC<span class="sc">::</span><span class="fu">IntegrateAUC</span>(AUC_train, utimes_train, surv_prob_train, <span class="at">tmax =</span> <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="do">## integrated AUC (e.g. over tmax=10 years) to get concordance measure based on training data</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>(iAUC_train <span class="ot">&lt;-</span> risksetROC<span class="sc">::</span><span class="fu">IntegrateAUC</span>(AUC_train<span class="sc">$</span>AUC, AUC_train<span class="sc">$</span>utimes, AUC_train<span class="sc">$</span>St, <span class="at">tmax =</span> <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<pre class="border"><code>[1] 0.6279646</code></pre>
+<pre class="border"><code>[1] 0.6758971</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="do">## integrated AUC (e.g. over tmax=10 years) to get concordance measure based on validation data</span></span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>(iAUC_validate <span class="ot">&lt;-</span> risksetROC<span class="sc">::</span><span class="fu">IntegrateAUC</span>(AUC_validate, utimes_validate, surv_prob_validate, <span class="at">tmax =</span> <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>(iAUC_validate <span class="ot">&lt;-</span> risksetROC<span class="sc">::</span><span class="fu">IntegrateAUC</span>(AUC_validate<span class="sc">$</span>AUC, AUC_validate<span class="sc">$</span>utimes, AUC_validate<span class="sc">$</span>St, <span class="at">tmax =</span> <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<pre class="border"><code>[1] 0.6318253</code></pre>
+<pre class="border"><code>[1] 0.6602153</code></pre>
 <p><font size="4"> <strong>Time-dependent C-index</strong> </font></p>
 <p>The C-index is not proper for <span class="math inline">\(t\)</span>-year predictions, see <span class="citation" data-cites="Blanche2019">Blanche, Kattan, and Gerds (<a href="#ref-Blanche2019" role="doc-biblioref">2019</a>)</span>. Consider using time-dependent AUC or time-dependent Brier score instead. For a time-dependent discrimination index for survival data, see <span class="citation" data-cites="Antolini2005">Antolini et al. (<a href="#ref-Antolini2005" role="doc-biblioref">2005</a>)</span>.</p>
 <p><font size="4"> <strong>C-index</strong> </font></p>
@@ -1352,7 +1331,7 @@ Survival prediction in Cox models
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
-<p><img src="fig/TCGA_surv_brier_t_lasso.png" class="img-fluid figure-img" style="width:50.0%"></p>
+<p><img src="fig/TCGA_surv_brier_t_lasso.png" class="img-fluid figure-img" style="width:60.0%"></p>
 <figcaption class="figure-caption"><em>Time-dependent Brier score based on a Lasso Cox model applied to the BRCA patients data from TCGA. The red line shows the Time-dependent Brier score calculated from the 80% training data, and the green line shows the Time-dependent Brier score calculated from the 20% validation data.</em></figcaption>
 </figure>
 </div>
@@ -1785,7 +1764,7 @@ min 0.01082    14   12.31 0.2743      15
 <span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a><span class="co"># harrell_c # get some details about the measure</span></span>
 <span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a><span class="co"># harrell_c$minimize # FALSE =&gt; higher C-index is better</span></span>
 <span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a><span class="co"># harrell_c$range # [0, 1] =&gt; [min, max]</span></span>
-<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a><span class="co"># harrell_c$predict_type # uses the $crank$ predictions (equal to $lp$ for Lasso Cox)</span></span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a><span class="co"># harrell_c$predict_type # uses the $crank$ predictions (equal to $lp$ for Lasso Cox</span></span>
 <span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a>pred<span class="sc">$</span><span class="fu">score</span>(harrell_c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
