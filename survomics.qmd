@@ -631,7 +631,7 @@ The pre-estimation can be done by a Ridge Cox model, see an example below.
 set.seed(123)
 fit <- cv.glmnet(x, y, family = "cox", alpha = 0, nfolds = 5)
 weights <- abs(1 / as.vector(coef(fit, s = "lambda.min")))
-weights[c(1,2)] = 0 # don't penalize age and ethnicity
+weights[c(1, 2)] <- 0 # don't penalize age and ethnicity
 
 # adaptive Lasso Cox by using cv.glmnet to obtain the 5-fold CV optimal lambda.min or lambda.1se
 cvfit <- cv.glmnet(x, y, family = "cox", nfolds = 5, penalty.factor = weights)
@@ -876,8 +876,10 @@ initial <- list(
   "tauSq" = rexp(p, rate = 1 / 2), "h" = rgamma(priorPara$J, 1, 1)
 )
 # in real application, 'num.reps' should be large enough (e.g. 20000, 40000) and 'chain' to be > 1
-BayesENfit <- psbcEN(survObj, priorPara, initial, rw = FALSE, mcmcPara, 
-                     num.reps = 100, thin = 1, chain = 1)
+BayesENfit <- psbcEN(survObj, priorPara, initial,
+  rw = FALSE, mcmcPara,
+  num.reps = 100, thin = 1, chain = 1
+)
 # burn-in the first half MCMC iterations
 EN_beta_p <- BayesENfit$beta.p[52:101, ]
 colnames(EN_beta_p) <- colnames(x)
@@ -1185,9 +1187,8 @@ See a [calibration plot](#slopeCali) in the following section [Graphical computa
 
 <font size="4"> **Time-dependent Brier score** </font> 
 
-The `R` package [**riskRegression**](https://CRAN.R-project.org/package=riskRegression) can assess the prediction error curves of survival models based on the time-dependent Brier score.
-Similar to the time-dependent AUC, one needs to first calculate the linear predictors ($lp$) from a frequentist or Bayesian Cox model, and then use `survival::coxph()` to regress the survival outcomes on the linear predictor, which is prepared as input of `riskRegression::Score()` to estimate the (time-dependent) Brier score. 
-If the survival model was fitted via the `R` package [**psbcSpeedUp**](#psbcSpeedUp), the curve of the time-dependent Brier score can be drawn by using the function `psbcSpeedUp::plotBrier()`. 
+The `R` package [**riskRegression**](https://CRAN.R-project.org/package=riskRegression) can assess the prediction error curves of survival models based on the time-dependent Brier score. 
+The function `riskRegression::Score()` works with predicted event probabilities as input, i.e. $R(t|X)=1-S(t|X)$ where $S(t|X)$ is the predicted survival chance for subject $X$ at time $t$. 
 
 ```{r}
 ## time-dependent Brier score
@@ -1197,22 +1198,34 @@ If the survival model was fitted via the `R` package [**psbcSpeedUp**](#psbcSpee
 
 y_train_surv <- Surv(y_train[, "time"], y_train[, "status"])
 y_validate_surv <- Surv(y_validate[, "time"], y_validate[, "status"])
+utime_train <- !duplicated(y_train[, "time"])
+utime_validate <- !duplicated(y_validate[, "time"])
+
 set.seed(123)
 cvfit <- cv.glmnet(x_train, y_train_surv, family = "cox", nfolds = 5, penalty.factor = pf)
-lp_train <- predict(cvfit, newx = x_train, s = cvfit$lambda.min, type = "link")
-lp_validate <- predict(cvfit, newx = x_validate, s = cvfit$lambda.min, type = "link")
 
-# prepare data format suited for function Score() from the riskRegression package
-data_train <- data.frame(time = y_train[, "time"], status = y_train[, "status"], lp = as.vector(lp_train))
-data_validate <- data.frame(time = y_validate[, "time"], status = y_validate[, "status"], lp = as.vector(lp_validate))
-lasso_train <- coxph(Surv(time, status) ~ lp, data = data_train, y = TRUE, x = TRUE)
-lasso_validate <- coxph(Surv(time, status) ~ lp, data = data_validate, y = TRUE, x = TRUE)
+# calculate predicted event probabilities
+sfit0 <- survival::survfit(cvfit, s = cvfit$lambda.min, x = x_train, y = y_train_surv, newx = x_train[utime_train, ])
+Rt_train <- 1 - diag(summary(sfit0, times = y_train[utime_train, "time"])$surv)
+sfit <- survival::survfit(cvfit, s = cvfit$lambda.min, x = x_train, y = y_train_surv, newx = x_validate[utime_validate, ])
+Rt_validate <- 1 - diag(summary(sfit, times = y_validate[utime_validate, "time"])$surv)
 
 # calculate Brier scores based on both training and validation data
-Brier_train <- riskRegression::Score(list("Brier_train" = lasso_train), formula = Surv(time, status) ~ 1, data = data_train, conf.int = FALSE, metrics = "brier", summary = "ibs", times = sort(unique(data_train$time)))$Brier$score
-Brier_validate <- riskRegression::Score(list("Brier_validate" = lasso_validate), formula = Surv(time, status) ~ 1, data = data_validate, conf.int = FALSE, metrics = "brier", summary = "ibs", times = sort(unique(data_validate$time)))$Brier$score
+Brier_train <- riskRegression::Score(list("Brier_train" = Rt_train),
+  formula = Surv(time, status) ~ 1,
+  data = data.frame(y_train[utime_train, ]),
+  conf.int = FALSE, null.model = FALSE,
+  metrics = "brier", summary = "ibs",
+  times = y_train[utime_train, "time"]
+)$Brier$score
+Brier_validate <- riskRegression::Score(list("Brier_validate" = Rt_validate),
+  formula = Surv(time, status) ~ 1,
+  data = data.frame(y_validate[utime_validate, ]),
+  conf.int = FALSE, null.model = FALSE,
+  metrics = "brier", summary = "ibs",
+  times = y_validate[utime_validate, "time"]
+)$Brier$score
 Brier_score <- rbind(Brier_train, Brier_validate)
-Brier_score <- Brier_score[Brier_score$model != "Null model", ]
 
 ggplot(Brier_score, aes(times, Brier, group = model, color = model)) +
   xlab("Evaluation time points (year)") +
@@ -1226,7 +1239,8 @@ ggplot(Brier_score, aes(times, Brier, group = model, color = model)) +
   xlab("Evaluation time points (year)") +
   ylab("Brier score") +
   geom_step(direction = "vh") +
-  theme(legend.position = c(0.15, 0.88), legend.title = element_blank())
+  theme_bw(base_size = 14) +
+  theme(legend.position = c(0.8, 0.2), legend.title = element_blank())
 dev.off()
 ```
 ![_Time-dependent Brier score based on a Lasso Cox model applied to the BRCA patients data from TCGA. The red line shows the Time-dependent Brier score calculated from the 80% training data, and the green line shows the Time-dependent Brier score calculated from the 20% validation data._](fig/TCGA_surv_brier_t_lasso.png){width=60%}
@@ -1236,14 +1250,25 @@ dev.off()
 <font size="4"> **Integrated Brier score (IBS)** </font> 
 
 The function `riskRegression::Score()` also summarizes IBS when specifying argument `summary = "ibs"`.
-We can extract the IBS corresponding to the largest evaluation time point.
+It returns both time-dependent Brier score and IBS at given evaluation time points as follows.
 
 ```{r}
-Brier_validate_ibs <- Brier_validate[Brier_validate$model == "Brier_validate", ]
-Brier_validate_ibs$IBS[which.max(Brier_validate_ibs$times)]
+Brier_validate
 ```
 ```{.border}
-[1] 0.1721158
+              model        times      Brier        IBS
+             <fctr>        <num>      <num>      <num>
+  1: Brier_validate  0.002737851 0.04212694 0.00000000
+  2: Brier_validate  0.027378508 0.04231610 0.03791424
+  3: Brier_validate  0.082135524 0.04736244 0.04084882
+  4: Brier_validate  0.147843943 0.04755453 0.04374376
+  5: Brier_validate  0.213552361 0.04774858 0.04491630
+ ---                                                  
+194: Brier_validate 11.920602327 0.42092779 0.29032468
+195: Brier_validate 11.939767283 0.44343782 0.29053431
+196: Brier_validate 14.171115674 0.42048940 0.31461012
+197: Brier_validate 17.226557153 0.39844414 0.33338972
+198: Brier_validate 19.455167693 0.29702857 0.34084178
 ```
 
 <br>
@@ -1684,7 +1709,7 @@ See respective [documentation](https://mlr3proba.mlr-org.com/reference/Predictio
 An example of using the `distr` predictions would be to request for the survival probability at e.g. $1,5,10,20$ years for the first two patients in the test set:
 ```{r}
 times <- c(1, 5, 10, 20)
-ids <- c(1,2)
+ids <- c(1, 2)
 pred$distr[ids]$survival(times)
 
 # same logic for the cumulative hazard
