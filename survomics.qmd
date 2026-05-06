@@ -1060,6 +1060,12 @@ dev.off()
 The `R` package [**riskRegression**](https://CRAN.R-project.org/package=riskRegression) can assess the prediction error curves of survival models based on the time-dependent AUC 
 The function `riskRegression::Score()` works with predicted event probabilities as input, i.e. $R(t|X)=1-S(t|X)$ where $S(t|X)$ is the predicted survival chance for subject $X$ at time $t$. 
 
+:::{.callout-note}
+## riskRegression for ROC curve
+
+The `R` package [**riskRegression**](https://CRAN.R-project.org/package=riskRegression) also provides a function `plotROC()` to plot a ROC curve given an evaluation time based on the object obtained with function `Score()`.
+:::
+
 ```{r}
 ## time-dependent AUC
 

@@ -1206,6 +1206,19 @@ Important
 <p><br></p>
 <p><font size="4"> <strong>Time-dependent AUC</strong> </font></p>
 <p>The <code>R</code> package <a href="https://CRAN.R-project.org/package=riskRegression"><strong>riskRegression</strong></a> can assess the prediction error curves of survival models based on the time-dependent AUC The function <code>riskRegression::Score()</code> works with predicted event probabilities as input, i.e.&nbsp;<span class="math inline">\(R(t|X)=1-S(t|X)\)</span> where <span class="math inline">\(S(t|X)\)</span> is the predicted survival chance for subject <span class="math inline">\(X\)</span> at time <span class="math inline">\(t\)</span>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+riskRegression for ROC curve
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>R</code> package <a href="https://CRAN.R-project.org/package=riskRegression"><strong>riskRegression</strong></a> also provides a function <code>plotROC()</code> to plot a ROC curve given an evaluation time based on the object obtained with function <code>Score()</code>.</p>
+</div>
+</div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="do">## time-dependent AUC</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
