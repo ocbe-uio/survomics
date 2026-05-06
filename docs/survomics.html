@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-03-12">
+<meta name="dcterms.date" content="2026-05-06">
 
 <title>Survive with Omics - Supplemental information for ‘Tutorial on survival modeling with applications to omics data’</title>
 <style>
@@ -267,7 +267,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">UPDATED</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 12, 2025</p>
+      <p class="date">May 6, 2026</p>
     </div>
   </div>
   
@@ -1315,38 +1315,40 @@ Survival prediction in Cox models
 <span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>y_validate_surv <span class="ot">&lt;-</span> <span class="fu">Surv</span>(y_validate[, <span class="st">"time"</span>], y_validate[, <span class="st">"status"</span>])</span>
 <span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>utime_train <span class="ot">&lt;-</span> <span class="sc">!</span><span class="fu">duplicated</span>(y_train[, <span class="st">"time"</span>])</span>
 <span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>utime_validate <span class="ot">&lt;-</span> <span class="sc">!</span><span class="fu">duplicated</span>(y_validate[, <span class="st">"time"</span>])</span>
-<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a>cvfit <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(x_train, y_train_surv, <span class="at">family =</span> <span class="st">"cox"</span>, <span class="at">nfolds =</span> <span class="dv">5</span>, <span class="at">penalty.factor =</span> pf)</span>
-<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate predicted event probabilities</span></span>
-<span id="cb53-15"><a href="#cb53-15" aria-hidden="true" tabindex="-1"></a>sfit0 <span class="ot">&lt;-</span> survival<span class="sc">::</span><span class="fu">survfit</span>(cvfit, <span class="at">s =</span> cvfit<span class="sc">$</span>lambda.min, <span class="at">x =</span> x_train, <span class="at">y =</span> y_train_surv, <span class="at">newx =</span> x_train[utime_train, ])</span>
-<span id="cb53-16"><a href="#cb53-16" aria-hidden="true" tabindex="-1"></a>Rt_train <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">diag</span>(<span class="fu">summary</span>(sfit0, <span class="at">times =</span> y_train[utime_train, <span class="st">"time"</span>])<span class="sc">$</span>surv)</span>
-<span id="cb53-17"><a href="#cb53-17" aria-hidden="true" tabindex="-1"></a>sfit <span class="ot">&lt;-</span> survival<span class="sc">::</span><span class="fu">survfit</span>(cvfit, <span class="at">s =</span> cvfit<span class="sc">$</span>lambda.min, <span class="at">x =</span> x_train, <span class="at">y =</span> y_train_surv, <span class="at">newx =</span> x_validate[utime_validate, ])</span>
-<span id="cb53-18"><a href="#cb53-18" aria-hidden="true" tabindex="-1"></a>Rt_validate <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">diag</span>(<span class="fu">summary</span>(sfit, <span class="at">times =</span> y_validate[utime_validate, <span class="st">"time"</span>])<span class="sc">$</span>surv)</span>
-<span id="cb53-19"><a href="#cb53-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-20"><a href="#cb53-20" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate Brier scores based on both training and validation data</span></span>
-<span id="cb53-21"><a href="#cb53-21" aria-hidden="true" tabindex="-1"></a>Brier_train <span class="ot">&lt;-</span> riskRegression<span class="sc">::</span><span class="fu">Score</span>(<span class="fu">list</span>(<span class="st">"Brier_train"</span> <span class="ot">=</span> Rt_train),</span>
-<span id="cb53-22"><a href="#cb53-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> <span class="fu">Surv</span>(time, status) <span class="sc">~</span> <span class="dv">1</span>,</span>
-<span id="cb53-23"><a href="#cb53-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> <span class="fu">data.frame</span>(y_train[utime_train, ]),</span>
-<span id="cb53-24"><a href="#cb53-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">conf.int =</span> <span class="cn">FALSE</span>, <span class="at">null.model =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb53-25"><a href="#cb53-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="st">"brier"</span>, <span class="at">summary =</span> <span class="st">"ibs"</span>,</span>
-<span id="cb53-26"><a href="#cb53-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">times =</span> y_train[utime_train, <span class="st">"time"</span>]</span>
-<span id="cb53-27"><a href="#cb53-27" aria-hidden="true" tabindex="-1"></a>)<span class="sc">$</span>Brier<span class="sc">$</span>score</span>
-<span id="cb53-28"><a href="#cb53-28" aria-hidden="true" tabindex="-1"></a>Brier_validate <span class="ot">&lt;-</span> riskRegression<span class="sc">::</span><span class="fu">Score</span>(<span class="fu">list</span>(<span class="st">"Brier_validate"</span> <span class="ot">=</span> Rt_validate),</span>
-<span id="cb53-29"><a href="#cb53-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> <span class="fu">Surv</span>(time, status) <span class="sc">~</span> <span class="dv">1</span>,</span>
-<span id="cb53-30"><a href="#cb53-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> <span class="fu">data.frame</span>(y_validate[utime_validate, ]),</span>
-<span id="cb53-31"><a href="#cb53-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">conf.int =</span> <span class="cn">FALSE</span>, <span class="at">null.model =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb53-32"><a href="#cb53-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="st">"brier"</span>, <span class="at">summary =</span> <span class="st">"ibs"</span>,</span>
-<span id="cb53-33"><a href="#cb53-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">times =</span> y_validate[utime_validate, <span class="st">"time"</span>]</span>
-<span id="cb53-34"><a href="#cb53-34" aria-hidden="true" tabindex="-1"></a>)<span class="sc">$</span>Brier<span class="sc">$</span>score</span>
-<span id="cb53-35"><a href="#cb53-35" aria-hidden="true" tabindex="-1"></a>Brier_score <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Brier_train, Brier_validate)</span>
-<span id="cb53-36"><a href="#cb53-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-37"><a href="#cb53-37" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Brier_score, <span class="fu">aes</span>(times, Brier, <span class="at">group =</span> model, <span class="at">color =</span> model)) <span class="sc">+</span></span>
-<span id="cb53-38"><a href="#cb53-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Evaluation time points (year)"</span>) <span class="sc">+</span></span>
-<span id="cb53-39"><a href="#cb53-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Brier score"</span>) <span class="sc">+</span></span>
-<span id="cb53-40"><a href="#cb53-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_step</span>(<span class="at">direction =</span> <span class="st">"vh"</span>) <span class="sc">+</span></span>
-<span id="cb53-41"><a href="#cb53-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.15</span>, <span class="fl">0.88</span>), <span class="at">legend.title =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>eval_times_train <span class="ot">&lt;-</span> <span class="fu">sort</span>(y_train[utime_train, <span class="st">"time"</span>])</span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>eval_times_validate <span class="ot">&lt;-</span> <span class="fu">sort</span>(y_validate[utime_validate, <span class="st">"time"</span>])</span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a>cvfit <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(x_train, y_train_surv, <span class="at">family =</span> <span class="st">"cox"</span>, <span class="at">nfolds =</span> <span class="dv">5</span>, <span class="at">penalty.factor =</span> pf)</span>
+<span id="cb53-15"><a href="#cb53-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-16"><a href="#cb53-16" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate predicted event probabilities</span></span>
+<span id="cb53-17"><a href="#cb53-17" aria-hidden="true" tabindex="-1"></a>sfit0 <span class="ot">&lt;-</span> survival<span class="sc">::</span><span class="fu">survfit</span>(cvfit, <span class="at">s =</span> cvfit<span class="sc">$</span>lambda.min, <span class="at">x =</span> x_train, <span class="at">y =</span> y_train_surv, <span class="at">newx =</span> x_train[utime_train, ])</span>
+<span id="cb53-18"><a href="#cb53-18" aria-hidden="true" tabindex="-1"></a>Rt_train <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">t</span>(<span class="fu">summary</span>(sfit0, <span class="at">times =</span> eval_times_train)<span class="sc">$</span>surv)</span>
+<span id="cb53-19"><a href="#cb53-19" aria-hidden="true" tabindex="-1"></a>sfit <span class="ot">&lt;-</span> survival<span class="sc">::</span><span class="fu">survfit</span>(cvfit, <span class="at">s =</span> cvfit<span class="sc">$</span>lambda.min, <span class="at">x =</span> x_train, <span class="at">y =</span> y_train_surv, <span class="at">newx =</span> x_validate[utime_validate, ])</span>
+<span id="cb53-20"><a href="#cb53-20" aria-hidden="true" tabindex="-1"></a>Rt_validate <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">t</span>(<span class="fu">summary</span>(sfit, <span class="at">times =</span> eval_times_validate)<span class="sc">$</span>surv)</span>
+<span id="cb53-21"><a href="#cb53-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-22"><a href="#cb53-22" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate Brier scores based on both training and validation data</span></span>
+<span id="cb53-23"><a href="#cb53-23" aria-hidden="true" tabindex="-1"></a>Brier_train <span class="ot">&lt;-</span> riskRegression<span class="sc">::</span><span class="fu">Score</span>(<span class="fu">list</span>(<span class="st">"Brier_train"</span> <span class="ot">=</span> Rt_train),</span>
+<span id="cb53-24"><a href="#cb53-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> <span class="fu">Surv</span>(time, status) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb53-25"><a href="#cb53-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> <span class="fu">data.frame</span>(y_train[utime_train, ]),</span>
+<span id="cb53-26"><a href="#cb53-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">conf.int =</span> <span class="cn">FALSE</span>, <span class="at">null.model =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb53-27"><a href="#cb53-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="st">"brier"</span>, <span class="at">summary =</span> <span class="st">"ibs"</span>,</span>
+<span id="cb53-28"><a href="#cb53-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">times =</span> eval_times_train</span>
+<span id="cb53-29"><a href="#cb53-29" aria-hidden="true" tabindex="-1"></a>)<span class="sc">$</span>Brier<span class="sc">$</span>score</span>
+<span id="cb53-30"><a href="#cb53-30" aria-hidden="true" tabindex="-1"></a>Brier_validate <span class="ot">&lt;-</span> riskRegression<span class="sc">::</span><span class="fu">Score</span>(<span class="fu">list</span>(<span class="st">"Brier_validate"</span> <span class="ot">=</span> Rt_validate),</span>
+<span id="cb53-31"><a href="#cb53-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> <span class="fu">Surv</span>(time, status) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb53-32"><a href="#cb53-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> <span class="fu">data.frame</span>(y_validate[utime_validate, ]),</span>
+<span id="cb53-33"><a href="#cb53-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">conf.int =</span> <span class="cn">FALSE</span>, <span class="at">null.model =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb53-34"><a href="#cb53-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="st">"brier"</span>, <span class="at">summary =</span> <span class="st">"ibs"</span>,</span>
+<span id="cb53-35"><a href="#cb53-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">times =</span> eval_times_validate</span>
+<span id="cb53-36"><a href="#cb53-36" aria-hidden="true" tabindex="-1"></a>)<span class="sc">$</span>Brier<span class="sc">$</span>score</span>
+<span id="cb53-37"><a href="#cb53-37" aria-hidden="true" tabindex="-1"></a>Brier_score <span class="ot">&lt;-</span> <span class="fu">rbind</span>(Brier_train, Brier_validate)</span>
+<span id="cb53-38"><a href="#cb53-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-39"><a href="#cb53-39" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Brier_score, <span class="fu">aes</span>(times, Brier, <span class="at">group =</span> model, <span class="at">color =</span> model)) <span class="sc">+</span></span>
+<span id="cb53-40"><a href="#cb53-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Evaluation time points (year)"</span>) <span class="sc">+</span></span>
+<span id="cb53-41"><a href="#cb53-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Brier score"</span>) <span class="sc">+</span></span>
+<span id="cb53-42"><a href="#cb53-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_step</span>(<span class="at">direction =</span> <span class="st">"vh"</span>) <span class="sc">+</span></span>
+<span id="cb53-43"><a href="#cb53-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.15</span>, <span class="fl">0.88</span>), <span class="at">legend.title =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="quarto-figure quarto-figure-left">
 <figure class="figure">
@@ -1360,19 +1362,18 @@ Survival prediction in Cox models
 <div class="cell">
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>Brier_validate</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<pre class="border"><code>              model        times      Brier        IBS
-             &lt;fctr&gt;        &lt;num&gt;      &lt;num&gt;      &lt;num&gt;
-  1: Brier_validate  0.002737851 0.04212694 0.00000000
-  2: Brier_validate  0.027378508 0.04231610 0.03791424
-  3: Brier_validate  0.082135524 0.04736244 0.04084882
-  4: Brier_validate  0.147843943 0.04755453 0.04374376
-  5: Brier_validate  0.213552361 0.04774858 0.04491630
- ---                                                  
-194: Brier_validate 11.920602327 0.42092779 0.29032468
-195: Brier_validate 11.939767283 0.44343782 0.29053431
-196: Brier_validate 14.171115674 0.42048940 0.31461012
-197: Brier_validate 17.226557153 0.39844414 0.33338972
-198: Brier_validate 19.455167693 0.29702857 0.34084178</code></pre>
+<pre class="border"><code>        model        times      Brier        IBS
+       &lt;fctr&gt;        &lt;num&gt;      &lt;num&gt;       &lt;num&gt;
+Brier_validate  0.002737851 0.005050505 0.000000000 
+Brier_validate  0.027378508 0.005050505 0.004545455 
+Brier_validate  0.082135524 0.010052158 0.004882155 
+Brier_validate  0.147843943 0.010052163 0.007179934 
+Brier_validate  0.213552361 0.010052153 0.008063697 
+Brier_validate  0.268309377 0.010052161 0.008469504 
+Brier_validate  0.470910335 0.014920813 0.009150414 
+Brier_validate  0.654346338 0.019727580 0.010768057 
+Brier_validate  0.684462697 0.019727794 0.011162276 
+Brier_validate  0.698151951 0.024821908 0.011330228 </code></pre>
 <p><br></p>
 </section>
 <section id="uq1" class="level4 unnumbered">
